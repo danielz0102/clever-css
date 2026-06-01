@@ -41,7 +41,25 @@
         "command": "css-viewer.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cssViewer",
+          "title": "CSS Viewer",
+          "icon": "media/symbol-color.svg"
+        }
+      ]
+    },
+    "views": {
+      "cssViewer": [
+        {
+          "id": "classes",
+          "name": "Classes",
+          "icon": ""
+        }
+      ]
+    }
   },
   "activationEvents": [],
   "engines": {
