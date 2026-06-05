@@ -42,10 +42,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "css-viewer.helloWorld",
-        "title": "Hello World"
-      },
-      {
         "command": "css-viewer.openClass",
         "title": "Open CSS Class"
       }
