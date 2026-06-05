@@ -6,33 +6,38 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem> {
     return element
   }
 
-  async getChildren(element?: ClassItem): Promise<ClassItem[]> {
-    if (element) {
-      return [new ClassItem("Class 1"), new ClassItem("Class 2"), new ClassItem("Class 3")]
+  async getChildren(item?: ClassItem | FileItem): Promise<ClassItem[] | FileItem[]> {
+    if (item instanceof ClassItem) {
+      return []
     }
 
-    const cssFiles = await this.getCSSFiles()
-    const classes = await this.getCSSClasses(cssFiles)
+    if (item instanceof FileItem) {
+      const content = await this.getCSSFileContent(item.resourceUri)
+      const classes = await parseCSSClasses(content)
+      return classes.map((c) => new ClassItem(`.${c}`))
+    }
 
-    return classes.map((c) => new ClassItem(`.${c}`))
-  }
-
-  private async getCSSFiles(): Promise<vscode.Uri[]> {
-    return await vscode.workspace.findFiles("**/*.css", "**/node_modules/**")
-  }
-
-  private async getCSSClasses(files: vscode.Uri[]): Promise<string[]> {
-    const classesPromises = files.map(async (file) => {
-      const content = await this.getCSSFileContent(file)
-      return await parseCSSClasses(content)
-    })
-    return await Promise.all(classesPromises).then((r) => r.flat())
+    const fileURIs = await this.getCSSFilesURIs()
+    return fileURIs.map((uri) => new FileItem(uri))
   }
 
   private async getCSSFileContent(file: vscode.Uri): Promise<string> {
     const content = await vscode.workspace.fs.readFile(file)
     return content.toString()
   }
+
+  private async getCSSFilesURIs(): Promise<vscode.Uri[]> {
+    return await vscode.workspace.findFiles("**/*.css", "**/node_modules/**")
+  }
+}
+
+class FileItem extends vscode.TreeItem {
+  constructor(override readonly resourceUri: vscode.Uri) {
+    super(resourceUri)
+  }
+
+  iconPath = vscode.ThemeIcon.File
+  collapsibleState = vscode.TreeItemCollapsibleState.Expanded
 }
 
 class ClassItem extends vscode.TreeItem {
