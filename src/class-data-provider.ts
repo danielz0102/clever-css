@@ -41,7 +41,7 @@ class FileItem extends vscode.TreeItem {
 }
 
 class ClassItem extends vscode.TreeItem {
-  iconPath?: vscode.IconPath = new vscode.ThemeIcon("symbol-class")
+  iconPath = new vscode.ThemeIcon("symbol-class")
 
   constructor(cssClass: CSSClass, fileUri: vscode.Uri) {
     super(`.${cssClass.name}`)
