@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { parseCSSClasses } from "./parse-css-classes"
+import { parseCSSClasses, type CSSClass } from "./parse-css-classes"
 
 export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem> {
   getTreeItem(element: ClassItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -14,7 +14,7 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem> {
     if (item instanceof FileItem) {
       const content = await this.getCSSFileContent(item.resourceUri)
       const classes = await parseCSSClasses(content)
-      return classes.map((c) => new ClassItem(`.${c}`))
+      return classes.map((c) => new ClassItem(c, item.resourceUri))
     }
 
     const fileURIs = await this.getCSSFilesURIs()
@@ -42,4 +42,21 @@ class FileItem extends vscode.TreeItem {
 
 class ClassItem extends vscode.TreeItem {
   iconPath?: vscode.IconPath = new vscode.ThemeIcon("symbol-class")
+
+  constructor(cssClass: CSSClass, fileUri: vscode.Uri) {
+    super(`.${cssClass.name}`)
+
+    const range = new vscode.Range(
+      cssClass.start.line - 1,
+      cssClass.start.column - 1,
+      cssClass.end.line - 1,
+      cssClass.end.column - 1
+    )
+
+    this.command = {
+      command: "css-viewer.openClass",
+      title: "Open Class",
+      arguments: [fileUri, range],
+    }
+  }
 }
