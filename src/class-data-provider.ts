@@ -12,8 +12,7 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem> {
     }
 
     if (item instanceof FileItem) {
-      const content = await this.getCSSFileContent(item.resourceUri)
-      const classes = await parseCSSClasses(content)
+      const classes = await this.getCSSFileClasses(item.resourceUri)
       return classes.map((c) => new ClassItem(c, item.resourceUri))
     }
 
@@ -21,9 +20,9 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem> {
     return fileURIs.map((uri) => new FileItem(uri))
   }
 
-  private async getCSSFileContent(file: vscode.Uri): Promise<string> {
-    const content = await vscode.workspace.fs.readFile(file)
-    return content.toString()
+  private async getCSSFileClasses(file: vscode.Uri): Promise<CSSClass[]> {
+    const buffer = await vscode.workspace.fs.readFile(file)
+    return await parseCSSClasses(buffer.toString())
   }
 
   private async getCSSFilesURIs(): Promise<vscode.Uri[]> {
