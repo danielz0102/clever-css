@@ -11,9 +11,16 @@ export function activate(context: vscode.ExtensionContext) {
       editor.selection = new vscode.Selection(range.start, range.start)
     }
   )
-  context.subscriptions.push(openClassCommand)
 
-  vscode.window.registerTreeDataProvider("classes", new ClassDataProvider())
+  const classDataProvider = new ClassDataProvider()
+  const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
+  watcher.onDidChange(() => classDataProvider.refresh())
+  watcher.onDidCreate(() => classDataProvider.refresh())
+  watcher.onDidDelete(() => classDataProvider.refresh())
+
+  context.subscriptions.push(openClassCommand)
+  context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
+  context.subscriptions.push(watcher)
 }
 
 export function deactivate() {}

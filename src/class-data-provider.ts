@@ -1,8 +1,17 @@
 import * as vscode from "vscode"
 import { parseCSSClasses, type CSSClass } from "./parse-css-classes"
 
-export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem> {
-  getTreeItem(element: ClassItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
+  private onDidChangeTreeDataEmitter = new vscode.EventEmitter<
+    ClassItem | FileItem | undefined | void
+  >()
+  readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event
+
+  refresh(): void {
+    this.onDidChangeTreeDataEmitter.fire()
+  }
+
+  getTreeItem(element: ClassItem | FileItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
     return element
   }
 
