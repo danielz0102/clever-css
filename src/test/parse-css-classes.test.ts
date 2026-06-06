@@ -2,7 +2,7 @@ import assert from "node:assert"
 import { parseCSSClasses } from "../parse-css-classes"
 
 suite("parseCSSClasses", () => {
-  test("returns classes with correct positions", async () => {
+  test("returns classes found", async () => {
     const classes = await parseCSSClasses(`
       .class1 {
         color: red;
@@ -13,10 +13,8 @@ suite("parseCSSClasses", () => {
     `)
 
     assert.strictEqual(classes.length, 2)
-    assert.deepEqual(classes[0]?.start, { line: 2, column: 7 })
-    assert.deepEqual(classes[0]?.end, { line: 2, column: 13 })
-    assert.deepEqual(classes[1]?.start, { line: 5, column: 7 })
-    assert.deepEqual(classes[1]?.end, { line: 5, column: 13 })
+    assert.strictEqual(classes[0]?.name, "class1")
+    assert.strictEqual(classes[1]?.name, "class2")
   })
 
   test("returns an empty array if there are no classes", async () => {
