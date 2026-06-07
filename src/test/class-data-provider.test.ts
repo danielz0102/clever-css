@@ -13,7 +13,7 @@ suite("ClassDataProvider", () => {
   test("loads all CSS files and their classes", async () => {
     const provider = new ClassDataProvider()
 
-    await workspace.createTestFile(
+    await workspace.createFile(
       "test.css",
       `
       .test-class1 {
