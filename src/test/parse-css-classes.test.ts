@@ -12,9 +12,9 @@ suite("parseCSSClasses", () => {
       }
     `)
 
-    assert.strictEqual(classes.length, 2)
-    assert.strictEqual(classes[0]?.name, "class1")
-    assert.strictEqual(classes[1]?.name, "class2")
+    assert(classes.length === 2)
+    assert(classes[0]?.name === "class1")
+    assert(classes[1]?.name === "class2")
   })
 
   test("returns an empty array if there are no classes", async () => {
@@ -27,6 +27,6 @@ suite("parseCSSClasses", () => {
       }
     `)
 
-    assert.strictEqual(classes.length, 0)
+    assert(classes.length === 0)
   })
 })
