@@ -1,3 +1,5 @@
+import path from "node:path"
+
 import * as vscode from "vscode"
 
 import { parseCSSClasses, type CSSClass } from "./parse-css-classes"
@@ -43,6 +45,9 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem | Fi
 class FileItem extends vscode.TreeItem {
   constructor(override readonly resourceUri: vscode.Uri) {
     super(resourceUri)
+
+    const relativePath = vscode.workspace.asRelativePath(resourceUri)
+    this.description = path.dirname(relativePath)
   }
 
   iconPath = vscode.ThemeIcon.File
