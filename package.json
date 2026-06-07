@@ -63,6 +63,13 @@
           "icon": ""
         }
       ]
+    },
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "references-view.findReferences"
+        }
+      ]
     }
   },
   "activationEvents": [],
