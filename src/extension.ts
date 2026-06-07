@@ -1,4 +1,5 @@
 import * as vscode from "vscode"
+
 import { ClassDataProvider } from "./class-data-provider"
 
 export function activate(context: vscode.ExtensionContext) {

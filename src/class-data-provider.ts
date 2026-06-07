@@ -1,4 +1,5 @@
 import * as vscode from "vscode"
+
 import { parseCSSClasses, type CSSClass } from "./parse-css-classes"
 
 export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {

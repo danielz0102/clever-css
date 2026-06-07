@@ -1,4 +1,5 @@
 import assert from "node:assert"
+
 import { parseCSSClasses } from "../parse-css-classes"
 
 suite("parseCSSClasses", () => {
