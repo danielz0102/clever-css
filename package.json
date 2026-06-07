@@ -28,13 +28,13 @@
   "devDependencies": {
     "@types/css-tree": "^2.3.11",
     "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
+    "@types/node": "25.9.2",
     "@types/vscode": "^1.120.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.27.3",
+    "esbuild": "^0.28.0",
     "npm-run-all": "^4.1.5",
-    "oxfmt": "^0.52.0",
+    "oxfmt": "^0.53.0",
     "oxlint": "^1.67.0",
     "oxlint-tsgolint": "^0.23.0",
     "typescript": "^6.0.3"
