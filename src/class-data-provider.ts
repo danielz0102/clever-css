@@ -25,7 +25,7 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem | Fi
 
     if (item instanceof FileItem) {
       const classes = await this.getCSSFileClasses(item.resourceUri)
-      return classes.map((c) => new ClassItem(c, item.resourceUri))
+      return classes.map((c) => new ClassItem(c.name, item.resourceUri, c))
     }
 
     const fileURIs = await this.getCSSFilesURIs()
@@ -54,11 +54,12 @@ class FileItem extends vscode.TreeItem {
   collapsibleState = vscode.TreeItemCollapsibleState.Expanded
 }
 
-class ClassItem extends vscode.TreeItem {
+export class ClassItem extends vscode.TreeItem {
   iconPath = new vscode.ThemeIcon("symbol-class")
+  contextValue = "cssClass"
 
-  constructor(cssClass: CSSClass, fileUri: vscode.Uri) {
-    super(`.${cssClass.name}`)
+  constructor(readonly cssClassName: string, fileUri: vscode.Uri, cssClass: CSSClass) {
+    super(`.${cssClassName}`)
 
     const range = new vscode.Range(
       cssClass.start.line - 1,
