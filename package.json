@@ -60,7 +60,7 @@
         {
           "id": "cssViewer",
           "title": "CSS Viewer",
-          "icon": "media/symbol-color.svg"
+          "icon": "$(symbol-color)"
         }
       ]
     },
