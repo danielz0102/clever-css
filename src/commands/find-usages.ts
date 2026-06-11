@@ -1,10 +1,11 @@
 import * as vscode from "vscode"
 
+import type { ClassItem } from "../class-data-provider"
 import { UsageTreeDataProvider, type Usage } from "../usage-data-provider"
 
 const usageDataProvider = new UsageTreeDataProvider()
 
-export async function findUsages(item: { cssClassName: string }) {
+export async function findUsages(item: ClassItem) {
   const className = item.cssClassName
   const pattern = `(?:class|className)=["']([^"']*\\b${className}\\b[^"']*)["']`
   const regex = new RegExp(pattern)
