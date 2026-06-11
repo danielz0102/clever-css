@@ -11,7 +11,6 @@ export function activate(context: vscode.ExtensionContext) {
   watcher.onDidDelete(() => classDataProvider.refresh())
 
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
-  context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openUsage", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
   context.subscriptions.push(watcher)
 }

@@ -43,15 +43,15 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem | Fi
 }
 
 class FileItem extends vscode.TreeItem {
+  iconPath = vscode.ThemeIcon.File
+  collapsibleState = vscode.TreeItemCollapsibleState.Expanded
+
   constructor(override readonly resourceUri: vscode.Uri) {
     super(resourceUri)
 
     const relativePath = vscode.workspace.asRelativePath(resourceUri)
     this.description = path.dirname(relativePath)
   }
-
-  iconPath = vscode.ThemeIcon.File
-  collapsibleState = vscode.TreeItemCollapsibleState.Expanded
 }
 
 export class ClassItem extends vscode.TreeItem {
