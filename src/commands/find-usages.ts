@@ -6,7 +6,7 @@ import { UsageTreeDataProvider, type Usage } from "../usage-data-provider"
 const usageDataProvider = new UsageTreeDataProvider()
 
 export async function findUsages(item: ClassItem) {
-  const className = item.cssClassName
+  const className = item.cssClass.name
   const pattern = `(?:class|className)=["']([^"']*\\b${className}\\b[^"']*)["']`
   const regex = new RegExp(pattern)
 
