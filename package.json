@@ -44,15 +44,6 @@
       {
         "command": "css-viewer.openClass",
         "title": "Open CSS Class"
-      },
-      {
-        "command": "css-viewer.findUsages",
-        "title": "Find Usages",
-        "icon": "$(search)"
-      },
-      {
-        "command": "css-viewer.openUsage",
-        "title": "Open Usage"
       }
     ],
     "viewsContainers": {
@@ -70,19 +61,6 @@
           "id": "classes",
           "name": "Classes",
           "icon": ""
-        },
-        {
-          "id": "usages",
-          "name": "Usages",
-          "icon": ""
-        }
-      ]
-    },
-    "menus": {
-      "view/item/context": [
-        {
-          "command": "css-viewer.findUsages",
-          "when": "view == classes && viewItem == cssClass"
         }
       ]
     }
