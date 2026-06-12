@@ -6,13 +6,10 @@ import { CSSClassCollection } from "./domain/css-class-collection"
 export async function findCSSClasses(): Promise<CSSClassCollection> {
   const collection = new CSSClassCollection()
   const files = await findCSSFiles()
+  const symbols = (await Promise.all(files.map(findCSSClassSymbols))).flat()
 
-  for (const file of files) {
-    const symbols = await findCSSClassSymbols(file)
-
-    for (const { className, location } of symbols) {
-      collection.add(className, location)
-    }
+  for (const { className, location } of symbols) {
+    collection.add(className, location)
   }
 
   return collection

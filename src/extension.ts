@@ -14,8 +14,11 @@ export async function activate(context: vscode.ExtensionContext) {
       .join("\n")
   )
 
+  //TODO: Pass collection to data provider and update it instead of refreshing everything
   const classDataProvider = new ClassDataProvider()
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
+
+  //TODO: Update classes collection instead of refreshing everything
   watcher.onDidChange(() => classDataProvider.refresh())
   watcher.onDidCreate(() => classDataProvider.refresh())
   watcher.onDidDelete(() => classDataProvider.refresh())
