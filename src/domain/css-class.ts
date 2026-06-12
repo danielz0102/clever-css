@@ -20,6 +20,16 @@ export class CSSClass {
     this.#usages.push(usage)
   }
 
+  get firstDefinition(): vscode.Location {
+    const def = this.#definitions[0]
+
+    if (!def) {
+      throw new Error(`CSS class ${this.name} has no definitions.`)
+    }
+
+    return def
+  }
+
   get definitions(): readonly vscode.Location[] {
     return this.#definitions
   }

@@ -1,24 +1,39 @@
 import * as vscode from "vscode"
 
-import { ClassDataProvider } from "./class-data-provider"
+import { ClassDataProvider, type CSSFile } from "./class-data-provider"
 import { openLocation } from "./commands/open-location"
 import { findCSSClasses } from "./find-css-classes"
 
 export async function activate(context: vscode.ExtensionContext) {
   const classes = await findCSSClasses()
-  console.log(`Found ${classes.getAll().length} CSS classes.`)
-  console.log(
-    classes
-      .getAll()
-      .map((c) => `${c.name}: ${c.definitions.length} definitions, ${c.usages.length} usages`)
-      .join("\n")
-  )
+  const files: CSSFile[] = []
 
-  //TODO: Pass collection to data provider and update it instead of refreshing everything
-  const classDataProvider = new ClassDataProvider()
+  for (const c of classes.getAll()) {
+    const def = c.firstDefinition
+    const file = files.find((f) => f.uri.toString() === def.uri.toString())
+
+    if (file) {
+      file.classes.push({
+        name: c.name,
+        range: def.range,
+      })
+    } else {
+      files.push({
+        uri: def.uri,
+        classes: [
+          {
+            name: c.name,
+            range: def.range,
+          },
+        ],
+      })
+    }
+  }
+
+  const classDataProvider = new ClassDataProvider(files)
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
 
-  //TODO: Update classes collection instead of refreshing everything
+  //TODO: Update repository
   watcher.onDidChange(() => classDataProvider.refresh())
   watcher.onDidCreate(() => classDataProvider.refresh())
   watcher.onDidDelete(() => classDataProvider.refresh())
