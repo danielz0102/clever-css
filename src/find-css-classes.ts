@@ -4,15 +4,15 @@ import * as vscode from "vscode"
 import { CSSClassCollection } from "./domain/css-class-collection"
 
 export async function findCSSClasses(): Promise<CSSClassCollection> {
-  const collection = new CSSClassCollection()
+  const classes = new CSSClassCollection()
   const files = await findCSSFiles()
   const symbols = (await Promise.all(files.map(findCSSClassSymbols))).flat()
 
   for (const { className, location } of symbols) {
-    collection.add(className, location)
+    classes.add(className, location)
   }
 
-  return collection
+  return classes
 }
 
 type CSSFile = {
