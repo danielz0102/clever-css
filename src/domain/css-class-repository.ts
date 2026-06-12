@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 
 import { CSSClass } from "./css-class"
 
-export class CSSClassCollection {
+export class CSSClassRepository {
   private classes = new Map<string, CSSClass>()
 
   add(className: string, definition: vscode.Location): void {

@@ -1,10 +1,10 @@
 import * as csstree from "css-tree"
 import * as vscode from "vscode"
 
-import { CSSClassCollection } from "./domain/css-class-collection"
+import { CSSClassRepository } from "./domain/css-class-repository"
 
-export async function findCSSClasses(): Promise<CSSClassCollection> {
-  const classes = new CSSClassCollection()
+export async function findCSSClasses(): Promise<CSSClassRepository> {
+  const classes = new CSSClassRepository()
   const files = await findCSSFiles()
   const symbols = (await Promise.all(files.map(findCSSClassSymbols))).flat()
 
