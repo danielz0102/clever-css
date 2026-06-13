@@ -15,6 +15,10 @@ export class CSSClass {
     this.#definitions.push(definition)
   }
 
+  removeDefinitionsFromFile(uri: vscode.Uri): void {
+    this.#definitions = this.#definitions.filter((d) => d.uri.toString() !== uri.toString())
+  }
+
   addUsage(usage: vscode.Location): void {
     this.#usages ??= []
     this.#usages.push(usage)

@@ -18,6 +18,20 @@ export class CSSClassRepository {
     return this.classes.has(className)
   }
 
+  delete(className: string): void {
+    this.classes.delete(className)
+  }
+
+  deleteFromFile(uri: vscode.Uri): void {
+    this.classes.forEach((v, k) => {
+      v.removeDefinitionsFromFile(uri)
+
+      if (v.definitions.length === 0) {
+        this.classes.delete(k)
+      }
+    })
+  }
+
   getAll(): CSSClass[] {
     return Array.from(this.classes.values())
   }

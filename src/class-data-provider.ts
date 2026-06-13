@@ -18,7 +18,8 @@ export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem | Fi
 
   constructor(private files: CSSFile[]) {}
 
-  refresh(): void {
+  refresh(newData: CSSFile[]): void {
+    this.files = newData
     this.onDidChangeTreeDataEmitter.fire()
   }
 

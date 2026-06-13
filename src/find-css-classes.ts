@@ -38,7 +38,7 @@ type CSSClassSymbol = {
   location: vscode.Location
 }
 
-async function findCSSClassSymbols(cssFile: CSSFile): Promise<CSSClassSymbol[]> {
+export async function findCSSClassSymbols(cssFile: CSSFile): Promise<CSSClassSymbol[]> {
   const ast = csstree.parse(cssFile.content, { positions: true })
   const classes: CSSClassSymbol[] = []
 
