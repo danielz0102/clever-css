@@ -10,7 +10,7 @@ export type CSSFile = {
   }>
 }
 
-export class ClassDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
+export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
   private onDidChangeTreeDataEmitter = new vscode.EventEmitter<
     ClassItem | FileItem | undefined | void
   >()

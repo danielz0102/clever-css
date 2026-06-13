@@ -2,11 +2,11 @@ import assert from "node:assert"
 
 import * as vscode from "vscode"
 
-import { ClassDataProvider } from "../class-data-provider"
+import { ClassTreeDataProvider } from "../class-tree-data-provider"
 
 suite("ClassDataProvider", () => {
   test("loads all CSS files and their classes", async () => {
-    const provider = new ClassDataProvider([
+    const provider = new ClassTreeDataProvider([
       {
         uri: vscode.Uri.parse("file:///test.css"),
         classes: [

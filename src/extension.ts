@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { ClassDataProvider, type CSSFile } from "./class-data-provider"
+import { ClassTreeDataProvider, type CSSFile } from "./class-tree-data-provider"
 import { openLocation } from "./commands/open-location"
 import type { CSSClass } from "./domain/css-class"
 import { findCSSClasses, findCSSClassSymbols } from "./find-css-classes"
@@ -36,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
     return files
   }
 
-  const classDataProvider = new ClassDataProvider(mapFiles(classes.getAll()))
+  const classDataProvider = new ClassTreeDataProvider(mapFiles(classes.getAll()))
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
 
   watcher.onDidChange(async (uri) => {
