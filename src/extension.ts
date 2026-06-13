@@ -3,7 +3,7 @@ import * as vscode from "vscode"
 import { ClassTreeDataProvider } from "./class-tree/class-tree-data-provider"
 import { classesToFiles } from "./class-tree/css-file-dto"
 import { openLocation } from "./commands/open-location"
-import { findCSSClasses, findCSSClassSymbols } from "./find-css-classes"
+import { findCSSClasses, parseSymbol } from "./find-css-classes"
 
 export async function activate(context: vscode.ExtensionContext) {
   const classes = await findCSSClasses()
@@ -12,20 +12,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
   watcher.onDidChange(async (uri) => {
     classes.deleteFromFile(uri)
-
-    const buffer = await vscode.workspace.fs.readFile(uri)
-    const newClasses = await findCSSClassSymbols({ uri, content: buffer.toString() })
-
+    const newClasses = await parseSymbol(uri)
     newClasses.forEach((c) => classes.add(c.className, c.location))
 
     classDataProvider.refresh(classesToFiles(classes.getAll()))
   })
   watcher.onDidCreate(async (uri) => {
     classes.deleteFromFile(uri)
-
-    const buffer = await vscode.workspace.fs.readFile(uri)
-    const newClasses = await findCSSClassSymbols({ uri, content: buffer.toString() })
-
+    const newClasses = await parseSymbol(uri)
     newClasses.forEach((c) => classes.add(c.className, c.location))
 
     classDataProvider.refresh(classesToFiles(classes.getAll()))
