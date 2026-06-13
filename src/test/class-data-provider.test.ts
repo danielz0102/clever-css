@@ -25,7 +25,7 @@ suite("ClassDataProvider", () => {
     const fileItems = provider.getChildren()
     const classItems = provider.getChildren(fileItems[0])
 
-    assert(fileItems.length >= 1, "Expected at least one CSS file")
+    assert(fileItems.length === 1, "Expected one CSS file")
     assert(classItems.length === 2, `Expected 2 classes, got ${classItems.length}`)
   })
 })
