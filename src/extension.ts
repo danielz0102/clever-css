@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { ClassTreeDataProvider, type CSSFile } from "./class-tree-data-provider"
+import { ClassTreeDataProvider, type CSSFile } from "./class-tree/class-tree-data-provider"
 import { openLocation } from "./commands/open-location"
 import type { CSSClass } from "./domain/css-class"
 import { findCSSClasses, findCSSClassSymbols } from "./find-css-classes"

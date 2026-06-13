@@ -1,6 +1,7 @@
-import path from "node:path"
-
 import * as vscode from "vscode"
+
+import { ClassItem } from "./class-tree-item"
+import { FileItem } from "./file-tree-item"
 
 export type CSSFile = {
   uri: vscode.Uri
@@ -42,40 +43,5 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
     }
 
     return this.files.map(({ uri }) => new FileItem(uri))
-  }
-}
-
-class FileItem extends vscode.TreeItem {
-  iconPath = vscode.ThemeIcon.File
-  collapsibleState = vscode.TreeItemCollapsibleState.Expanded
-
-  constructor(override readonly resourceUri: vscode.Uri) {
-    super(resourceUri)
-
-    const relativePath = vscode.workspace.asRelativePath(resourceUri)
-    this.description = path.dirname(relativePath)
-  }
-}
-
-export class ClassItem extends vscode.TreeItem {
-  iconPath = new vscode.ThemeIcon("symbol-class")
-  contextValue = "cssClass"
-
-  constructor({
-    className,
-    fileUri,
-    range,
-  }: {
-    className: string
-    range: vscode.Range
-    fileUri: vscode.Uri
-  }) {
-    super(`.${className}`)
-
-    this.command = {
-      command: "css-viewer.openClass",
-      title: "Open Class",
-      arguments: [fileUri, range],
-    }
   }
 }
