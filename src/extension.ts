@@ -11,6 +11,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const classDataProvider = new ClassTreeDataProvider(classesToFiles(classes.getAll()))
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
 
+  //TODO: Extract use cases
   watcher.onDidChange(async (uri) => {
     classes.deleteFromFile(uri)
     const newClasses = await parseCSSClassSymbols(uri)
