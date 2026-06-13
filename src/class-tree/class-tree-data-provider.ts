@@ -1,15 +1,8 @@
 import * as vscode from "vscode"
 
 import { ClassItem } from "./class-tree-item"
+import type { CSSFile } from "./css-file-dto"
 import { FileItem } from "./file-tree-item"
-
-export type CSSFile = {
-  uri: vscode.Uri
-  classes: Array<{
-    name: string
-    range: vscode.Range
-  }>
-}
 
 export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
   private onDidChangeTreeDataEmitter = new vscode.EventEmitter<
