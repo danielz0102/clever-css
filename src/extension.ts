@@ -24,6 +24,37 @@ export async function activate(context: vscode.ExtensionContext) {
     classDataProvider.refresh(classesToFiles(classes.getAll()))
   })
 
+  vscode.languages.registerReferenceProvider(
+    { pattern: "**/*.css", scheme: "file" },
+    {
+      provideReferences(document, position) {
+        // 1. Get the symbol at the position
+        const wordRange = document.getWordRangeAtPosition(position, /\.\w+/)
+        if (!wordRange) return
+
+        // 2. If it's not a class, return
+        const word = document.getText(wordRange)
+        if (!word.startsWith(".")) return
+
+        // 3. Get the class from the repository
+        const className = word.substring(1)
+        const cssClass = classes.get(className)
+        if (!cssClass) return
+
+        // 4. Only if usages are undefined, find usages and set them in the repository
+        // It's assumed that usages are updated when files change
+        if (!cssClass.usages) {
+          return //TODO
+        }
+
+        // 5. Merge definitions and usages and return them
+
+        const references = [...cssClass.definitions, ...cssClass.usages]
+        return references
+      },
+    }
+  )
+
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
   context.subscriptions.push(watcher)

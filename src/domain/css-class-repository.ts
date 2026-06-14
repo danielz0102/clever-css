@@ -14,6 +14,10 @@ export class CSSClassRepository {
     this.classes.set(className, new CSSClass(className, definition))
   }
 
+  get(className: string): CSSClass | undefined {
+    return this.classes.get(className)
+  }
+
   has(className: string): boolean {
     return this.classes.has(className)
   }
