@@ -3,26 +3,12 @@ import * as vscode from "vscode"
 import { ClassTreeDataProvider } from "./class-tree/class-tree-data-provider"
 import { classesToFiles } from "./class-tree/css-file-dto"
 import { openLocation } from "./commands/open-location"
-import { createOrUpdateFile } from "./use-cases/create-or-update-file"
 import { findCSSClasses } from "./use-cases/find-css-classes"
+import { createCSSFilesWatcher } from "./watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
   const classes = await findCSSClasses()
   const classDataProvider = new ClassTreeDataProvider(classesToFiles(classes.getAll()))
-  const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
-
-  watcher.onDidChange(async (uri) => {
-    await createOrUpdateFile(classes, uri)
-    classDataProvider.refresh(classesToFiles(classes.getAll()))
-  })
-  watcher.onDidCreate(async (uri) => {
-    await createOrUpdateFile(classes, uri)
-    classDataProvider.refresh(classesToFiles(classes.getAll()))
-  })
-  watcher.onDidDelete(async (uri) => {
-    classes.deleteFromFile(uri)
-    classDataProvider.refresh(classesToFiles(classes.getAll()))
-  })
 
   vscode.languages.registerReferenceProvider(
     { pattern: "**/*.css", scheme: "file" },
@@ -57,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
-  context.subscriptions.push(watcher)
+  context.subscriptions.push(createCSSFilesWatcher({ repo: classes, provider: classDataProvider }))
 }
 
 export function deactivate() {}
