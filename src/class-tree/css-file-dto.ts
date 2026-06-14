@@ -10,7 +10,7 @@ export type CSSFile = {
   }>
 }
 
-export function classesToFiles(classes: CSSClass[]): CSSFile[] {
+export function fromDomain(classes: CSSClass[]): CSSFile[] {
   const files: CSSFile[] = []
 
   for (const c of classes) {

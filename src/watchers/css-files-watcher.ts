@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import type { ClassTreeDataProvider } from "../class-tree/class-tree-data-provider"
-import { classesToFiles } from "../class-tree/css-file-dto"
+import { fromDomain } from "../class-tree/css-file-dto"
 import type { CSSClassRepository } from "../domain/css-class-repository"
 import { createOrUpdateFile } from "../use-cases/create-or-update-file"
 
@@ -15,15 +15,15 @@ export function createCSSFilesWatcher({ repo, provider }: WatchCSSFilesParams) {
 
   watcher.onDidChange(async (uri) => {
     await createOrUpdateFile(repo, uri)
-    provider.refresh(classesToFiles(repo.getAll()))
+    provider.refresh(fromDomain(repo.getAll()))
   })
   watcher.onDidCreate(async (uri) => {
     await createOrUpdateFile(repo, uri)
-    provider.refresh(classesToFiles(repo.getAll()))
+    provider.refresh(fromDomain(repo.getAll()))
   })
   watcher.onDidDelete(async (uri) => {
     repo.deleteFromFile(uri)
-    provider.refresh(classesToFiles(repo.getAll()))
+    provider.refresh(fromDomain(repo.getAll()))
   })
 
   return watcher

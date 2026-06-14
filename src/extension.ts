@@ -1,14 +1,14 @@
 import * as vscode from "vscode"
 
 import { ClassTreeDataProvider } from "./class-tree/class-tree-data-provider"
-import { classesToFiles } from "./class-tree/css-file-dto"
+import { fromDomain } from "./class-tree/css-file-dto"
 import { openLocation } from "./commands/open-location"
 import { findCSSClasses } from "./use-cases/find-css-classes"
 import { createCSSFilesWatcher } from "./watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
   const classes = await findCSSClasses()
-  const classDataProvider = new ClassTreeDataProvider(classesToFiles(classes.getAll()))
+  const classDataProvider = new ClassTreeDataProvider(fromDomain(classes.getAll()))
 
   vscode.languages.registerReferenceProvider(
     { pattern: "**/*.css", scheme: "file" },
