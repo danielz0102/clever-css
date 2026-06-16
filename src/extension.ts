@@ -4,7 +4,7 @@ import { ClassTreeDataProvider } from "./class-tree/class-tree-data-provider"
 import { fromDomain } from "./class-tree/css-file-dto"
 import { openLocation } from "./commands/open-location"
 import { findCSSClasses } from "./use-cases/find-css-classes"
-import { findUsages } from "./use-cases/find-usages"
+import { FindReferences } from "./use-cases/find-references"
 import { createCSSFilesWatcher } from "./watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -15,22 +15,8 @@ export async function activate(context: vscode.ExtensionContext) {
     { pattern: "**/*.css", scheme: "file" },
     {
       async provideReferences(document, position) {
-        const wordRange = document.getWordRangeAtPosition(position)
-        if (!wordRange) return
-
-        const word = document.getText(wordRange)
-
-        const className = word.substring(1)
-        const cssClass = classes.get(className)
-        if (!cssClass) return
-
-        if (!cssClass.usagesAreLoaded) {
-          const usages = await findUsages(className)
-          usages.forEach((u) => cssClass.addUsage(u))
-          return cssClass.usages as vscode.Location[]
-        }
-
-        return cssClass.usages as vscode.Location[]
+        const findReferences = new FindReferences(classes)
+        return await findReferences.execute({ document, position })
       },
     }
   )
