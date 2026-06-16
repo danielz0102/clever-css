@@ -4,6 +4,7 @@ import { ClassTreeDataProvider } from "./class-tree/class-tree-data-provider"
 import { fromDomain } from "./class-tree/css-file-dto"
 import { openLocation } from "./commands/open-location"
 import { findCSSClasses } from "./use-cases/find-css-classes"
+import { findUsages } from "./use-cases/find-usages"
 import { createCSSFilesWatcher } from "./watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -13,30 +14,23 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.languages.registerReferenceProvider(
     { pattern: "**/*.css", scheme: "file" },
     {
-      provideReferences(document, position) {
-        // 1. Get the symbol at the position
-        const wordRange = document.getWordRangeAtPosition(position, /\.\w+/)
+      async provideReferences(document, position) {
+        const wordRange = document.getWordRangeAtPosition(position)
         if (!wordRange) return
 
-        // 2. If it's not a class, return
         const word = document.getText(wordRange)
-        if (!word.startsWith(".")) return
 
-        // 3. Get the class from the repository
         const className = word.substring(1)
         const cssClass = classes.get(className)
         if (!cssClass) return
 
-        // 4. Only if usages are undefined, find usages and set them in the repository
-        // It's assumed that usages are updated when files change
-        if (!cssClass.usages) {
-          return //TODO
+        if (!cssClass.usagesAreLoaded) {
+          const usages = await findUsages(className)
+          usages.forEach((u) => cssClass.addUsage(u))
+          return cssClass.usages as vscode.Location[]
         }
 
-        // 5. Merge definitions and usages and return them
-
-        const references = [...cssClass.definitions, ...cssClass.usages]
-        return references
+        return cssClass.usages as vscode.Location[]
       },
     }
   )
