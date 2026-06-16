@@ -17,10 +17,6 @@ export function createCSSFilesWatcher({ repo, provider }: WatchCSSFilesParams) {
     await createOrUpdateFile(repo, uri)
     provider.refresh(fromDomain(repo.getAll()))
   })
-  watcher.onDidCreate(async (uri) => {
-    await createOrUpdateFile(repo, uri)
-    provider.refresh(fromDomain(repo.getAll()))
-  })
   watcher.onDidDelete(async (uri) => {
     repo.deleteFromFile(uri)
     provider.refresh(fromDomain(repo.getAll()))
