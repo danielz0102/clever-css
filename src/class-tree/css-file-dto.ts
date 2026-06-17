@@ -10,7 +10,11 @@ export type CSSFile = {
   }>
 }
 
-export function fromDomain(classes: CSSClass[]): CSSFile[] {
+export const CSSFileMapper = {
+  fromDomain,
+}
+
+function fromDomain(classes: CSSClass[]): CSSFile[] {
   const files: CSSFile[] = []
 
   for (const c of classes) {
