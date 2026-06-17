@@ -15,11 +15,11 @@ export function createCSSFilesWatcher({ repo, provider }: WatchCSSFilesParams) {
 
   watcher.onDidChange(async (uri) => {
     await saveCSSFile(repo, uri)
-    provider.refresh(CSSFileMapper.fromDomain(repo.getAll()))
+    provider.refresh(CSSFileMapper.fromEntities(repo.getAll()))
   })
   watcher.onDidDelete(async (uri) => {
     repo.deleteFromFile(uri)
-    provider.refresh(CSSFileMapper.fromDomain(repo.getAll()))
+    provider.refresh(CSSFileMapper.fromEntities(repo.getAll()))
   })
 
   return watcher

@@ -9,7 +9,7 @@ import { createCSSFilesWatcher } from "./watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
   const classes = await findCSSClasses()
-  const classDataProvider = new ClassTreeDataProvider(CSSFileMapper.fromDomain(classes.getAll()))
+  const classDataProvider = new ClassTreeDataProvider(CSSFileMapper.fromEntities(classes.getAll()))
 
   vscode.languages.registerReferenceProvider(
     { pattern: "**/*.css", scheme: "file" },
