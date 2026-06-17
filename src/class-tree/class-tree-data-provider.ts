@@ -27,7 +27,7 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
     }
 
     if (item instanceof FileItem) {
-      const file = this.files.find((d) => d.uri.toString() === item.resourceUri.toString())
+      const file = this.files.find((f) => f.is(item.resourceUri))
       return (
         file?.classes.map(
           (c) => new ClassItem({ className: c.name, fileUri: file.uri, range: c.range })
