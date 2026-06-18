@@ -5,9 +5,9 @@ import type { CSSClassRepository } from "../domain/css-class-repository"
 export class FindReferences {
   constructor(private classes: CSSClassRepository) {}
 
-  async execute(className: string): Promise<vscode.Location[] | undefined> {
+  async execute(className: string): Promise<vscode.Location[]> {
     const cssClass = this.classes.get(className)
-    if (!cssClass) return
+    if (!cssClass) return []
 
     if (!cssClass.usagesAreLoaded) {
       const usages = await this.findUsages(className)

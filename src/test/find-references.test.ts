@@ -26,7 +26,7 @@ suite("FindReferences", () => {
     const findReferences = new FindReferences(repo)
     const result = await findReferences.execute("my-class")
 
-    assert(result?.length === 2, "Expected to find 2 usages of 'my-class'")
+    assert(result.length === 2, "Expected to find 2 usages of 'my-class'")
 
     await workspace.teardown()
   })
@@ -46,10 +46,7 @@ suite("FindReferences", () => {
     const findReferences = new FindReferences(repo)
     const result = await findReferences.execute("button")
 
-    assert(
-      result === undefined || result.length === 0,
-      "Should not detect class name in casual text"
-    )
+    assert(result.length === 0, "Should not detect class name in casual text")
   })
 
   test("returns an empty array if a class doesn't have usages", async () => {
@@ -62,7 +59,6 @@ suite("FindReferences", () => {
     const findReferences = new FindReferences(repo)
     const result = await findReferences.execute("my-class")
 
-    assert(result !== undefined, "Expected result to be defined")
-    assert.strictEqual(result.length, 0)
+    assert(result.length === 0, "Expected to not find any usages")
   })
 })
