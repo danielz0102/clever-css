@@ -20,7 +20,7 @@ export class FindReferences {
 
   private async findUsages(className: string): Promise<vscode.Location[]> {
     const files = await vscode.workspace.findFiles("**/*.{jsx,tsx}", "**/node_modules/**")
-    const classRegex = new RegExp(`\\b${className}\\b`, "g")
+    const classRegex = new RegExp(`(?:className)=["'][^"']*\\b(${className})\\b[^"']*["']`, "g")
     const locations: vscode.Location[] = []
 
     const readFile = async (uri: vscode.Uri) => {
@@ -28,8 +28,10 @@ export class FindReferences {
       const text = document.getText()
 
       for (const match of text.matchAll(classRegex)) {
-        const start = document.positionAt(match.index)
-        const end = document.positionAt(match.index + match[0].length)
+        const matchedName = match[1]!
+        const nameIndex = match.index + match[0].indexOf(matchedName)
+        const start = document.positionAt(nameIndex)
+        const end = document.positionAt(nameIndex + matchedName.length)
         locations.push(new vscode.Location(uri, new vscode.Range(start, end)))
       }
     }

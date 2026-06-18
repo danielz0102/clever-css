@@ -31,7 +31,7 @@ suite("FindReferences", () => {
     await workspace.teardown()
   })
 
-  test.skip("does not match class name in casual text", async () => {
+  test("does not match class name in casual text", async () => {
     const repo = new CSSClassRepository()
     repo.add(
       "button",
