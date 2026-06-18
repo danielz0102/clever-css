@@ -28,8 +28,13 @@ export class FindReferences {
       const text = document.getText()
 
       for (const match of text.matchAll(classRegex)) {
-        const matchedName = match[1]!
-        const nameIndex = match.index + match[0].indexOf(matchedName)
+        const [fullMatch, matchedName] = match
+
+        if (!matchedName) {
+          throw new Error("Capturing group for class name was not found")
+        }
+
+        const nameIndex = match.index + fullMatch.indexOf(matchedName)
         const start = document.positionAt(nameIndex)
         const end = document.positionAt(nameIndex + matchedName.length)
         locations.push(new vscode.Location(uri, new vscode.Range(start, end)))
