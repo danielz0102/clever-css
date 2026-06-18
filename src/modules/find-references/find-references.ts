@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import type { CSSClassRepository } from "../domain/css-class-repository"
+import type { CSSClassRepository } from "../../domain/css-class-repository"
 
 export class FindReferences {
   constructor(private classes: CSSClassRepository) {}

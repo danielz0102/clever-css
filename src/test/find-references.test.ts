@@ -3,7 +3,7 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { CSSClassRepository } from "../domain/css-class-repository"
-import { FindReferences } from "../use-cases/find-references"
+import { FindReferences } from "../modules/find-references/find-references"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
 suite("FindReferences", () => {
