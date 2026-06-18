@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import type { CSSClassRepository } from "../domain/css-class-repository"
+import type { CSSClassRepository } from "../../domain/css-class-repository"
 
 export async function saveClientFile(classes: CSSClassRepository, uri: vscode.Uri): Promise<void> {
   const classesWithUsage = classes.getAll().filter((c) => c.hasUsage(uri))
