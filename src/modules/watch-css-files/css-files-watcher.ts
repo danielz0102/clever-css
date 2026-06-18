@@ -3,7 +3,7 @@ import * as vscode from "vscode"
 import type { CSSClassRepository } from "../../domain/css-class-repository"
 import type { ClassTreeDataProvider } from "../class-tree/class-tree-data-provider"
 import { CSSFileMapper } from "../class-tree/css-file-dto"
-import { saveCSSFile } from "./save-css-file"
+import { SaveCSSFile } from "./save-css-file"
 
 type WatchCSSFilesParams = {
   repo: CSSClassRepository
@@ -11,10 +11,11 @@ type WatchCSSFilesParams = {
 }
 
 export function createCSSFilesWatcher({ repo, provider }: WatchCSSFilesParams) {
+  const saveCSSFile = new SaveCSSFile(repo)
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
 
   watcher.onDidChange(async (uri) => {
-    await saveCSSFile(repo, uri)
+    await saveCSSFile.execute(uri)
     provider.refresh(CSSFileMapper.fromEntities(repo.getAll()))
   })
   watcher.onDidDelete(async (uri) => {
