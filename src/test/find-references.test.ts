@@ -26,9 +26,7 @@ suite("FindReferences", () => {
     const findReferences = new FindReferences(repo)
     const result = await findReferences.execute("my-class")
 
-    assert(result.length === 2, "Expected to find 2 usages of 'my-class'")
-
-    await workspace.teardown()
+    assert(result.length === 2, `Expected 2 usages, found ${result.length}`)
   })
 
   test("does not match class name in casual text", async () => {
@@ -60,5 +58,20 @@ suite("FindReferences", () => {
     const result = await findReferences.execute("my-class")
 
     assert(result.length === 0, "Expected to not find any usages")
+  })
+
+  test("supports classes inside template strings", async () => {
+    const repo = new CSSClassRepository()
+    repo.add(
+      "my-class",
+      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
+    )
+
+    await workspace.createFile("with-template-strings.tsx", `<div className={\`my-class\`}>`)
+
+    const findReferences = new FindReferences(repo)
+    const result = await findReferences.execute("my-class")
+
+    assert(result.length === 1, `Expected 1 usage, found ${result.length}`)
   })
 })
