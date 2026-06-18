@@ -33,7 +33,7 @@ async function main() {
     sourcesContent: false,
     platform: "node",
     outfile: "dist/extension.mjs",
-    external: ["vscode", "css-tree"],
+    external: ["vscode", "css-tree", "ts-morph"],
     logLevel: "silent",
     plugins: [
       /* add to the end of plugins array */

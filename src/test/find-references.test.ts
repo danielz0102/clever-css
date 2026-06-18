@@ -20,8 +20,8 @@ suite("FindReferences", () => {
       new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
     )
 
-    await workspace.createFile("component.tsx", `<div className="my-class">`)
-    await workspace.createFile("other.tsx", `<span className="my-class">`)
+    await workspace.createFile("component.tsx", `<div className="my-class" />`)
+    await workspace.createFile("other.tsx", `<span className="my-class" />`)
 
     const findReferences = new FindReferences(repo)
     const result = await findReferences.execute("my-class")
@@ -67,7 +67,7 @@ suite("FindReferences", () => {
       new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
     )
 
-    await workspace.createFile("with-template-strings.tsx", `<div className={\`my-class\`}>`)
+    await workspace.createFile("with-template-strings.tsx", `<div className={\`my-class\`} />`)
 
     const findReferences = new FindReferences(repo)
     const result = await findReferences.execute("my-class")

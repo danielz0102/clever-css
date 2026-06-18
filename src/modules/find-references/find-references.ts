@@ -1,3 +1,4 @@
+import { Project, SyntaxKind } from "ts-morph"
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
@@ -20,29 +21,56 @@ export class FindReferences {
 
   private async findUsages(className: string): Promise<vscode.Location[]> {
     const files = await vscode.workspace.findFiles("**/*.{jsx,tsx}", "**/node_modules/**")
-    const classRegex = new RegExp(`(?:className)=["'][^"']*\\b(${className})\\b[^"']*["']`, "g")
     const locations: vscode.Location[] = []
 
     const readFile = async (uri: vscode.Uri) => {
       const document = await vscode.workspace.openTextDocument(uri)
-      const text = document.getText()
+      const classNames = await this.findClasses(uri.fsPath, className)
 
-      for (const match of text.matchAll(classRegex)) {
-        const [fullMatch, matchedName] = match
-
-        if (!matchedName) {
-          throw new Error("Capturing group for class name was not found")
-        }
-
-        const nameIndex = match.index + fullMatch.indexOf(matchedName)
-        const start = document.positionAt(nameIndex)
-        const end = document.positionAt(nameIndex + matchedName.length)
+      classNames.forEach((c) => {
+        const start = document.positionAt(c.start)
+        const end = document.positionAt(c.end)
         locations.push(new vscode.Location(uri, new vscode.Range(start, end)))
-      }
+      })
     }
 
     await Promise.all(files.map(readFile))
 
     return locations
+  }
+
+  private async findClasses(
+    path: string,
+    className: string
+  ): Promise<{ start: number; end: number }[]> {
+    //!: Create just one project and reuse it for all files to improve performance
+    const project = new Project()
+    const ast = project.addSourceFileAtPath(path)
+    const jsxAttributes = ast.getDescendantsOfKind(SyntaxKind.JsxAttribute)
+    const classes: { start: number; end: number }[] = []
+
+    jsxAttributes.forEach((attr) => {
+      if (attr.getNameNode().getText() !== "className") return
+
+      const initializer = attr.getInitializer()
+
+      if (!initializer) return
+
+      //TODO: check template expressions too
+      if (initializer.isKind(SyntaxKind.StringLiteral)) {
+        const text = initializer.getLiteralValue()
+        const foundClasses = text.split(/\s+/)
+
+        foundClasses.forEach((c) => {
+          if (c === className) {
+            const start = initializer.getStart() + text.indexOf(c) + 1
+            const end = start + c.length
+            classes.push({ start, end })
+          }
+        })
+      }
+    })
+
+    return classes
   }
 }
