@@ -1,6 +1,6 @@
 import type * as vscode from "vscode"
 
-import type { CSSClass } from "../domain/css-class"
+import type { CSSClass } from "../../domain/css-class"
 
 export class CSSFile {
   #classes: CSSFileClass[] = []
