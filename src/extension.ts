@@ -4,8 +4,8 @@ import { ClassTreeDataProvider } from "./class-tree/class-tree-data-provider"
 import { CSSFileMapper } from "./class-tree/css-file-dto"
 import { openLocation } from "./commands/open-location"
 import { createFindReferencesProvider } from "./modules/find-references/references-provider"
+import { createCSSFilesWatcher } from "./modules/watch-css-files/css-files-watcher"
 import { findCSSClasses } from "./use-cases/find-css-classes"
-import { createCSSFilesWatcher } from "./watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
   const classes = await findCSSClasses()
