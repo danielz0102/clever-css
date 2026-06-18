@@ -1,10 +1,10 @@
 import * as vscode from "vscode"
 
-import { openLocation } from "./commands/open-location"
 import { ClassTreeDataProvider } from "./modules/class-tree/class-tree-data-provider"
 import { CSSFileMapper } from "./modules/class-tree/css-file-dto"
 import { findCSSClasses } from "./modules/find-classes/find-css-classes"
 import { createFindReferencesProvider } from "./modules/find-references/references-provider"
+import { openLocation } from "./modules/open-location/open-location"
 import { createCSSFilesWatcher } from "./modules/watch-css-files/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
