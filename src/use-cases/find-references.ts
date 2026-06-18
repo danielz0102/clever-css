@@ -2,24 +2,10 @@ import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../domain/css-class-repository"
 
-type FindReferencesParams = {
-  document: vscode.TextDocument
-  position: vscode.Position
-}
-
 export class FindReferences {
   constructor(private classes: CSSClassRepository) {}
 
-  async execute({
-    document,
-    position,
-  }: FindReferencesParams): Promise<vscode.Location[] | undefined> {
-    const wordRange = document.getWordRangeAtPosition(position)
-    if (!wordRange) return
-
-    const word = document.getText(wordRange)
-
-    const className = word.substring(1)
+  async execute(className: string): Promise<vscode.Location[] | undefined> {
     const cssClass = this.classes.get(className)
     if (!cssClass) return
 

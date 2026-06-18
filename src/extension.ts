@@ -15,8 +15,14 @@ export async function activate(context: vscode.ExtensionContext) {
     { pattern: "**/*.css", scheme: "file" },
     {
       async provideReferences(document, position) {
+        const wordRange = document.getWordRangeAtPosition(position)
+        if (!wordRange) return
+
+        const word = document.getText(wordRange)
+        const className = word.substring(1)
+
         const findReferences = new FindReferences(classes)
-        return await findReferences.execute({ document, position })
+        return await findReferences.execute(className)
       },
     }
   )
