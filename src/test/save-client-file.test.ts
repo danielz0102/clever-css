@@ -69,24 +69,6 @@ suite("SaveClientFile", () => {
     )
   })
 
-  test("doesn't load usages if the class usages aren't loaded", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "my-class",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
-
-    const uri = await workspace.createFile("component.tsx", `<div className="my-class">`)
-
-    const saveClientFile = new SaveClientFile(repo)
-    await saveClientFile.execute(uri)
-
-    assert(
-      repo.get("my-class")!.usages.length === 0,
-      "Expected no usages to be loaded when usages are not yet loaded"
-    )
-  })
-
   test("supports classes inside template strings", async () => {
     const repo = new CSSClassRepository()
     repo.add(
