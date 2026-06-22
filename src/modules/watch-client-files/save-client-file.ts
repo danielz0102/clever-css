@@ -1,30 +1,30 @@
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
+import { ClientFileParser } from "../../shared/client-file-parser"
 
 export class SaveClientFile {
+  private parser = new ClientFileParser()
+
   constructor(private classes: CSSClassRepository) {}
 
   async execute(uri: vscode.Uri): Promise<void> {
-    const classesWithUsage = this.classes.getAll().filter((c) => c.hasUsage(uri))
-    classesWithUsage.forEach((c) => c.removeUsage(uri))
+    this.classes.getAll().forEach((c) => c.removeUsage(uri))
 
     const document = await vscode.workspace.openTextDocument(uri)
-    const text = document.getText()
-    const classRegex = /className?=["'`]([^"'`]+)["'`]/g
+    const usages = this.parser.getUsagesFrom(document.fileName)
 
-    for (const match of text.matchAll(classRegex)) {
-      const classNames = match[1]?.split(" ").filter(Boolean) ?? []
+    usages.forEach(({ name, start, end }) => {
+      const cssClass = this.classes.get(name)
 
-      classNames.forEach((c) => {
-        const cssClass = this.classes.get(c)
-
-        if (cssClass && cssClass.usagesAreLoaded) {
-          const start = document.positionAt(match.index)
-          const end = document.positionAt(match.index + match[0].length)
-          cssClass.addUsage(new vscode.Location(uri, new vscode.Range(start, end)))
-        }
-      })
-    }
+      if (cssClass) {
+        cssClass.addUsage(
+          new vscode.Location(
+            uri,
+            new vscode.Range(document.positionAt(start), document.positionAt(end))
+          )
+        )
+      }
+    })
   }
 }
