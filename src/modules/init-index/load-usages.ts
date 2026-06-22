@@ -27,7 +27,7 @@ export class LoadUsages {
 
     const readFile = async (uri: vscode.Uri) => {
       const document = await vscode.workspace.openTextDocument(uri)
-      const classNames = await this.findClasses(uri.fsPath, className)
+      const classNames = await this.parseFile(uri.fsPath, className)
 
       classNames.forEach((c) => {
         const start = document.positionAt(c.start)
@@ -41,7 +41,7 @@ export class LoadUsages {
     return locations
   }
 
-  private async findClasses(path: string, className: string): Promise<UsagePosition[]> {
+  private async parseFile(path: string, className: string): Promise<UsagePosition[]> {
     const ast = this.project.addSourceFileAtPath(path)
     const jsxAttributes = ast.getDescendantsOfKind(SyntaxKind.JsxAttribute)
     const classes: UsagePosition[] = []
