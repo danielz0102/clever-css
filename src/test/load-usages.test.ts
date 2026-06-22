@@ -27,7 +27,7 @@ suite("LoadUsages", () => {
     await loadUsages.execute()
 
     const cssClass = repo.get("my-class")
-    assert(cssClass, "Expected to find the CSS class in the repository")
+    assert(cssClass !== undefined)
     assert(cssClass.usages.length === 2, `Expected 2 usages, found ${cssClass.usages.length}`)
   })
 
@@ -42,7 +42,7 @@ suite("LoadUsages", () => {
     await loadUsages.execute()
 
     const cssClass = repo.get("unused-class")
-    assert(cssClass, "Expected to find the CSS class in the repository")
+    assert(cssClass !== undefined)
     assert(cssClass.usages.length === 0, `Expected 0 usages, found ${cssClass.usages.length}`)
   })
 
@@ -62,8 +62,7 @@ suite("LoadUsages", () => {
     await loadUsages.execute()
 
     const cssClass = repo.get("button")
-    assert(cssClass, "Expected to find the CSS class in the repository")
-    assert(cssClass.usages.length === 0, "Should not detect class name in casual text")
+    assert(cssClass?.usages.length === 0, "Should not detect class name in casual text")
   })
 
   test("detects multiple classes in a single className attribute", async () => {
@@ -133,7 +132,7 @@ suite("LoadUsages", () => {
     await loadUsages.execute()
 
     const cssClass = repo.get("my-class")
-    assert(cssClass, "Expected to find the CSS class in the repository")
+    assert(cssClass !== undefined)
     assert(cssClass.usages.length === 1, `Expected 1 usage, found ${cssClass.usages.length}`)
   })
 })
