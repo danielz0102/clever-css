@@ -135,4 +135,35 @@ suite("LoadUsages", () => {
     assert(cssClass !== undefined)
     assert(cssClass.usages.length === 1, `Expected 1 usage, found ${cssClass.usages.length}`)
   })
+
+  test("supports classes inside template strings with expressions", async () => {
+    const repo = new CSSClassRepository()
+    repo.add(
+      "my-class",
+      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
+    )
+    repo.add(
+      "another-class",
+      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
+    )
+
+    await workspace.createFile(
+      "with-template-expressions.tsx",
+      `<div className={\`my-class \${variable} another-class \`} />`
+    )
+
+    const loadUsages = new LoadUsages(repo)
+    await loadUsages.execute()
+
+    const cssClass = repo.get("my-class")
+    assert(cssClass !== undefined)
+    assert(cssClass.usages.length === 1, `Expected 1 usage, found ${cssClass.usages.length}`)
+
+    const anotherClass = repo.get("another-class")
+    assert(anotherClass !== undefined)
+    assert(
+      anotherClass.usages.length === 1,
+      `Expected 1 usage, found ${anotherClass.usages.length}`
+    )
+  })
 })

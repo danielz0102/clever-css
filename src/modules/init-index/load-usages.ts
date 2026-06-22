@@ -1,4 +1,4 @@
-import { Project, SyntaxKind, type StringLiteral } from "ts-morph"
+import { Project, SyntaxKind, type TemplateExpression } from "ts-morph"
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
@@ -50,17 +50,25 @@ export class LoadUsages {
 
       if (!initializer) return
 
-      //TODO: check template expressions too
       if (initializer.isKind(SyntaxKind.StringLiteral)) {
-        usages.push(...this.parseStringLiteral(initializer))
+        usages.push(...this.parseText(initializer.getLiteralValue(), initializer.getStart()))
+      } else if (initializer.isKind(SyntaxKind.JsxExpression)) {
+        const expression = initializer.getExpression()
+
+        if (!expression) return
+
+        if (expression.isKind(SyntaxKind.NoSubstitutionTemplateLiteral)) {
+          usages.push(...this.parseText(expression.getLiteralValue(), expression.getStart()))
+        } else if (expression.isKind(SyntaxKind.TemplateExpression)) {
+          usages.push(...this.parseTemplateExpression(expression))
+        }
       }
     })
 
     return usages
   }
 
-  private parseStringLiteral(initializer: StringLiteral): Usage[] {
-    const text = initializer.getLiteralValue()
+  private parseText(text: string, startOffset: number): Usage[] {
     const names = text.split(/\s+/)
     let offset = 0
 
@@ -68,11 +76,28 @@ export class LoadUsages {
 
     names.forEach((name) => {
       const idx = text.indexOf(name, offset)
-      const start = initializer.getStart() + idx + 1
+      const start = startOffset + idx + 1
       const end = start + name.length
 
       usages.push({ name, start, end })
       offset = idx + name.length
+    })
+
+    return usages
+  }
+
+  private parseTemplateExpression(expression: TemplateExpression): Usage[] {
+    const usages: Usage[] = []
+
+    const head = expression.getHead()
+    usages.push(...this.parseText(head.getLiteralText(), head.getStart()))
+
+    expression.getTemplateSpans().forEach((span) => {
+      const literal = span.getLiteral()
+
+      if (literal.isKind(SyntaxKind.TemplateMiddle) || literal.isKind(SyntaxKind.TemplateTail)) {
+        usages.push(...this.parseText(literal.getLiteralText(), literal.getStart()))
+      }
     })
 
     return usages
