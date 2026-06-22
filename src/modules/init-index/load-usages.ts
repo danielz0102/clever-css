@@ -1,4 +1,4 @@
-import { Project, SyntaxKind } from "ts-morph"
+import { Project, SyntaxKind, type StringLiteral } from "ts-morph"
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
@@ -52,18 +52,27 @@ export class LoadUsages {
 
       //TODO: check template expressions too
       if (initializer.isKind(SyntaxKind.StringLiteral)) {
-        const text = initializer.getLiteralValue()
-        const names = text.split(/\s+/)
-        let offset = 0
-
-        names.forEach((name) => {
-          const idx = text.indexOf(name, offset)
-          const start = initializer.getStart() + idx + 1
-          const end = start + name.length
-          usages.push({ name, start, end })
-          offset = idx + name.length
-        })
+        usages.push(...this.parseStringLiteral(initializer))
       }
+    })
+
+    return usages
+  }
+
+  private parseStringLiteral(initializer: StringLiteral): Usage[] {
+    const text = initializer.getLiteralValue()
+    const names = text.split(/\s+/)
+    let offset = 0
+
+    const usages: Usage[] = []
+
+    names.forEach((name) => {
+      const idx = text.indexOf(name, offset)
+      const start = initializer.getStart() + idx + 1
+      const end = start + name.length
+
+      usages.push({ name, start, end })
+      offset = idx + name.length
     })
 
     return usages
