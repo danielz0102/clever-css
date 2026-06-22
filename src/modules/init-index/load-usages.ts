@@ -3,6 +3,12 @@ import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
 
+type Usage = {
+  name: string
+  start: number
+  end: number
+}
+
 export class LoadUsages {
   private project = new Project()
 
@@ -32,10 +38,10 @@ export class LoadUsages {
     )
   }
 
-  private parseFile(path: string): { name: string; start: number; end: number }[] {
+  private parseFile(path: string): Usage[] {
     const ast = this.project.addSourceFileAtPath(path)
     const jsxAttributes = ast.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    const usages: { name: string; start: number; end: number }[] = []
+    const usages: Usage[] = []
 
     jsxAttributes.forEach((attr) => {
       if (attr.getNameNode().getText() !== "className") return
