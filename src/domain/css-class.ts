@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 
 export class CSSClass {
   #definitions: vscode.Location[] = []
-  #usages?: vscode.Location[] = undefined
+  #usages: vscode.Location[] = []
 
   constructor(
     readonly name: string,
@@ -20,7 +20,6 @@ export class CSSClass {
   }
 
   addUsage(usage: vscode.Location): void {
-    this.#usages ??= []
     this.#usages.push(usage)
   }
 
@@ -34,6 +33,10 @@ export class CSSClass {
     }
 
     this.#usages = this.#usages.filter((u) => u.uri.toString() !== uri.toString())
+  }
+
+  getReferences(): vscode.Location[] {
+    return [...this.#definitions, ...this.#usages]
   }
 
   get firstDefinition(): vscode.Location {

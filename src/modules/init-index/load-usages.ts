@@ -3,20 +3,22 @@ import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
 
-export class FindReferences {
+type UsagePosition = { start: number; end: number }
+
+export class LoadUsages {
+  private project = new Project()
+
   constructor(private classes: CSSClassRepository) {}
 
-  async execute(className: string): Promise<vscode.Location[]> {
-    const cssClass = this.classes.get(className)
-    if (!cssClass) return []
+  async execute(): Promise<void> {
+    const allClasses = this.classes.getAll()
 
-    if (!cssClass.usagesAreLoaded) {
-      const usages = await this.findUsages(className)
-      usages.forEach((u) => cssClass.addUsage(u))
-      return cssClass.usages as vscode.Location[]
-    }
-
-    return cssClass.usages as vscode.Location[]
+    await Promise.all(
+      allClasses.map(async (cssClass) => {
+        const usages = await this.findUsages(cssClass.name)
+        usages.forEach((u) => cssClass.addUsage(u))
+      })
+    )
   }
 
   private async findUsages(className: string): Promise<vscode.Location[]> {
@@ -39,15 +41,10 @@ export class FindReferences {
     return locations
   }
 
-  private async findClasses(
-    path: string,
-    className: string
-  ): Promise<{ start: number; end: number }[]> {
-    //!: Create just one project and reuse it for all files to improve performance
-    const project = new Project()
-    const ast = project.addSourceFileAtPath(path)
+  private async findClasses(path: string, className: string): Promise<UsagePosition[]> {
+    const ast = this.project.addSourceFileAtPath(path)
     const jsxAttributes = ast.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    const classes: { start: number; end: number }[] = []
+    const classes: UsagePosition[] = []
 
     jsxAttributes.forEach((attr) => {
       if (attr.getNameNode().getText() !== "className") return
