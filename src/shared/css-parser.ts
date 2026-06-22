@@ -7,8 +7,8 @@ export type CSSClassSymbol = {
 }
 
 export async function parseCSSClassSymbols(uri: vscode.Uri): Promise<CSSClassSymbol[]> {
-  const buffer = await vscode.workspace.fs.readFile(uri)
-  const ast = csstree.parse(buffer.toString(), { positions: true })
+  const doc = await vscode.workspace.openTextDocument(uri)
+  const ast = csstree.parse(doc.getText(), { positions: true })
   const classes: CSSClassSymbol[] = []
 
   csstree.walk(ast, {
