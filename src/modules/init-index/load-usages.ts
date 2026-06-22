@@ -3,48 +3,39 @@ import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
 
-type UsagePosition = { start: number; end: number }
-
 export class LoadUsages {
   private project = new Project()
 
   constructor(private classes: CSSClassRepository) {}
 
   async execute(): Promise<void> {
-    const allClasses = this.classes.getAll()
+    const files = await vscode.workspace.findFiles("**/*.{jsx,tsx}", "**/node_modules/**")
 
     await Promise.all(
-      allClasses.map(async (cssClass) => {
-        const usages = await this.findUsages(cssClass.name)
-        usages.forEach((u) => cssClass.addUsage(u))
+      files.map(async (uri) => {
+        const document = await vscode.workspace.openTextDocument(uri)
+        const usages = this.parseFile(document.fileName)
+
+        usages.forEach(({ name, start, end }) => {
+          const cssClass = this.classes.get(name)
+
+          if (cssClass) {
+            cssClass.addUsage(
+              new vscode.Location(
+                uri,
+                new vscode.Range(document.positionAt(start), document.positionAt(end))
+              )
+            )
+          }
+        })
       })
     )
   }
 
-  private async findUsages(className: string): Promise<vscode.Location[]> {
-    const files = await vscode.workspace.findFiles("**/*.{jsx,tsx}", "**/node_modules/**")
-    const locations: vscode.Location[] = []
-
-    const readFile = async (uri: vscode.Uri) => {
-      const document = await vscode.workspace.openTextDocument(uri)
-      const classNames = await this.parseFile(uri.fsPath, className)
-
-      classNames.forEach((c) => {
-        const start = document.positionAt(c.start)
-        const end = document.positionAt(c.end)
-        locations.push(new vscode.Location(uri, new vscode.Range(start, end)))
-      })
-    }
-
-    await Promise.all(files.map(readFile))
-
-    return locations
-  }
-
-  private async parseFile(path: string, className: string): Promise<UsagePosition[]> {
+  private parseFile(path: string): { name: string; start: number; end: number }[] {
     const ast = this.project.addSourceFileAtPath(path)
     const jsxAttributes = ast.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    const classes: UsagePosition[] = []
+    const usages: { name: string; start: number; end: number }[] = []
 
     jsxAttributes.forEach((attr) => {
       if (attr.getNameNode().getText() !== "className") return
@@ -56,18 +47,19 @@ export class LoadUsages {
       //TODO: check template expressions too
       if (initializer.isKind(SyntaxKind.StringLiteral)) {
         const text = initializer.getLiteralValue()
-        const foundClasses = text.split(/\s+/)
+        const names = text.split(/\s+/)
+        let offset = 0
 
-        foundClasses.forEach((c) => {
-          if (c === className) {
-            const start = initializer.getStart() + text.indexOf(c) + 1
-            const end = start + c.length
-            classes.push({ start, end })
-          }
+        names.forEach((name) => {
+          const idx = text.indexOf(name, offset)
+          const start = initializer.getStart() + idx + 1
+          const end = start + name.length
+          usages.push({ name, start, end })
+          offset = idx + name.length
         })
       }
     })
 
-    return classes
+    return usages
   }
 }
