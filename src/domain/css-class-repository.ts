@@ -2,6 +2,7 @@ import * as vscode from "vscode"
 
 import { CSSClass } from "./css-class"
 
+//TODO: Decouple this class from vscode.Location, maybe create a Location class in the domain layer
 export class CSSClassRepository {
   private classes = new Map<string, CSSClass>()
 
