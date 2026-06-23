@@ -24,14 +24,10 @@ export class CSSClass {
   }
 
   hasUsage(uri: vscode.Uri): boolean {
-    return this.#usages?.some((u) => u.uri.toString() === uri.toString()) ?? false
+    return this.#usages.some((u) => u.uri.toString() === uri.toString()) ?? false
   }
 
   removeUsage(uri: vscode.Uri): void {
-    if (!this.#usages) {
-      return
-    }
-
     this.#usages = this.#usages.filter((u) => u.uri.toString() !== uri.toString())
   }
 
@@ -54,10 +50,6 @@ export class CSSClass {
   }
 
   get usages(): readonly vscode.Location[] {
-    return this.#usages ?? []
-  }
-
-  get usagesAreLoaded(): boolean {
-    return this.#usages !== undefined
+    return this.#usages
   }
 }
