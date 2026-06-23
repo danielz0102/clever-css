@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../../domain/css-class-repository"
-import { parseCSSClassSymbols } from "../../css-parser"
+import { parseCSSClassSymbols } from "../css-parser"
 
 export class SaveCSSFile {
   constructor(private classes: CSSClassRepository) {}

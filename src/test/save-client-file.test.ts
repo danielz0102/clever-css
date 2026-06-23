@@ -3,7 +3,7 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { CSSClassRepository } from "../domain/css-class-repository"
-import { SaveClientFile } from "../modules/watch-client-files/save-client-file"
+import { SaveClientFile } from "../modules/client-files/save-client-file"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
 suite("SaveClientFile", () => {
