@@ -1,12 +1,12 @@
 import * as vscode from "vscode"
 
-import { ClassTreeDataProvider } from "./modules/class-tree/class-tree-data-provider"
-import { CSSFileMapper } from "./modules/class-tree/css-file-dto"
-import { createFindReferencesProvider } from "./modules/find-references/references-provider"
 import { findCSSClasses } from "./modules/init-index/find-css-classes"
 import { LoadUsages } from "./modules/init-index/load-usages"
-import { openLocation } from "./modules/open-location/open-location"
 import { createCSSFilesWatcher } from "./modules/watch-css-files/css-files-watcher"
+import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
+import { CSSFileMapper } from "./ui/class-tree/css-file-dto"
+import { openLocation } from "./ui/open-location"
+import { createFindReferencesProvider } from "./ui/references-provider"
 
 export async function activate(context: vscode.ExtensionContext) {
   const classes = await findCSSClasses()
