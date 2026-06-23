@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
-import { CSSClassRepository } from "../../domain/css-class-repository"
-import { parseCSSClassSymbols } from "../../shared/css-parser"
+import { CSSClassRepository } from "../../../../domain/css-class-repository"
+import { parseCSSClassSymbols } from "../../../../shared/css-parser"
 
 export async function findCSSClasses(): Promise<CSSClassRepository> {
   const classes = new CSSClassRepository()

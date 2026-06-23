@@ -1,7 +1,6 @@
 import * as vscode from "vscode"
 
-import { findCSSClasses } from "./modules/init-index/find-css-classes"
-import { LoadUsages } from "./modules/init-index/load-usages"
+import { initIndex } from "./modules/css-files/commands/init-index/init-index"
 import { createCSSFilesWatcher } from "./modules/watch-css-files/css-files-watcher"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
 import { CSSFileMapper } from "./ui/class-tree/css-file-dto"
@@ -9,9 +8,7 @@ import { openLocation } from "./ui/open-location"
 import { createFindReferencesProvider } from "./ui/references-provider"
 
 export async function activate(context: vscode.ExtensionContext) {
-  const classes = await findCSSClasses()
-  const findUsages = new LoadUsages(classes)
-  void findUsages.execute()
+  const classes = await initIndex()
   const classDataProvider = new ClassTreeDataProvider(CSSFileMapper.fromEntities(classes.getAll()))
 
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))

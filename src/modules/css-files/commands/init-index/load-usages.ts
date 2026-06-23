@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
-import type { CSSClassRepository } from "../../domain/css-class-repository"
-import { ClientFileParser } from "../../shared/client-file-parser"
+import type { CSSClassRepository } from "../../../../domain/css-class-repository"
+import { ClientFileParser } from "../../../../shared/client-file-parser"
 
 export class LoadUsages {
   private parser = new ClientFileParser()
