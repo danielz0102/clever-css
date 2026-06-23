@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import { initIndex } from "./modules/css-files/commands/init-index/init-index"
-import { createCSSFilesWatcher } from "./modules/watch-css-files/css-files-watcher"
+import { createCSSFilesWatcher } from "./modules/css-files/watchers/css-files-watcher"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
 import { CSSFileMapper } from "./ui/class-tree/css-file-dto"
 import { openLocation } from "./ui/open-location"

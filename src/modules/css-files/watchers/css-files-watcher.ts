@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
 
-import type { CSSClass } from "../../domain/css-class"
-import type { CSSClassRepository } from "../../domain/css-class-repository"
-import { SaveCSSFile } from "./save-css-file"
+import type { CSSClass } from "../../../domain/css-class"
+import type { CSSClassRepository } from "../../../domain/css-class-repository"
+import { SaveCSSFile } from "../commands/save-css-file"
 
 type WatchCSSFilesParams = {
   repo: CSSClassRepository
