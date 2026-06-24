@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import { watchCSSFiles } from "./modules/css-files/css-files-watcher"
-import type { CSSFileDTO } from "./modules/css-files/dtos/css-file"
+import { CSSFileDTO } from "./modules/css-files/dtos/css-file-dto"
 import { DeleteCSSFile } from "./modules/css-files/use-cases/delete-css-file"
 import { GetAllClasses } from "./modules/css-files/use-cases/get-all-classes"
 import { LoadDefinitions } from "./modules/css-files/use-cases/load-definitions"
@@ -44,16 +44,6 @@ export function deactivate() {}
 
 async function findCSSFiles(): Promise<CSSFileDTO[]> {
   const uris = await vscode.workspace.findFiles("**/*.css", "**/{node_modules,dist,build}/**")
-
-  const files = await Promise.all(
-    uris.map(async (uri) => {
-      const doc = await vscode.workspace.openTextDocument(uri)
-      return {
-        uri: uri.toString(),
-        content: doc.getText(),
-      }
-    })
-  )
-
+  const files = await Promise.all(uris.map(async (u) => CSSFileDTO.fromVsCodeUri(u)))
   return files
 }

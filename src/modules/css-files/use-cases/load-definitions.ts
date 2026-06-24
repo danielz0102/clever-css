@@ -1,6 +1,6 @@
 import type { CSSClassIndex } from "../../../persistence/class-index"
 import { parseCSSClassSymbols } from "../css-parser"
-import type { CSSFileDTO } from "../dtos/css-file"
+import type { CSSFileDTO } from "../dtos/css-file-dto"
 
 export class LoadDefinitions {
   constructor(private index: CSSClassIndex) {}
