@@ -25,7 +25,6 @@ export async function parseCSSClassSymbols(content: string): Promise<CSSClassSym
 
       classes.push({
         className: node.name,
-
         location: { start: node.loc.start, end: node.loc.end },
       })
     },

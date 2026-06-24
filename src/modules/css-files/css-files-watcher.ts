@@ -1,17 +1,20 @@
 import * as vscode from "vscode"
 
-import type { CSSClassRepository } from "../../domain/css-class-repository"
-import { SaveCSSFile } from "./use-cases/save-css-file"
+import type { DeleteCSSFile } from "./use-cases/delete-css-file"
+import type { SaveCSSFile } from "./use-cases/save-css-file"
 
-export function createCSSFilesWatcher(repo: CSSClassRepository) {
-  const saveCSSFile = new SaveCSSFile(repo)
+export function watchCSSFiles(
+  saveFile: SaveCSSFile,
+  deleteFile: DeleteCSSFile
+): vscode.FileSystemWatcher {
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
 
   watcher.onDidChange(async (uri) => {
-    await saveCSSFile.execute(uri)
+    const doc = await vscode.workspace.openTextDocument(uri)
+    await saveFile.execute({ uri: uri.toString(), content: doc.getText() })
   })
   watcher.onDidDelete(async (uri) => {
-    repo.deleteFromFile(uri)
+    await deleteFile.execute(uri.toString())
   })
 
   return watcher
