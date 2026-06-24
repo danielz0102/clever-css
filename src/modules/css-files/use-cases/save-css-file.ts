@@ -9,13 +9,11 @@ export class SaveCSSFile {
     const symbols = await parseCSSClassSymbols(file.content)
     const foundClasses = symbols.map((c) => c.className)
 
-    for (const [className, data] of this.index.entries()) {
-      if (
-        data.definitions.some((def) => def.uri === file.uri) &&
-        !foundClasses.includes(className)
-      ) {
-        data.definitions = data.definitions.filter((def) => def.uri !== file.uri)
-      }
-    }
+    Array.from(this.index.entries())
+      .filter(([_, record]) => record.definitions.some((def) => def.uri === file.uri))
+      .filter(([className]) => !foundClasses.includes(className))
+      .forEach(([_, record]) => {
+        record.definitions = record.definitions.filter((def) => def.uri !== file.uri)
+      })
   }
 }
