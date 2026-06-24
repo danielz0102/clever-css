@@ -1,6 +1,6 @@
-import type * as vscode from "vscode"
+import * as vscode from "vscode"
 
-import type { CSSClass } from "../../domain/css-class"
+import type { CSSClassRecord } from "../../persistence/class-index"
 
 export class CSSFile {
   #classes: CSSFileClass[] = []
@@ -31,17 +31,30 @@ type CSSFileClass = {
 }
 
 export const CSSFileMapper = {
-  fromEntities(classes: CSSClass[]): CSSFile[] {
+  fromPersistence(classes: CSSClassRecord[]): CSSFile[] {
     const files: CSSFile[] = []
 
     for (const c of classes) {
-      const def = c.firstDefinition
-      const file = files.find((f) => f.is(def.uri))
+      const def = c.definitions[0]
+
+      if (!def) {
+        throw new Error(`CSS class ${c.className} has no definition`)
+      }
+
+      const file = files.find((f) => f.is(vscode.Uri.parse(def.uri)))
 
       if (file) {
-        file.addClass({ name: c.name, range: def.range })
+        file.addClass({
+          name: c.className,
+          range: new vscode.Range(def.start.line, def.start.column, def.end.line, def.end.column),
+        })
       } else {
-        files.push(new CSSFile(def.uri, { name: c.name, range: def.range }))
+        files.push(
+          new CSSFile(vscode.Uri.parse(def.uri), {
+            name: c.className,
+            range: new vscode.Range(def.start.line, def.start.column, def.end.line, def.end.column),
+          })
+        )
       }
     }
 
