@@ -14,16 +14,17 @@ export async function activate(context: vscode.ExtensionContext) {
   void loadUsages.execute()
   const classDataProvider = new ClassTreeDataProvider(CSSFileMapper.fromEntities(classes.getAll()))
 
+  const cssFilesWatcher = createCSSFilesWatcher(classes)
+  cssFilesWatcher.onDidChange(() => {
+    classDataProvider.refresh(CSSFileMapper.fromEntities(classes.getAll()))
+  })
+  cssFilesWatcher.onDidDelete(() => {
+    classDataProvider.refresh(CSSFileMapper.fromEntities(classes.getAll()))
+  })
+
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
-  context.subscriptions.push(
-    createCSSFilesWatcher({
-      repo: classes,
-      onClassesChanged: (newClasses) => {
-        classDataProvider.refresh(CSSFileMapper.fromEntities(newClasses))
-      },
-    })
-  )
+  context.subscriptions.push(cssFilesWatcher)
   context.subscriptions.push(createFindReferencesProvider(classes))
 }
 
