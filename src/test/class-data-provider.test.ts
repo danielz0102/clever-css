@@ -3,12 +3,12 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { ClassTreeDataProvider } from "../ui/class-tree/class-tree-data-provider"
-import { CSSFile } from "../ui/class-tree/css-file-dto"
+import { CSSFileViewModel } from "../ui/class-tree/css-file-view-model"
 
 suite("ClassDataProvider", () => {
   test("loads all CSS files and their classes", async () => {
     const provider = new ClassTreeDataProvider([
-      new CSSFile(
+      new CSSFileViewModel(
         vscode.Uri.parse("file:///test.css"),
         {
           name: "test-class1",
@@ -29,7 +29,7 @@ suite("ClassDataProvider", () => {
   })
 
   test("refreshes data when new classes are added", async () => {
-    const file = new CSSFile(vscode.Uri.parse("file:///test.css"), {
+    const file = new CSSFileViewModel(vscode.Uri.parse("file:///test.css"), {
       name: "test-class1",
       range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 12)),
     })

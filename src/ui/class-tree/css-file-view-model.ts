@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 
 import type { CSSClassRecord } from "../../persistence/class-index"
 
-export class CSSFile {
+export class CSSFileViewModel {
   #classes: CSSFileClass[] = []
 
   constructor(
@@ -30,9 +30,9 @@ type CSSFileClass = {
   range: vscode.Range
 }
 
-export const CSSFileMapper = {
-  fromPersistence(classes: CSSClassRecord[]): CSSFile[] {
-    const files: CSSFile[] = []
+export const CSSFileViewModelMapper = {
+  fromPersistence(classes: CSSClassRecord[]): CSSFileViewModel[] {
+    const files: CSSFileViewModel[] = []
 
     for (const c of classes) {
       const def = c.definitions[0]
@@ -50,7 +50,7 @@ export const CSSFileMapper = {
         })
       } else {
         files.push(
-          new CSSFile(vscode.Uri.parse(def.uri), {
+          new CSSFileViewModel(vscode.Uri.parse(def.uri), {
             name: c.className,
             range: new vscode.Range(def.start.line, def.start.column, def.end.line, def.end.column),
           })

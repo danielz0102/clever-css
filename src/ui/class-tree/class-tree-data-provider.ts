@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import { ClassItem } from "./class-tree-item"
-import type { CSSFile } from "./css-file-dto"
+import type { CSSFileViewModel } from "./css-file-view-model"
 import { FileItem } from "./file-tree-item"
 
 export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
@@ -10,9 +10,9 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
   >()
   readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event
 
-  constructor(private files: CSSFile[]) {}
+  constructor(private files: CSSFileViewModel[]) {}
 
-  refresh(newData: CSSFile[]): void {
+  refresh(newData: CSSFileViewModel[]): void {
     this.files = newData
     this.onDidChangeTreeDataEmitter.fire()
   }
