@@ -10,6 +10,7 @@ import { index } from "./persistence/class-index"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
 import { mapCSSFiles } from "./ui/class-tree/css-file-data"
 import { openLocation } from "./ui/open-location"
+import { createFindReferencesProvider } from "./ui/references-provider"
 
 export async function activate(context: vscode.ExtensionContext) {
   const loadDefinitions = new LoadDefinitions(index)
@@ -34,8 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
   context.subscriptions.push(cssFilesWatcher)
-  //TODO: Update FindReferencesProvider to use index
-  // context.subscriptions.push(createFindReferencesProvider(classes))
+  context.subscriptions.push(createFindReferencesProvider(index))
 }
 
 export function deactivate() {}

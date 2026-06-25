@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
 
-import type { CSSClassRepository } from "../domain/css-class-repository"
+import type { CSSClassIndex } from "../persistence/class-index"
 
-export function createFindReferencesProvider(classes: CSSClassRepository) {
+export function createFindReferencesProvider(index: CSSClassIndex) {
   return vscode.languages.registerReferenceProvider(
     { pattern: "**/*.css", scheme: "file" },
     {
@@ -13,10 +13,21 @@ export function createFindReferencesProvider(classes: CSSClassRepository) {
         const word = document.getText(wordRange)
         const className = word.substring(1)
 
-        const cssClass = classes.get(className)
+        const cssClass = index.get(className)
         if (!cssClass) return
 
-        return cssClass.getReferences()
+        return cssClass.usages.map(
+          (location) =>
+            new vscode.Location(
+              vscode.Uri.file(location.uri),
+              new vscode.Range(
+                location.start.line,
+                location.start.column,
+                location.end.line,
+                location.end.column
+              )
+            )
+        )
       },
     }
   )
