@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
 
-import { DeleteCSSFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-command-handler"
-import { LoadDefinitions } from "./modules/css-files/commands/load-definitions/load-definitions-command-handler"
-import { SaveCSSFile } from "./modules/css-files/commands/save-css-file/save-css-file-command-handler"
+import { DeleteCSSFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-service"
+import { LoadDefinitions } from "./modules/css-files/commands/load-definitions/load-definitions-service"
+import { SaveCSSFile } from "./modules/css-files/commands/save-css-file/save-css-file-service"
 import { CSSFileDTO } from "./modules/css-files/dtos/css-file-dto"
 import { GetAllClasses } from "./modules/css-files/queries/get-all-classes/get-all-classes-query-handler"
 import { watchCSSFiles } from "./modules/css-files/watchers/css-files-watcher"
