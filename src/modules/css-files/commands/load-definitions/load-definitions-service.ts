@@ -3,9 +3,14 @@ import { parseCSSClassSymbols } from "../../adapters/css-parser"
 import type { CSSFileDto } from "../../dtos/css-file-dto"
 
 export class LoadDefinitions {
-  constructor(private index: CSSClassIndex) {}
+  constructor(
+    private index: CSSClassIndex,
+    private findAllCssFiles: () => Promise<CSSFileDto[]>
+  ) {}
 
-  async execute(files: CSSFileDto[]): Promise<void> {
+  async execute(): Promise<void> {
+    const files = await this.findAllCssFiles()
+
     const symbols = (
       await Promise.all(
         files.map(async (file: CSSFileDto) => {
