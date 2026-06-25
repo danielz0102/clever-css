@@ -1,4 +1,4 @@
-import type { CSSClassIndex } from "../../../persistence/class-index"
+import type { CSSClassIndex } from "../../../../persistence/class-index"
 
 export class DeleteCSSFile {
   constructor(private index: CSSClassIndex) {}

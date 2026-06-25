@@ -1,4 +1,4 @@
-import type { CSSClassIndex, CSSClassRecord } from "../../../persistence/class-index"
+import type { CSSClassIndex, CSSClassRecord } from "../../../../persistence/class-index"
 
 export class GetAllClasses {
   constructor(private index: CSSClassIndex) {}

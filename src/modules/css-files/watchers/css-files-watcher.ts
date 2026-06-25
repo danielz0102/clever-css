@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
 
-import { CSSFileDTO } from "./dtos/css-file-dto"
-import type { DeleteCSSFile } from "./use-cases/delete-css-file"
-import type { SaveCSSFile } from "./use-cases/save-css-file"
+import type { DeleteCSSFile } from "../commands/delete-css-file/delete-css-file-command-handler"
+import type { SaveCSSFile } from "../commands/save-css-file/save-css-file-command-handler"
+import { CSSFileDTO } from "../dtos/css-file-dto"
 
 export function watchCSSFiles(
   saveFile: SaveCSSFile,

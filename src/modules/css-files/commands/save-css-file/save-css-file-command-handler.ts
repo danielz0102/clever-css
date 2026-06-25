@@ -1,6 +1,6 @@
-import type { CSSClassIndex } from "../../../persistence/class-index"
-import { parseCSSClassSymbols } from "../css-parser"
-import type { CSSFileDTO } from "../dtos/css-file-dto"
+import type { CSSClassIndex } from "../../../../persistence/class-index"
+import type { CSSFileDTO } from "../../dtos/css-file-dto"
+import { parseCSSClassSymbols } from "../../parsers/css-parser"
 
 export class SaveCSSFile {
   constructor(private index: CSSClassIndex) {}
