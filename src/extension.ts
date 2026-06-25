@@ -14,6 +14,8 @@ import { createFindReferencesProvider } from "./ui/references-provider"
 
 export async function activate(context: vscode.ExtensionContext) {
   const loadDefinitions = new LoadDefinitions(index)
+  const saveFile = new SaveCSSFile(index)
+  const deleteFile = new DeleteCSSFile(index)
   const getAll = new GetAllClasses(index)
 
   await loadDefinitions.execute(await findCSSFiles())
@@ -24,7 +26,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const classDataProvider = new ClassTreeDataProvider(mapCSSFiles(await getAll.execute()))
 
-  const cssFilesWatcher = watchCSSFiles(new SaveCSSFile(index), new DeleteCSSFile(index))
+  const cssFilesWatcher = watchCSSFiles(
+    async (uri) => saveFile.execute(await CSSFileDTO.fromVsCodeUri(uri)),
+    (uri) => deleteFile.execute(uri.toString())
+  )
   cssFilesWatcher.onDidChange(async () => {
     classDataProvider.refresh(mapCSSFiles(await getAll.execute()))
   })
