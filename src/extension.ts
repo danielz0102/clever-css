@@ -8,7 +8,7 @@ import { LoadDefinitions } from "./modules/css-files/use-cases/load-definitions"
 import { SaveCSSFile } from "./modules/css-files/use-cases/save-css-file"
 import { index } from "./persistence/class-index"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
-import { CSSFileViewModelMapper } from "./ui/class-tree/css-file-view-model"
+import { mapCSSFiles } from "./ui/class-tree/css-file-data"
 import { openLocation } from "./ui/open-location"
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -21,16 +21,14 @@ export async function activate(context: vscode.ExtensionContext) {
   // const loadUsages = new LoadUsages(classes)
   // void loadUsages.execute()
 
-  const classDataProvider = new ClassTreeDataProvider(
-    CSSFileViewModelMapper.fromPersistence(await getAll.execute())
-  )
+  const classDataProvider = new ClassTreeDataProvider(mapCSSFiles(await getAll.execute()))
 
   const cssFilesWatcher = watchCSSFiles(new SaveCSSFile(index), new DeleteCSSFile(index))
   cssFilesWatcher.onDidChange(async () => {
-    classDataProvider.refresh(CSSFileViewModelMapper.fromPersistence(await getAll.execute()))
+    classDataProvider.refresh(mapCSSFiles(await getAll.execute()))
   })
   cssFilesWatcher.onDidDelete(async () => {
-    classDataProvider.refresh(CSSFileViewModelMapper.fromPersistence(await getAll.execute()))
+    classDataProvider.refresh(mapCSSFiles(await getAll.execute()))
   })
 
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))

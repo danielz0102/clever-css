@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import { ClassItem } from "./class-tree-item"
-import type { CSSFileViewModel } from "./css-file-view-model"
+import type { FilesIndex } from "./css-file-data"
 import { FileItem } from "./file-tree-item"
 
 export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
@@ -10,9 +10,9 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
   >()
   readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event
 
-  constructor(private files: CSSFileViewModel[]) {}
+  constructor(private files: FilesIndex) {}
 
-  refresh(newData: CSSFileViewModel[]): void {
+  refresh(newData: FilesIndex): void {
     this.files = newData
     this.onDidChangeTreeDataEmitter.fire()
   }
@@ -27,7 +27,7 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
     }
 
     if (item instanceof FileItem) {
-      const file = this.files.find((f) => f.is(item.resourceUri))
+      const file = this.files.get(item.resourceUri.toString())
       return (
         file?.classes.map(
           (c) => new ClassItem({ className: c.name, fileUri: file.uri, range: c.range })
@@ -35,6 +35,6 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
       )
     }
 
-    return this.files.map(({ uri }) => new FileItem(uri))
+    return Array.from(this.files.values()).map((f) => new FileItem(f.uri))
   }
 }
