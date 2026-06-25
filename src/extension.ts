@@ -3,11 +3,12 @@ import * as vscode from "vscode"
 import { DeleteCSSFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-service"
 import { LoadDefinitions } from "./modules/css-files/commands/load-definitions/load-definitions-service"
 import { SaveCSSFile } from "./modules/css-files/commands/save-css-file/save-css-file-service"
-import { CSSFileDTO } from "./modules/css-files/dtos/css-file-dto"
+import { CSSFileDto } from "./modules/css-files/dtos/css-file-dto"
 import { GetAllClasses } from "./modules/css-files/queries/get-all-classes/get-all-classes-query-handler"
 import { index } from "./persistence/class-index"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
 import { mapCSSFiles } from "./ui/class-tree/css-file-data"
+import { UriMapper } from "./ui/mappers/uri-mapper"
 import { openLocation } from "./ui/open-location"
 import { createFindReferencesProvider } from "./ui/references-provider"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
@@ -27,7 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const classDataProvider = new ClassTreeDataProvider(mapCSSFiles(await getAll.execute()))
 
   const cssFilesWatcher = watchCSSFiles(
-    async (uri) => saveFile.execute(await CSSFileDTO.fromVsCodeUri(uri)),
+    async (uri) => saveFile.execute(await UriMapper.toCssFileDto(uri)),
     (uri) => deleteFile.execute(uri.toString())
   )
   cssFilesWatcher.onDidChange(async () => {
@@ -45,8 +46,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-async function findCSSFiles(): Promise<CSSFileDTO[]> {
+async function findCSSFiles(): Promise<CSSFileDto[]> {
   const uris = await vscode.workspace.findFiles("**/*.css", "**/{node_modules,dist,build}/**")
-  const files = await Promise.all(uris.map(async (u) => CSSFileDTO.fromVsCodeUri(u)))
+  const files = await Promise.all(uris.map(async (u) => UriMapper.toCssFileDto(u)))
   return files
 }

@@ -1,14 +1,14 @@
 import type { CSSClassIndex } from "../../../../persistence/class-index"
 import { parseCSSClassSymbols } from "../../adapters/css-parser"
-import type { CSSFileDTO } from "../../dtos/css-file-dto"
+import type { CSSFileDto } from "../../dtos/css-file-dto"
 
 export class LoadDefinitions {
   constructor(private index: CSSClassIndex) {}
 
-  async execute(files: CSSFileDTO[]): Promise<void> {
+  async execute(files: CSSFileDto[]): Promise<void> {
     const symbols = (
       await Promise.all(
-        files.map(async (file: CSSFileDTO) => {
+        files.map(async (file: CSSFileDto) => {
           const classes = await parseCSSClassSymbols(file.content)
           return classes.map((c) => ({ ...c, ...file }))
         })
