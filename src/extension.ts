@@ -9,10 +9,10 @@ import { SaveCssFile } from "./modules/css-files/commands/save-css-file/save-css
 import { SaveCssFileVsCodeController } from "./modules/css-files/commands/save-css-file/save-css-file-vscode-controller"
 import { GetAllClasses } from "./modules/css-files/queries/get-all-classes/get-all-classes-query-handler"
 import { index } from "./persistence/class-index"
-import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
-import { mapCssFiles } from "./ui/class-tree/css-file-data"
-import { openLocation } from "./ui/open-location"
-import { createFindReferencesProvider } from "./ui/references-provider"
+import { openLocation } from "./ui/commands/open-location"
+import { ClassTreeDataProvider } from "./ui/providers/class-tree/class-tree-data-provider"
+import { mapCssFiles } from "./ui/providers/class-tree/css-file-data"
+import { createFindReferencesProvider } from "./ui/providers/references-provider"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
