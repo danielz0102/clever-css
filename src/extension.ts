@@ -1,9 +1,9 @@
 import * as vscode from "vscode"
 
-import { DeleteCSSFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-service"
+import { DeleteCSSFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-command-handler"
 import { findCSSFiles } from "./modules/css-files/commands/load-definitions/adapters/find-css-files"
-import { LoadDefinitions } from "./modules/css-files/commands/load-definitions/load-definitions-service"
-import { SaveCSSFile } from "./modules/css-files/commands/save-css-file/save-css-file-service"
+import { LoadDefinitions } from "./modules/css-files/commands/load-definitions/load-definitions-command-handler"
+import { SaveCSSFile } from "./modules/css-files/commands/save-css-file/save-css-file-command-handler"
 import { GetAllClasses } from "./modules/css-files/queries/get-all-classes/get-all-classes-query-handler"
 import { index } from "./persistence/class-index"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
