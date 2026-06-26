@@ -1,10 +1,9 @@
 import assert from "node:assert"
 
-import * as vscode from "vscode"
-
-import { CSSClassRepository } from "../domain/css-class-repository"
+import type { ClientFileFinder } from "../modules/client-files/adapters/client-file-finder/client-file-finder"
 import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
-import { LoadUsages } from "../modules/client-files/commands/load-usages"
+import { LoadUsagesV2 } from "../modules/client-files/commands/load-usages"
+import type { CssClassIndex, CssClassRecord } from "../persistence/class-index"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
 suite("LoadUsages", () => {
@@ -15,81 +14,85 @@ suite("LoadUsages", () => {
   })
 
   test("loads usages for all classes in the repository", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "my-class",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
+    const index: CssClassIndex = new Map()
+    index.set("my-class", makeRecord("my-class"))
 
-    await workspace.createFile("component.tsx", `<div className="my-class" />`)
-    await workspace.createFile("other.tsx", `<span className="my-class" />`)
+    const file1 = await workspace.createFile("component.tsx", `<div className="my-class" />`)
+    const file2 = await workspace.createFile("other.tsx", `<span className="my-class" />`)
 
-    const loadUsages = new LoadUsages(repo, new JsxParser())
+    const finder: ClientFileFinder = {
+      find: () => Promise.resolve([file1.fsPath, file2.fsPath]),
+    }
+
+    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
     await loadUsages.execute()
 
-    const cssClass = repo.get("my-class")
-    assert(cssClass !== undefined)
-    assert(cssClass.usages.length === 2, `Expected 2 usages, found ${cssClass.usages.length}`)
+    const record = index.get("my-class")
+    assert(record !== undefined)
+    assert(record.usages.length === 2, `Expected 2 usages, found ${record.usages.length}`)
   })
 
   test("does not load usages for classes that are not used", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "unused-class",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
+    const index: CssClassIndex = new Map()
+    index.set("unused-class", makeRecord("unused-class"))
 
-    const loadUsages = new LoadUsages(repo, new JsxParser())
+    const finder: ClientFileFinder = {
+      find: () => Promise.resolve([]),
+    }
+
+    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
     await loadUsages.execute()
 
-    const cssClass = repo.get("unused-class")
-    assert(cssClass !== undefined)
-    assert(cssClass.usages.length === 0, `Expected 0 usages, found ${cssClass.usages.length}`)
+    const record = index.get("unused-class")
+    assert(record !== undefined)
+    assert(record.usages.length === 0, `Expected 0 usages, found ${record.usages.length}`)
   })
 
   test("does not match class name in casual text", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "button",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
+    const index: CssClassIndex = new Map()
+    index.set("button", makeRecord("button"))
 
-    await workspace.createFile(
+    const file = await workspace.createFile(
       "index.tsx",
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
     )
 
-    const loadUsages = new LoadUsages(repo, new JsxParser())
+    const finder: ClientFileFinder = {
+      find: () => Promise.resolve([file.fsPath]),
+    }
+
+    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
     await loadUsages.execute()
 
-    const cssClass = repo.get("button")
-    assert(cssClass?.usages.length === 0, "Should not detect class name in casual text")
+    const record = index.get("button")
+    assert(record?.usages.length === 0, "Should not detect class name in casual text")
   })
 
   test("detects multiple classes in a single className attribute", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "class-one",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
-    repo.add(
-      "class-two",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
+    const index: CssClassIndex = new Map()
+    index.set("class-one", makeRecord("class-one"))
+    index.set("class-two", makeRecord("class-two"))
+
+    const file = await workspace.createFile(
+      "multiple-classes.tsx",
+      `<div className="class-one class-two" />`
     )
 
-    await workspace.createFile("multiple-classes.tsx", `<div className="class-one class-two" />`)
+    const finder: ClientFileFinder = {
+      find: () => Promise.resolve([file.fsPath]),
+    }
 
-    const loadUsages = new LoadUsages(repo, new JsxParser())
+    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
     await loadUsages.execute()
 
-    const classOne = repo.get("class-one")
+    const classOne = index.get("class-one")
     assert(classOne !== undefined)
     assert(
       classOne.usages.length === 1,
       `Expected 1 usage for 'class-one', found ${classOne.usages.length}`
     )
 
-    const classTwo = repo.get("class-two")
+    const classTwo = index.get("class-two")
     assert(classTwo !== undefined)
     assert(
       classTwo.usages.length === 1,
@@ -98,69 +101,72 @@ suite("LoadUsages", () => {
   })
 
   test("detects the same class used multiple times in a single className attribute", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "duplicate-class",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
+    const index: CssClassIndex = new Map()
+    index.set("duplicate-class", makeRecord("duplicate-class"))
 
-    await workspace.createFile(
+    const file = await workspace.createFile(
       "duplicate-classes.tsx",
       `<div className="duplicate-class duplicate-class" />`
     )
 
-    const loadUsages = new LoadUsages(repo, new JsxParser())
+    const finder: ClientFileFinder = {
+      find: () => Promise.resolve([file.fsPath]),
+    }
+
+    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
     await loadUsages.execute()
 
-    const cssClass = repo.get("duplicate-class")
-    assert(cssClass !== undefined)
+    const record = index.get("duplicate-class")
+    assert(record !== undefined)
     assert(
-      cssClass.usages.length === 2,
-      `Expected 2 usages for 'duplicate-class', found ${cssClass.usages.length}`
+      record.usages.length === 2,
+      `Expected 2 usages for 'duplicate-class', found ${record.usages.length}`
     )
   })
 
   test("supports classes inside template strings", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "my-class",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
+    const index: CssClassIndex = new Map()
+    index.set("my-class", makeRecord("my-class"))
+
+    const file = await workspace.createFile(
+      "with-template-strings.tsx",
+      `<div className={\`my-class\`} />`
     )
 
-    await workspace.createFile("with-template-strings.tsx", `<div className={\`my-class\`} />`)
+    const finder: ClientFileFinder = {
+      find: () => Promise.resolve([file.fsPath]),
+    }
 
-    const loadUsages = new LoadUsages(repo, new JsxParser())
+    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
     await loadUsages.execute()
 
-    const cssClass = repo.get("my-class")
-    assert(cssClass !== undefined)
-    assert(cssClass.usages.length === 1, `Expected 1 usage, found ${cssClass.usages.length}`)
+    const record = index.get("my-class")
+    assert(record !== undefined)
+    assert(record.usages.length === 1, `Expected 1 usage, found ${record.usages.length}`)
   })
 
   test("supports classes inside template strings with expressions", async () => {
-    const repo = new CSSClassRepository()
-    repo.add(
-      "my-class",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
-    repo.add(
-      "another-class",
-      new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
-    )
+    const index: CssClassIndex = new Map()
+    index.set("my-class", makeRecord("my-class"))
+    index.set("another-class", makeRecord("another-class"))
 
-    await workspace.createFile(
+    const file = await workspace.createFile(
       "with-template-expressions.tsx",
       `<div className={\`my-class \${variable} another-class \`} />`
     )
 
-    const loadUsages = new LoadUsages(repo, new JsxParser())
+    const finder: ClientFileFinder = {
+      find: () => Promise.resolve([file.fsPath]),
+    }
+
+    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
     await loadUsages.execute()
 
-    const cssClass = repo.get("my-class")
-    assert(cssClass !== undefined)
-    assert(cssClass.usages.length === 1, `Expected 1 usage, found ${cssClass.usages.length}`)
+    const myClass = index.get("my-class")
+    assert(myClass !== undefined)
+    assert(myClass.usages.length === 1, `Expected 1 usage, found ${myClass.usages.length}`)
 
-    const anotherClass = repo.get("another-class")
+    const anotherClass = index.get("another-class")
     assert(anotherClass !== undefined)
     assert(
       anotherClass.usages.length === 1,
@@ -168,3 +174,13 @@ suite("LoadUsages", () => {
     )
   })
 })
+
+function makeRecord(className: string): CssClassRecord {
+  return {
+    className,
+    definitions: [
+      { uri: "file:///test.css", start: { line: 0, column: 0 }, end: { line: 0, column: 8 } },
+    ],
+    usages: [],
+  }
+}
