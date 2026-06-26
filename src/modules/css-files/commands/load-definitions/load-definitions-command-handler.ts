@@ -11,15 +11,7 @@ export class LoadDefinitions {
 
   async execute(): Promise<void> {
     const files = await this.findCssFiles()
-
-    const symbols = (
-      await Promise.all(
-        files.map(async (file) => {
-          const symbols = await this.parseSymbols(file.content)
-          return symbols.map((c) => ({ ...c, ...file }))
-        })
-      )
-    ).flat()
+    const symbols = (await Promise.all(files.map(this.parseFile))).flat()
 
     symbols.forEach(({ className, location, uri }) => {
       const record = this.index.get(className)
@@ -44,5 +36,10 @@ export class LoadDefinitions {
         })
       }
     })
+  }
+
+  private parseFile = async (file: CssFileDto) => {
+    const symbols = await this.parseSymbols(file.content)
+    return symbols.map((c) => ({ ...c, ...file }))
   }
 }
