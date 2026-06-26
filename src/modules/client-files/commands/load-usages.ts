@@ -1,18 +1,18 @@
 import type { CssClassIndex } from "../../../persistence/class-index"
-import type { ClientFileFinder } from "../adapters/client-file-finder/client-file-finder"
+import type { ClientFilesFinder } from "../adapters/find-client-files"
 import type { ClientFileParser } from "../adapters/parsers/client-file-parser"
 
 export class LoadUsages {
   constructor(
     private index: CssClassIndex,
     private parser: ClientFileParser,
-    private clientFiles: ClientFileFinder
+    private findFiles: ClientFilesFinder
   ) {}
 
   async execute(): Promise<void> {
     this.clearUsages()
 
-    const files = await this.clientFiles.find()
+    const files = await this.findFiles()
 
     for (const filePath of files) {
       const usages = this.parser.getUsagesFrom(filePath)

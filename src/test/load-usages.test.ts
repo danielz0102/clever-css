@@ -1,6 +1,5 @@
 import assert from "node:assert"
 
-import type { ClientFileFinder } from "../modules/client-files/adapters/client-file-finder/client-file-finder"
 import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
 import { LoadUsages } from "../modules/client-files/commands/load-usages"
 import type { CssClassIndex, CssClassRecord } from "../persistence/class-index"
@@ -20,11 +19,10 @@ suite("LoadUsages", () => {
     const file1 = await workspace.createFile("component.tsx", `<div className="my-class" />`)
     const file2 = await workspace.createFile("other.tsx", `<span className="my-class" />`)
 
-    const finder: ClientFileFinder = {
-      find: () => Promise.resolve([file1.fsPath, file2.fsPath]),
-    }
-
-    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), async () => [
+      file1.fsPath,
+      file2.fsPath,
+    ])
     await loadUsages.execute()
 
     const record = index.get("my-class")
@@ -36,11 +34,7 @@ suite("LoadUsages", () => {
     const index: CssClassIndex = new Map()
     index.set("unused-class", makeRecord("unused-class"))
 
-    const finder: ClientFileFinder = {
-      find: () => Promise.resolve([]),
-    }
-
-    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), async () => [])
     await loadUsages.execute()
 
     const record = index.get("unused-class")
@@ -57,11 +51,7 @@ suite("LoadUsages", () => {
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
     )
 
-    const finder: ClientFileFinder = {
-      find: () => Promise.resolve([file.fsPath]),
-    }
-
-    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), async () => [file.fsPath])
     await loadUsages.execute()
 
     const record = index.get("button")
@@ -78,11 +68,7 @@ suite("LoadUsages", () => {
       `<div className="class-one class-two" />`
     )
 
-    const finder: ClientFileFinder = {
-      find: () => Promise.resolve([file.fsPath]),
-    }
-
-    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), async () => [file.fsPath])
     await loadUsages.execute()
 
     const classOne = index.get("class-one")
@@ -109,11 +95,7 @@ suite("LoadUsages", () => {
       `<div className="duplicate-class duplicate-class" />`
     )
 
-    const finder: ClientFileFinder = {
-      find: () => Promise.resolve([file.fsPath]),
-    }
-
-    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), async () => [file.fsPath])
     await loadUsages.execute()
 
     const record = index.get("duplicate-class")
@@ -133,11 +115,7 @@ suite("LoadUsages", () => {
       `<div className={\`my-class\`} />`
     )
 
-    const finder: ClientFileFinder = {
-      find: () => Promise.resolve([file.fsPath]),
-    }
-
-    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), async () => [file.fsPath])
     await loadUsages.execute()
 
     const record = index.get("my-class")
@@ -155,11 +133,7 @@ suite("LoadUsages", () => {
       `<div className={\`my-class \${variable} another-class \`} />`
     )
 
-    const finder: ClientFileFinder = {
-      find: () => Promise.resolve([file.fsPath]),
-    }
-
-    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), async () => [file.fsPath])
     await loadUsages.execute()
 
     const myClass = index.get("my-class")

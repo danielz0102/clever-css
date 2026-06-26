@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { VSCodeClientFileFinder } from "./modules/client-files/adapters/client-file-finder/vscode-client-file-finder"
+import { findClientFiles } from "./modules/client-files/adapters/find-client-files"
 import { JsxParser } from "./modules/client-files/adapters/parsers/jsx-parser"
 import { DeleteClientFile } from "./modules/client-files/commands/delete-client-file"
 import { LoadUsages } from "./modules/client-files/commands/load-usages"
@@ -25,7 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const loadDefinitions = new LoadDefinitions(index, findCssFiles, parseCssClassSymbols)
   await loadDefinitions.execute()
 
-  const loadUsages = new LoadUsages(index, new JsxParser(), new VSCodeClientFileFinder())
+  const loadUsages = new LoadUsages(index, new JsxParser(), findClientFiles)
   void loadUsages.execute()
 
   const getAll = new GetAllClasses(index)
