@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
-import type { ClassTreeDataProvider } from "../../../../ui/class-tree/class-tree-data-provider"
-import { mapCssFiles } from "../../../../ui/class-tree/css-file-data"
+import type { ClassTreeDataProvider } from "../../../../ui/providers/class-tree/class-tree-data-provider"
+import { mapCssFiles } from "../../../../ui/providers/class-tree/css-file-data"
 import type { GetAllClasses } from "../../queries/get-all-classes/get-all-classes-query-handler"
 import type { DeleteCssFile } from "./delete-css-file-command-handler"
 

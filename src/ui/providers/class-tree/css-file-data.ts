@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import type { CssClassRecord } from "../../persistence/class-index"
+import type { CssClassRecord } from "../../../persistence/class-index"
 
 type CssClass = {
   name: string
