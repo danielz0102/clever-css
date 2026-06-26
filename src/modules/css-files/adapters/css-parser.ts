@@ -1,5 +1,7 @@
 import * as csstree from "css-tree"
 
+export type CssClassParser = (content: string) => Promise<CssClassSymbol[]>
+
 export type CssClassSymbol = {
   className: string
   location: {
@@ -14,7 +16,7 @@ export type CssClassSymbol = {
   }
 }
 
-export async function parseCssClassSymbols(content: string): Promise<CssClassSymbol[]> {
+export const parseCssClassSymbols: CssClassParser = async (content: string) => {
   const ast = csstree.parse(content, { positions: true })
   const classes: CssClassSymbol[] = []
 

@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 
+import { parseCssClassSymbols } from "./modules/css-files/adapters/css-parser"
 import { DeleteCssFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-command-handler"
 import { DeleteCssFileVsCodeController } from "./modules/css-files/commands/delete-css-file/delete-css-file-vscode-controller"
 import { findCSSFiles } from "./modules/css-files/commands/load-definitions/adapters/find-css-files"
@@ -15,7 +16,7 @@ import { createFindReferencesProvider } from "./ui/references-provider"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
-  const loadDefinitions = new LoadDefinitions(index, findCSSFiles)
+  const loadDefinitions = new LoadDefinitions(index, findCSSFiles, parseCssClassSymbols)
   const getAll = new GetAllClasses(index)
 
   await loadDefinitions.execute()
@@ -26,7 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const classDataProvider = new ClassTreeDataProvider(mapCSSFiles(await getAll.execute()))
   const saveCssFileController = new SaveCssFileVsCodeController(
-    new SaveCssFile(index),
+    new SaveCssFile(index, parseCssClassSymbols),
     getAll,
     classDataProvider
   )
