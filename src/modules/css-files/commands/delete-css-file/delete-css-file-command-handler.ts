@@ -1,7 +1,7 @@
-import type { CSSClassIndex } from "../../../../persistence/class-index"
+import type { CssClassIndex } from "../../../../persistence/class-index"
 
-export class DeleteCSSFile {
-  constructor(private index: CSSClassIndex) {}
+export class DeleteCssFile {
+  constructor(private index: CssClassIndex) {}
 
   async execute(uri: string): Promise<void> {
     Array.from(this.index.entries())

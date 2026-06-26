@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
 
-import type { CSSClassIndex } from "../persistence/class-index"
+import type { CssClassIndex } from "../persistence/class-index"
 
-export function createFindReferencesProvider(index: CSSClassIndex) {
+export function createFindReferencesProvider(index: CssClassIndex) {
   return vscode.languages.registerReferenceProvider(
     { pattern: "**/*.css", scheme: "file" },
     {

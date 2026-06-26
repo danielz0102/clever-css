@@ -1,6 +1,6 @@
 import * as csstree from "css-tree"
 
-export type CSSClassSymbol = {
+export type CssClassSymbol = {
   className: string
   location: {
     start: {
@@ -14,9 +14,9 @@ export type CSSClassSymbol = {
   }
 }
 
-export async function parseCSSClassSymbols(content: string): Promise<CSSClassSymbol[]> {
+export async function parseCssClassSymbols(content: string): Promise<CssClassSymbol[]> {
   const ast = csstree.parse(content, { positions: true })
-  const classes: CSSClassSymbol[] = []
+  const classes: CssClassSymbol[] = []
 
   csstree.walk(ast, {
     visit: "ClassSelector",

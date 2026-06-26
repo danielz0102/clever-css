@@ -1,12 +1,12 @@
-import type { CSSClassIndex } from "../../../../persistence/class-index"
-import { parseCSSClassSymbols } from "../../adapters/css-parser"
+import type { CssClassIndex } from "../../../../persistence/class-index"
+import { parseCssClassSymbols } from "../../adapters/css-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 
-export class SaveCSSFile {
-  constructor(private index: CSSClassIndex) {}
+export class SaveCssFile {
+  constructor(private index: CssClassIndex) {}
 
   async execute(file: CssFileDto): Promise<void> {
-    const symbols = await parseCSSClassSymbols(file.content)
+    const symbols = await parseCssClassSymbols(file.content)
     const foundClasses = symbols.map((c) => c.className)
 
     Array.from(this.index.entries())

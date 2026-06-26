@@ -1,9 +1,9 @@
-import type { CSSClassIndex, CSSClassRecord } from "../../../../persistence/class-index"
+import type { CssClassIndex, CssClassRecord } from "../../../../persistence/class-index"
 
 export class GetAllClasses {
-  constructor(private index: CSSClassIndex) {}
+  constructor(private index: CssClassIndex) {}
 
-  async execute(): Promise<CSSClassRecord[]> {
+  async execute(): Promise<CssClassRecord[]> {
     return Array.from(this.index.values())
   }
 }

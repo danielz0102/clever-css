@@ -1,10 +1,10 @@
 import * as vscode from "vscode"
 
-import { DeleteCSSFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-command-handler"
+import { DeleteCssFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-command-handler"
 import { DeleteCssFileVsCodeController } from "./modules/css-files/commands/delete-css-file/delete-css-file-vscode-controller"
 import { findCSSFiles } from "./modules/css-files/commands/load-definitions/adapters/find-css-files"
 import { LoadDefinitions } from "./modules/css-files/commands/load-definitions/load-definitions-command-handler"
-import { SaveCSSFile } from "./modules/css-files/commands/save-css-file/save-css-file-command-handler"
+import { SaveCssFile } from "./modules/css-files/commands/save-css-file/save-css-file-command-handler"
 import { SaveCssFileVsCodeController } from "./modules/css-files/commands/save-css-file/save-css-file-vscode-controller"
 import { GetAllClasses } from "./modules/css-files/queries/get-all-classes/get-all-classes-query-handler"
 import { index } from "./persistence/class-index"
@@ -26,12 +26,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const classDataProvider = new ClassTreeDataProvider(mapCSSFiles(await getAll.execute()))
   const saveCssFileController = new SaveCssFileVsCodeController(
-    new SaveCSSFile(index),
+    new SaveCssFile(index),
     getAll,
     classDataProvider
   )
   const deleteCssFileController = new DeleteCssFileVsCodeController(
-    new DeleteCSSFile(index),
+    new DeleteCssFile(index),
     getAll,
     classDataProvider
   )

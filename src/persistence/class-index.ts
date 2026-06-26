@@ -4,11 +4,11 @@ export type EditorLocation = {
   end: { line: number; column: number }
 }
 
-export type CSSClassRecord = {
+export type CssClassRecord = {
   className: string
   definitions: EditorLocation[]
   usages: EditorLocation[]
 }
 
-export const index = new Map<string, CSSClassRecord>()
-export type CSSClassIndex = typeof index
+export const index = new Map<string, CssClassRecord>()
+export type CssClassIndex = typeof index
