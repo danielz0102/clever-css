@@ -28,14 +28,14 @@ export async function activate(context: vscode.ExtensionContext) {
   const classDataProvider = new ClassTreeDataProvider(mapCSSFiles(await getAll.execute()))
 
   const cssFilesWatcher = watchCSSFiles({
-    saveFile: async (uri) => saveFile.execute(await UriMapper.toCssFileDto(uri)),
-    deleteFile: (uri) => deleteFile.execute(uri.toString()),
-  })
-  cssFilesWatcher.onDidChange(async () => {
-    classDataProvider.refresh(mapCSSFiles(await getAll.execute()))
-  })
-  cssFilesWatcher.onDidDelete(async () => {
-    classDataProvider.refresh(mapCSSFiles(await getAll.execute()))
+    saveFile: async (uri) => {
+      await saveFile.execute(await UriMapper.toCssFileDto(uri))
+      classDataProvider.refresh(mapCSSFiles(await getAll.execute()))
+    },
+    deleteFile: async (uri) => {
+      await deleteFile.execute(uri.toString())
+      classDataProvider.refresh(mapCSSFiles(await getAll.execute()))
+    },
   })
 
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
