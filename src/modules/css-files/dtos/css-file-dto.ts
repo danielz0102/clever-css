@@ -1,4 +1,4 @@
-export type CSSFileDto = {
+export type CssFileDto = {
   uri: string
   content: string
 }
