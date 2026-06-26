@@ -6,7 +6,7 @@ type Usage = {
   end: number
 }
 
-export class ClientFileParser {
+export class JsxParser {
   private project = new Project()
 
   getUsagesFrom(path: string): Usage[] {

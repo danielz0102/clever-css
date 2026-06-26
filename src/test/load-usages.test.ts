@@ -3,6 +3,7 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { CSSClassRepository } from "../domain/css-class-repository"
+import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
 import { LoadUsages } from "../modules/client-files/commands/load-usages"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
@@ -23,7 +24,7 @@ suite("LoadUsages", () => {
     await workspace.createFile("component.tsx", `<div className="my-class" />`)
     await workspace.createFile("other.tsx", `<span className="my-class" />`)
 
-    const loadUsages = new LoadUsages(repo)
+    const loadUsages = new LoadUsages(repo, new JsxParser())
     await loadUsages.execute()
 
     const cssClass = repo.get("my-class")
@@ -38,7 +39,7 @@ suite("LoadUsages", () => {
       new vscode.Location(vscode.Uri.parse("file:///test.css"), new vscode.Range(0, 0, 0, 8))
     )
 
-    const loadUsages = new LoadUsages(repo)
+    const loadUsages = new LoadUsages(repo, new JsxParser())
     await loadUsages.execute()
 
     const cssClass = repo.get("unused-class")
@@ -58,7 +59,7 @@ suite("LoadUsages", () => {
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
     )
 
-    const loadUsages = new LoadUsages(repo)
+    const loadUsages = new LoadUsages(repo, new JsxParser())
     await loadUsages.execute()
 
     const cssClass = repo.get("button")
@@ -78,7 +79,7 @@ suite("LoadUsages", () => {
 
     await workspace.createFile("multiple-classes.tsx", `<div className="class-one class-two" />`)
 
-    const loadUsages = new LoadUsages(repo)
+    const loadUsages = new LoadUsages(repo, new JsxParser())
     await loadUsages.execute()
 
     const classOne = repo.get("class-one")
@@ -108,7 +109,7 @@ suite("LoadUsages", () => {
       `<div className="duplicate-class duplicate-class" />`
     )
 
-    const loadUsages = new LoadUsages(repo)
+    const loadUsages = new LoadUsages(repo, new JsxParser())
     await loadUsages.execute()
 
     const cssClass = repo.get("duplicate-class")
@@ -128,7 +129,7 @@ suite("LoadUsages", () => {
 
     await workspace.createFile("with-template-strings.tsx", `<div className={\`my-class\`} />`)
 
-    const loadUsages = new LoadUsages(repo)
+    const loadUsages = new LoadUsages(repo, new JsxParser())
     await loadUsages.execute()
 
     const cssClass = repo.get("my-class")
@@ -152,7 +153,7 @@ suite("LoadUsages", () => {
       `<div className={\`my-class \${variable} another-class \`} />`
     )
 
-    const loadUsages = new LoadUsages(repo)
+    const loadUsages = new LoadUsages(repo, new JsxParser())
     await loadUsages.execute()
 
     const cssClass = repo.get("my-class")

@@ -1,12 +1,13 @@
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../../domain/css-class-repository"
-import { ClientFileParser } from "../client-file-parser"
+import type { ClientFileParser } from "../adapters/parsers/client-file-parser"
 
 export class SaveClientFile {
-  private parser = new ClientFileParser()
-
-  constructor(private classes: CSSClassRepository) {}
+  constructor(
+    private classes: CSSClassRepository,
+    private parser: ClientFileParser
+  ) {}
 
   async execute(uri: vscode.Uri): Promise<void> {
     this.classes.getAll().forEach((c) => c.removeUsage(uri))

@@ -1,12 +1,13 @@
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../../domain/css-class-repository"
-import { ClientFileParser } from "../client-file-parser"
+import type { ClientFileParser } from "../adapters/parsers/client-file-parser"
 
 export class LoadUsages {
-  private parser = new ClientFileParser()
-
-  constructor(private classes: CSSClassRepository) {}
+  constructor(
+    private classes: CSSClassRepository,
+    private parser: ClientFileParser
+  ) {}
 
   async execute(): Promise<void> {
     const files = await vscode.workspace.findFiles("**/*.{jsx,tsx}", "**/node_modules/**")

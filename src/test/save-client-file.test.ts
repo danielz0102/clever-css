@@ -3,6 +3,7 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { CSSClassRepository } from "../domain/css-class-repository"
+import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
 import { SaveClientFile } from "../modules/client-files/commands/save-client-file"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
@@ -45,7 +46,7 @@ suite("SaveClientFile", () => {
       `<div className="my-class other-class">`
     )
 
-    const saveClientFile = new SaveClientFile(repo)
+    const saveClientFile = new SaveClientFile(repo, new JsxParser())
     await saveClientFile.execute(uri)
 
     const myClassUsages = repo.get("my-class")!.usages
@@ -86,7 +87,7 @@ suite("SaveClientFile", () => {
 
     const uri = await workspace.createFile("component.tsx", `<div className={\`my-class\`}>`)
 
-    const saveClientFile = new SaveClientFile(repo)
+    const saveClientFile = new SaveClientFile(repo, new JsxParser())
     await saveClientFile.execute(uri)
 
     assert(
