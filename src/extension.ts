@@ -38,8 +38,8 @@ export async function activate(context: vscode.ExtensionContext) {
   )
 
   const cssFilesWatcher = watchCSSFiles({
-    saveFile: async (uri) => saveCssFileController.execute(uri),
-    deleteFile: async (uri) => deleteCssFileController.execute(uri),
+    onSaveFile: async (uri) => saveCssFileController.execute(uri),
+    onDeleteFile: async (uri) => deleteCssFileController.execute(uri),
   })
 
   context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
