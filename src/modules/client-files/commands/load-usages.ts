@@ -14,8 +14,7 @@ export class LoadUsages {
 
     await Promise.all(
       files.map(async (uri) => {
-        const document = await vscode.workspace.openTextDocument(uri)
-        const usages = this.parser.getUsagesFrom(document.fileName)
+        const usages = this.parser.getUsagesFrom(uri.fsPath)
 
         usages.forEach(({ name, start, end }) => {
           const cssClass = this.classes.get(name)
@@ -24,7 +23,7 @@ export class LoadUsages {
             cssClass.addUsage(
               new vscode.Location(
                 uri,
-                new vscode.Range(document.positionAt(start), document.positionAt(end))
+                new vscode.Range(start.line, start.column, end.line, end.column)
               )
             )
           }

@@ -1,17 +1,14 @@
-import { Project, SyntaxKind, type TemplateExpression } from "ts-morph"
+import { Project, SyntaxKind, type SourceFile, type TemplateExpression } from "ts-morph"
 
-type Usage = {
-  name: string
-  start: number
-  end: number
-}
+import type { Position, Usage } from "./client-file-parser"
 
 export class JsxParser {
   private project = new Project()
+  private sourceFile?: SourceFile
 
   getUsagesFrom(path: string): Usage[] {
-    const ast = this.project.addSourceFileAtPath(path)
-    const jsxAttributes = ast.getDescendantsOfKind(SyntaxKind.JsxAttribute)
+    this.sourceFile = this.project.addSourceFileAtPath(path)
+    const jsxAttributes = this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)
     const usages: Usage[] = []
 
     jsxAttributes.forEach((attr) => {
@@ -39,6 +36,11 @@ export class JsxParser {
     return usages
   }
 
+  private posAt(offset: number): Position {
+    const { line, column } = this.sourceFile!.getLineAndColumnAtPos(offset)
+    return { line: line - 1, column: column - 1 }
+  }
+
   private parseText(text: string, startOffset: number): Usage[] {
     const names = text.split(/\s+/)
     let offset = 0
@@ -50,7 +52,7 @@ export class JsxParser {
       const start = startOffset + idx + 1
       const end = start + name.length
 
-      usages.push({ name, start, end })
+      usages.push({ name, start: this.posAt(start), end: this.posAt(end) })
       offset = idx + name.length
     })
 
