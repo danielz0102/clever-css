@@ -3,7 +3,7 @@ import * as vscode from "vscode"
 import { parseCssClassSymbols } from "./modules/css-files/adapters/css-parser"
 import { DeleteCssFile } from "./modules/css-files/commands/delete-css-file/delete-css-file-command-handler"
 import { DeleteCssFileVsCodeController } from "./modules/css-files/commands/delete-css-file/delete-css-file-vscode-controller"
-import { findCSSFiles } from "./modules/css-files/commands/load-definitions/adapters/find-css-files"
+import { findCssFiles } from "./modules/css-files/commands/load-definitions/adapters/find-css-files"
 import { LoadDefinitions } from "./modules/css-files/commands/load-definitions/load-definitions-command-handler"
 import { SaveCssFile } from "./modules/css-files/commands/save-css-file/save-css-file-command-handler"
 import { SaveCssFileVsCodeController } from "./modules/css-files/commands/save-css-file/save-css-file-vscode-controller"
@@ -16,7 +16,7 @@ import { createFindReferencesProvider } from "./ui/references-provider"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
-  const loadDefinitions = new LoadDefinitions(index, findCSSFiles, parseCssClassSymbols)
+  const loadDefinitions = new LoadDefinitions(index, findCssFiles, parseCssClassSymbols)
   const getAll = new GetAllClasses(index)
 
   await loadDefinitions.execute()
