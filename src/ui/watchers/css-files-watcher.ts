@@ -1,9 +1,12 @@
 import * as vscode from "vscode"
 
-export function watchCSSFiles(
-  saveFile: (uri: vscode.Uri) => Promise<void>,
+export function watchCSSFiles({
+  saveFile,
+  deleteFile,
+}: {
+  saveFile: (uri: vscode.Uri) => Promise<void>
   deleteFile: (uri: vscode.Uri) => Promise<void>
-): vscode.FileSystemWatcher {
+}): vscode.FileSystemWatcher {
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
 
   watcher.onDidChange(saveFile)
