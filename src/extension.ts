@@ -23,13 +23,12 @@ import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
   const loadDefinitions = new LoadDefinitions(index, findCssFiles, parseCssClassSymbols)
-  const getAll = new GetAllClasses(index)
-
   await loadDefinitions.execute()
 
   const loadUsages = new LoadUsages(index, new JsxParser(), new VSCodeClientFileFinder())
   void loadUsages.execute()
 
+  const getAll = new GetAllClasses(index)
   const classDataProvider = new ClassTreeDataProvider(mapCssFiles(await getAll.execute()))
   const saveCssFileController = new SaveCssFileVsCodeController(
     new SaveCssFile(index, parseCssClassSymbols),
