@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import type { CssFileDto } from "../../modules/css-files/dtos/css-file-dto"
+import type { CssFileDto } from "../dtos/css-file-dto"
 
 export const UriMapper = {
   async toCssFileDto(uri: vscode.Uri): Promise<CssFileDto> {

@@ -2,19 +2,19 @@ import * as vscode from "vscode"
 
 import type { CssClassRecord } from "../../persistence/class-index"
 
-type CSSClass = {
+type CssClass = {
   name: string
   range: vscode.Range
 }
 
-export type CSSFile = {
+export type CssFile = {
   uri: vscode.Uri
-  classes: CSSClass[]
+  classes: CssClass[]
 }
 
-export type FilesIndex = Map<string, CSSFile>
+export type FilesIndex = Map<string, CssFile>
 
-export function mapCSSFiles(records: CssClassRecord[]): FilesIndex {
+export function mapCssFiles(records: CssClassRecord[]): FilesIndex {
   const files: FilesIndex = new Map()
 
   records.forEach((record) => {
