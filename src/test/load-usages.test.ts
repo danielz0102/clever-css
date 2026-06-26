@@ -3,7 +3,7 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { CSSClassRepository } from "../domain/css-class-repository"
-import { LoadUsages } from "../modules/client-files/use-cases/load-usages"
+import { LoadUsages } from "../modules/client-files/commands/load-usages"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
 suite("LoadUsages", () => {

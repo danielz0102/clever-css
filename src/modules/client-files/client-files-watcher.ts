@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
 
 import type { CSSClassRepository } from "../../domain/css-class-repository"
-import { DeleteClientFile } from "./use-cases/delete-client-file"
-import { SaveClientFile } from "./use-cases/save-client-file"
+import { DeleteClientFile } from "./commands/delete-client-file"
+import { SaveClientFile } from "./commands/save-client-file"
 
 export function createClientFilesWatcher(repo: CSSClassRepository) {
   const saveClientFile = new SaveClientFile(repo)
