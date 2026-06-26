@@ -2,7 +2,7 @@ import assert from "node:assert"
 
 import type { ClientFileFinder } from "../modules/client-files/adapters/client-file-finder/client-file-finder"
 import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
-import { LoadUsagesV2 } from "../modules/client-files/commands/load-usages"
+import { LoadUsages } from "../modules/client-files/commands/load-usages"
 import type { CssClassIndex, CssClassRecord } from "../persistence/class-index"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
@@ -24,7 +24,7 @@ suite("LoadUsages", () => {
       find: () => Promise.resolve([file1.fsPath, file2.fsPath]),
     }
 
-    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
     await loadUsages.execute()
 
     const record = index.get("my-class")
@@ -40,7 +40,7 @@ suite("LoadUsages", () => {
       find: () => Promise.resolve([]),
     }
 
-    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
     await loadUsages.execute()
 
     const record = index.get("unused-class")
@@ -61,7 +61,7 @@ suite("LoadUsages", () => {
       find: () => Promise.resolve([file.fsPath]),
     }
 
-    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
     await loadUsages.execute()
 
     const record = index.get("button")
@@ -82,7 +82,7 @@ suite("LoadUsages", () => {
       find: () => Promise.resolve([file.fsPath]),
     }
 
-    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
     await loadUsages.execute()
 
     const classOne = index.get("class-one")
@@ -113,7 +113,7 @@ suite("LoadUsages", () => {
       find: () => Promise.resolve([file.fsPath]),
     }
 
-    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
     await loadUsages.execute()
 
     const record = index.get("duplicate-class")
@@ -137,7 +137,7 @@ suite("LoadUsages", () => {
       find: () => Promise.resolve([file.fsPath]),
     }
 
-    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
     await loadUsages.execute()
 
     const record = index.get("my-class")
@@ -159,7 +159,7 @@ suite("LoadUsages", () => {
       find: () => Promise.resolve([file.fsPath]),
     }
 
-    const loadUsages = new LoadUsagesV2(index, new JsxParser(), finder)
+    const loadUsages = new LoadUsages(index, new JsxParser(), finder)
     await loadUsages.execute()
 
     const myClass = index.get("my-class")

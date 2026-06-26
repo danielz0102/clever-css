@@ -1,11 +1,9 @@
-import * as vscode from "vscode"
-
-import type { CSSClassRepository } from "../../../domain/css-class-repository"
+import type { CssClassIndex } from "../../../persistence/class-index"
 
 export class DeleteClientFile {
-  constructor(private _classes: CSSClassRepository) {}
+  constructor(private _index: CssClassIndex) {}
 
-  async execute(_uri: vscode.Uri): Promise<void> {
+  async execute(_uri: string): Promise<void> {
     throw new Error("Not implemented yet.")
   }
 }

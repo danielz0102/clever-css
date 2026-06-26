@@ -1,7 +1,7 @@
 import assert from "node:assert"
 
 import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
-import { SaveClientFileV2 } from "../modules/client-files/commands/save-client-file"
+import { SaveClientFile } from "../modules/client-files/commands/save-client-file"
 import type { CssClassIndex } from "../persistence/class-index"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
@@ -46,7 +46,7 @@ suite("SaveClientFileV2", () => {
       `<div className="my-class other-class">`
     )
 
-    const saveClientFile = new SaveClientFileV2(index, new JsxParser())
+    const saveClientFile = new SaveClientFile(index, new JsxParser())
     await saveClientFile.execute(uri.fsPath)
 
     const myClassUsages = index.get("my-class")!.usages
@@ -85,7 +85,7 @@ suite("SaveClientFileV2", () => {
 
     const uri = await workspace.createFile("component.tsx", `<div className={\`my-class\`}>`)
 
-    const saveClientFile = new SaveClientFileV2(index, new JsxParser())
+    const saveClientFile = new SaveClientFile(index, new JsxParser())
     await saveClientFile.execute(uri.fsPath)
 
     assert(
