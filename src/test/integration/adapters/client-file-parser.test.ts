@@ -1,7 +1,7 @@
 import assert from "node:assert"
 
-import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
-import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
+import { JsxParser } from "../../../modules/client-files/adapters/parsers/jsx-parser"
+import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
 suite("JsxParser", () => {
   const workspace = new TemporalWorkspaceFixture()
@@ -82,9 +82,6 @@ suite("JsxParser", () => {
     assert(myClassUsages.length === 1, `Expected 1 usage, found ${myClassUsages.length}`)
 
     const anotherClassUsages = usages.filter((u) => u.name === "another-class")
-    assert(
-      anotherClassUsages.length === 1,
-      `Expected 1 usage, found ${anotherClassUsages.length}`
-    )
+    assert(anotherClassUsages.length === 1, `Expected 1 usage, found ${anotherClassUsages.length}`)
   })
 })

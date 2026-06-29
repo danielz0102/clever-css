@@ -1,8 +1,8 @@
 import assert from "node:assert"
 
-import type { ClientFileParser } from "../modules/client-files/adapters/parsers/client-file-parser"
-import { SaveClientFile } from "../modules/client-files/commands/save-client-file"
-import type { CssClassIndex } from "../persistence/class-index"
+import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
+import { SaveClientFile } from "../../../modules/client-files/commands/save-client-file"
+import type { CssClassIndex } from "../../../persistence/class-index"
 
 suite("SaveClientFile", () => {
   test("loads all usages found", async () => {

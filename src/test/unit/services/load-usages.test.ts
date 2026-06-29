@@ -1,9 +1,9 @@
 import assert from "node:assert"
 
-import type { ClientFilesFinder } from "../modules/client-files/adapters/find-client-files"
-import type { ClientFileParser } from "../modules/client-files/adapters/parsers/client-file-parser"
-import { LoadUsages } from "../modules/client-files/commands/load-usages"
-import type { CssClassIndex, CssClassRecord } from "../persistence/class-index"
+import type { ClientFilesFinder } from "../../../modules/client-files/adapters/find-client-files"
+import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
+import { LoadUsages } from "../../../modules/client-files/commands/load-usages"
+import type { CssClassIndex, CssClassRecord } from "../../../persistence/class-index"
 
 suite("LoadUsages", () => {
   test("loads usages for all classes in the repository", async () => {
