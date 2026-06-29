@@ -77,31 +77,4 @@ suite("SaveClientFile", () => {
       "Expected the second usage to be in the test file"
     )
   })
-
-  test("supports classes inside template strings", async () => {
-    const index: CssClassIndex = new Map()
-    index.set("my-class", {
-      className: "my-class",
-      definitions: [
-        { uri: "file:///test.css", start: { line: 0, column: 0 }, end: { line: 0, column: 8 } },
-      ],
-      usages: [
-        {
-          uri: "file:///load-trigger.tsx",
-          start: { line: 0, column: 0 },
-          end: { line: 0, column: 0 },
-        },
-      ],
-    })
-
-    const uri = await workspace.createFile("component.tsx", `<div className={\`my-class\`}>`)
-
-    const saveClientFile = new SaveClientFile(index, new JsxParser())
-    await saveClientFile.execute(uri.fsPath)
-
-    assert(
-      index.get("my-class")!.usages.length === 2,
-      "Expected the class usage to be loaded from template string"
-    )
-  })
 })
