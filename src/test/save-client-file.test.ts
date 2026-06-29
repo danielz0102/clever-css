@@ -5,7 +5,7 @@ import { SaveClientFile } from "../modules/client-files/commands/save-client-fil
 import type { CssClassIndex } from "../persistence/class-index"
 import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
-suite("SaveClientFileV2", () => {
+suite("SaveClientFile", () => {
   const workspace = new TemporalWorkspaceFixture()
 
   teardown(async () => {
@@ -13,33 +13,44 @@ suite("SaveClientFileV2", () => {
   })
 
   test("loads all classes found", async () => {
-    const index: CssClassIndex = new Map()
-    index.set("my-class", {
-      className: "my-class",
-      definitions: [
-        { uri: "file:///test.css", start: { line: 0, column: 0 }, end: { line: 0, column: 8 } },
-      ],
-      usages: [
+    const index: CssClassIndex = new Map([
+      [
+        "my-class",
         {
-          uri: "file:///load-trigger.tsx",
-          start: { line: 0, column: 0 },
-          end: { line: 0, column: 0 },
+          className: "my-class",
+          definitions: [
+            {
+              uri: "file:///test.css",
+              start: { line: 0, column: 0 },
+              end: { line: 0, column: 8 },
+            },
+          ],
+          usages: [
+            {
+              uri: "file:///load-trigger.tsx",
+              start: { line: 0, column: 0 },
+              end: { line: 0, column: 0 },
+            },
+          ],
         },
       ],
-    })
-    index.set("other-class", {
-      className: "other-class",
-      definitions: [
-        { uri: "file:///test.css", start: { line: 1, column: 0 }, end: { line: 1, column: 8 } },
-      ],
-      usages: [
+      [
+        "other-class",
         {
-          uri: "file:///load-trigger.tsx",
-          start: { line: 0, column: 0 },
-          end: { line: 0, column: 0 },
+          className: "other-class",
+          definitions: [
+            { uri: "file:///test.css", start: { line: 1, column: 0 }, end: { line: 1, column: 8 } },
+          ],
+          usages: [
+            {
+              uri: "file:///load-trigger.tsx",
+              start: { line: 0, column: 0 },
+              end: { line: 0, column: 0 },
+            },
+          ],
         },
       ],
-    })
+    ])
 
     const uri = await workspace.createFile(
       "component.tsx",
