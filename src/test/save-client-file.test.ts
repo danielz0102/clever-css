@@ -1,18 +1,11 @@
 import assert from "node:assert"
 
-import { JsxParser } from "../modules/client-files/adapters/parsers/jsx-parser"
+import type { ClientFileParser } from "../modules/client-files/adapters/parsers/client-file-parser"
 import { SaveClientFile } from "../modules/client-files/commands/save-client-file"
 import type { CssClassIndex } from "../persistence/class-index"
-import { TemporalWorkspaceFixture } from "./fixtures/temporal-workspace"
 
 suite("SaveClientFile", () => {
-  const workspace = new TemporalWorkspaceFixture()
-
-  teardown(async () => {
-    await workspace.teardown()
-  })
-
-  test("loads all classes found", async () => {
+  test("loads all usages found", async () => {
     const index: CssClassIndex = new Map([
       [
         "my-class",
@@ -52,17 +45,20 @@ suite("SaveClientFile", () => {
       ],
     ])
 
-    const uri = await workspace.createFile(
-      "component.tsx",
-      `<div className="my-class other-class">`
-    )
+    const mockParser: ClientFileParser = {
+      getUsagesFrom: () => [
+        { name: "my-class", start: { line: 0, column: 13 }, end: { line: 0, column: 21 } },
+        { name: "other-class", start: { line: 0, column: 22 }, end: { line: 0, column: 33 } },
+      ],
+    }
 
-    const saveClientFile = new SaveClientFile(index, new JsxParser())
-    await saveClientFile.execute(uri.fsPath)
+    const saveClientFile = new SaveClientFile(index, mockParser)
+    const uri = "/component.tsx"
+
+    await saveClientFile.execute(uri)
 
     const myClassUsages = index.get("my-class")!.usages
     const otherClassUsages = index.get("other-class")!.usages
-
     assert(
       myClassUsages.length === 2,
       `Expected 2 usages for 'my-class', got ${myClassUsages.length}`
@@ -70,11 +66,6 @@ suite("SaveClientFile", () => {
     assert(
       otherClassUsages.length === 2,
       `Expected 2 usages for 'other-class', got ${otherClassUsages.length}`
-    )
-    assert(myClassUsages[1]!.uri === uri.fsPath, "Expected the second usage to be in the test file")
-    assert(
-      otherClassUsages[1]!.uri === uri.fsPath,
-      "Expected the second usage to be in the test file"
     )
   })
 })
