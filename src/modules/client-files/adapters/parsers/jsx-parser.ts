@@ -1,8 +1,8 @@
 import { Project, SyntaxKind, type SourceFile, type TemplateExpression } from "ts-morph"
 
-import type { Position, Usage } from "./client-file-parser"
+import type { ClientFileParser, Position, Usage } from "./client-file-parser"
 
-export class JsxParser {
+export class JsxParser implements ClientFileParser {
   private project = new Project()
   private sourceFile?: SourceFile
 
