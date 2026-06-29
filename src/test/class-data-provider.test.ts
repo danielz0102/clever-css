@@ -3,6 +3,7 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { ClassTreeDataProvider } from "../ui/providers/class-tree/class-tree-data-provider"
+import type { FilesIndex } from "../ui/providers/class-tree/css-file-data"
 
 suite("ClassDataProvider", () => {
   test("loads all CSS files and their classes", async () => {
@@ -35,7 +36,7 @@ suite("ClassDataProvider", () => {
   })
 
   test("refreshes data when new classes are added", async () => {
-    const index = new Map([
+    const index: FilesIndex = new Map([
       [
         "file:///test.css",
         {
@@ -56,18 +57,9 @@ suite("ClassDataProvider", () => {
 
     assert(classItems.length === 1, `Expected 1 class, got ${classItems.length}`)
 
-    index.set("file:///test.css", {
-      uri: vscode.Uri.parse("file:///test.css"),
-      classes: [
-        {
-          name: "test-class1",
-          range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 12)),
-        },
-        {
-          name: "test-class2",
-          range: new vscode.Range(new vscode.Position(1, 0), new vscode.Position(1, 12)),
-        },
-      ],
+    index.get("file:///test.css")?.classes.push({
+      name: "test-class2",
+      range: new vscode.Range(new vscode.Position(1, 0), new vscode.Position(1, 12)),
     })
     provider.refresh(index)
 
