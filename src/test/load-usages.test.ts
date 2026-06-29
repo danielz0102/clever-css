@@ -25,8 +25,7 @@ suite("LoadUsages", () => {
   })
 
   test("does not load usages for classes that are not used", async () => {
-    const index: CssClassIndex = new Map()
-    index.set("unused-class", makeRecord("unused-class"))
+    const index: CssClassIndex = new Map([["unused-class", makeRecord("unused-class")]])
 
     const mockParser: ClientFileParser = {
       getUsagesFrom: () => [
@@ -39,6 +38,27 @@ suite("LoadUsages", () => {
     await loadUsages.execute()
 
     const record = index.get("unused-class")
+    assert(record !== undefined)
+    assert(record.usages.length === 0, `Expected 0 usages, found ${record.usages.length}`)
+  })
+
+  test("set usages to 0 if there are no usages", async () => {
+    const index: CssClassIndex = new Map([["my-class", makeRecord("my-class")]])
+    index.get("my-class")!.usages.push({
+      uri: "file:///ex-client.tsx",
+      start: { line: 0, column: 0 },
+      end: { line: 0, column: 8 },
+    })
+
+    const mockParser: ClientFileParser = {
+      getUsagesFrom: () => [],
+    }
+    const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
+
+    const loadUsages = new LoadUsages(index, mockParser, findFiles)
+    await loadUsages.execute()
+
+    const record = index.get("my-class")
     assert(record !== undefined)
     assert(record.usages.length === 0, `Expected 0 usages, found ${record.usages.length}`)
   })
