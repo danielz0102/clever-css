@@ -10,12 +10,13 @@ export class LoadDefinitions {
   ) {}
 
   async execute(): Promise<void> {
+    this.index.clear()
+
     const files = await this.findCssFiles()
     const symbols = (await Promise.all(files.map(this.parseFile))).flat()
 
     symbols.forEach(({ className, location, uri }) => {
       const record = this.index.get(className)
-
       if (record) {
         record.definitions.push({
           uri,
