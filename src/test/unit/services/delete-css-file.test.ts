@@ -49,12 +49,11 @@ suite("DeleteCssFile", () => {
 
     const record = index.get(testClass)
     assert(record !== undefined, `Expected '${testClass}' to remain in the index`)
-    assert.strictEqual(
-      record.definitions.length,
-      1,
+    assert(
+      record.definitions.length === 1,
       `Expected 1 remaining definition, got ${record.definitions.length}`
     )
-    assert.strictEqual(record.definitions[0]?.uri, "file:///other.css")
+    assert(record.definitions[0]?.uri === "file:///other.css")
   })
 
   test("removes classes from the index if they have no definitions left", async () => {
