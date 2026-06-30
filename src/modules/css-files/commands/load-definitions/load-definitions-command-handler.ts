@@ -17,22 +17,18 @@ export class LoadDefinitions {
 
     symbols.forEach(({ className, location, uri }) => {
       const record = this.index.get(className)
+      const newDefinition = {
+        uri,
+        start: location.start,
+        end: location.end,
+      }
+
       if (record) {
-        record.definitions.push({
-          uri,
-          start: location.start,
-          end: location.end,
-        })
+        record.definitions.push(newDefinition)
       } else {
         this.index.set(className, {
           className: className,
-          definitions: [
-            {
-              uri,
-              start: location.start,
-              end: location.end,
-            },
-          ],
+          definitions: [newDefinition],
           usages: [],
         })
       }

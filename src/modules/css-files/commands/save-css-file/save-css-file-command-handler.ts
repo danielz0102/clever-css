@@ -1,4 +1,4 @@
-import type { CssClassIndex } from "../../../../persistence/class-index"
+import type { CssClassIndex, EditorLocation } from "../../../../persistence/class-index"
 import { type CssClassParser } from "../../adapters/css-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 
@@ -23,23 +23,18 @@ export class SaveCssFile {
 
     symbols.forEach(({ className, location }) => {
       const record = this.index.get(className)
+      const newDefinition: EditorLocation = {
+        uri: file.uri,
+        start: location.start,
+        end: location.end,
+      }
 
       if (record) {
-        record.definitions.push({
-          uri: file.uri,
-          start: location.start,
-          end: location.end,
-        })
+        record.definitions.push(newDefinition)
       } else {
         this.index.set(className, {
           className,
-          definitions: [
-            {
-              uri: file.uri,
-              start: location.start,
-              end: location.end,
-            },
-          ],
+          definitions: [newDefinition],
           usages: [],
         })
       }
