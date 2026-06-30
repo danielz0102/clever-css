@@ -10,13 +10,39 @@ export class SaveCssFile {
 
   async execute(file: CssFileDto): Promise<void> {
     const symbols = await this.parseSymbols(file.content)
-    const foundClasses = symbols.map((c) => c.className)
 
     Array.from(this.index.entries())
-      .filter(([_, record]) => record.definitions.some((def) => def.uri === file.uri))
-      .filter(([className]) => !foundClasses.includes(className))
+      .filter(([_, record]) => record.definitions.some((d) => d.uri === file.uri))
       .forEach(([_, record]) => {
-        record.definitions = record.definitions.filter((def) => def.uri !== file.uri)
+        record.definitions = record.definitions.filter((d) => d.uri !== file.uri)
+
+        if (record.definitions.length === 0) {
+          this.index.delete(record.className)
+        }
       })
+
+    symbols.forEach(({ className, location }) => {
+      const record = this.index.get(className)
+
+      if (record) {
+        record.definitions.push({
+          uri: file.uri,
+          start: location.start,
+          end: location.end,
+        })
+      } else {
+        this.index.set(className, {
+          className,
+          definitions: [
+            {
+              uri: file.uri,
+              start: location.start,
+              end: location.end,
+            },
+          ],
+          usages: [],
+        })
+      }
+    })
   }
 }
