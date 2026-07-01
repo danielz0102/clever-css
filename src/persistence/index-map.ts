@@ -1,13 +1,9 @@
-export type LocationModel = {
-  uri: string
-  start: { line: number; column: number }
-  end: { line: number; column: number }
-}
+import type { Location } from "../domain/location"
 
 export type CssClassModel = {
   className: string
-  definitions: LocationModel[]
-  usages: LocationModel[]
+  definitions: Location[]
+  usages: Location[]
 }
 
 export const index = new Map<string, CssClassModel>()

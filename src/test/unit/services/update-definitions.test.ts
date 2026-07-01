@@ -2,14 +2,15 @@ import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { CssClassSymbol } from "../../../adapters/css-parser"
+import type { Location } from "../../../domain/location"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
-import type { IndexMap, LocationModel } from "../../../persistence/index-map"
+import type { IndexMap } from "../../../persistence/index-map"
 
 suite("UpdateDefinitions", () => {
   const TEST_URI = "file:///test.css"
   const OTHER_URI = "file:///other.css"
 
-  function makeLocation(uri: string, line: number, column: number): LocationModel {
+  function makeLocation(uri: string, line: number, column: number): Location {
     return {
       uri,
       start: { line, column },
