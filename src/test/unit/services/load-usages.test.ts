@@ -1,76 +1,44 @@
 import assert from "node:assert"
 
-import type { ClientFileParser } from "../../../adapters/client-file-parsers/client-file-parser-port"
-import { CssClassIndex } from "../../../adapters/css-class-index"
-import type { ClientFilesFinder } from "../../../features/load-all-usages/find-client-files-adapter"
-import { LoadAllUsages } from "../../../features/load-all-usages/load-all-usages-command-handler"
-import type { IndexMap, CssClassModel } from "../../../persistence/index-map"
+import { LoadAllUsagesContextBuilder } from "../../fixtures/builders/load-all-usages-context-builder"
 
 suite("LoadUsages", () => {
   test("loads usages for all classes in the repository", async () => {
-    const index: IndexMap = new Map([["my-class", makeRecord("my-class")]])
+    const { index, command } = new LoadAllUsagesContextBuilder()
+      .withClasses(["my-class"])
+      .withUsages(["my-class", "my-class"])
+      .build()
 
-    const mockParser: ClientFileParser = {
-      getUsagesFrom: () => [
-        { name: "my-class", start: { line: 0, column: 0 }, end: { line: 0, column: 8 } },
-      ],
-    }
-    const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
+    await command.execute()
 
-    const loadUsages = new LoadAllUsages(new CssClassIndex(index), mockParser, findFiles)
-    await loadUsages.execute()
-
-    const record = index.get("my-class")
-    assert(record !== undefined)
-    assert(record.usages.length === 2, `Expected 2 usages, found ${record.usages.length}`)
+    const myClass = index.get("my-class")
+    assert(myClass !== undefined)
+    assert(myClass.usages.length === 2, `Expected 2 usages, found ${myClass.usages.length}`)
   })
 
   test("does not load usages for classes that are not used", async () => {
-    const index: IndexMap = new Map([["unused-class", makeRecord("unused-class")]])
+    const { index, command } = new LoadAllUsagesContextBuilder()
+      .withClasses(["unused-class"])
+      .withUsages(["some-other-class"])
+      .build()
 
-    const mockParser: ClientFileParser = {
-      getUsagesFrom: () => [
-        { name: "some-other-class", start: { line: 0, column: 0 }, end: { line: 0, column: 8 } },
-      ],
-    }
-    const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
+    await command.execute()
 
-    const loadUsages = new LoadAllUsages(new CssClassIndex(index), mockParser, findFiles)
-    await loadUsages.execute()
-
-    const record = index.get("unused-class")
-    assert(record !== undefined)
-    assert(record.usages.length === 0, `Expected 0 usages, found ${record.usages.length}`)
+    const unusedClass = index.get("unused-class")
+    assert(unusedClass !== undefined)
+    assert(unusedClass.usages.length === 0, `Expected 0 usages, found ${unusedClass.usages.length}`)
   })
 
   test("set usages to 0 if there are no usages", async () => {
-    const index: IndexMap = new Map([["my-class", makeRecord("my-class")]])
-    index.get("my-class")!.usages.push({
-      uri: "file:///ex-client.tsx",
-      start: { line: 0, column: 0 },
-      end: { line: 0, column: 8 },
-    })
+    const { command, index } = new LoadAllUsagesContextBuilder()
+      .withClasses(["my-class"])
+      .withInitialUsages(["my-class"])
+      .build()
 
-    const mockParser: ClientFileParser = {
-      getUsagesFrom: () => [],
-    }
-    const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
-
-    const loadUsages = new LoadAllUsages(new CssClassIndex(index), mockParser, findFiles)
-    await loadUsages.execute()
+    await command.execute()
 
     const record = index.get("my-class")
     assert(record !== undefined)
     assert(record.usages.length === 0, `Expected 0 usages, found ${record.usages.length}`)
   })
 })
-
-function makeRecord(className: string): CssClassModel {
-  return {
-    className,
-    definitions: [
-      { uri: "file:///test.css", start: { line: 0, column: 0 }, end: { line: 0, column: 8 } },
-    ],
-    usages: [],
-  }
-}
