@@ -1,8 +1,8 @@
 import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
+import type { ClientFilesFinder } from "../../../features/load-all-usages/find-client-files-adapter"
 import { LoadAllUsages } from "../../../features/load-all-usages/load-all-usages-command-handler"
-import type { ClientFilesFinder } from "../../../modules/client-files/adapters/find-client-files"
 import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
 import type { IndexMap, CssClassModel } from "../../../persistence/class-index"
 
