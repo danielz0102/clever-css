@@ -1,10 +1,5 @@
-import type { Location } from "../../domain/location"
-
-export type UsageSymbol = {
-  className: string
-  location: Location
-}
+import type { Symbol } from "../../dtos/symbol-dto"
 
 export interface ClientFileParser {
-  getUsagesFrom(uri: string): UsageSymbol[]
+  getUsagesFrom(uri: string): Symbol[]
 }

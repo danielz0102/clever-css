@@ -1,16 +1,17 @@
 import { Project, SyntaxKind, type SourceFile, type TemplateExpression } from "ts-morph"
 
 import type { Position } from "../../domain/location"
-import type { ClientFileParser, UsageSymbol } from "./client-file-parser-port"
+import type { Symbol } from "../../dtos/symbol-dto"
+import type { ClientFileParser } from "./client-file-parser-port"
 
 export class JsxParser implements ClientFileParser {
   private project = new Project()
   private sourceFile?: SourceFile
 
-  getUsagesFrom(uri: string): UsageSymbol[] {
+  getUsagesFrom(uri: string): Symbol[] {
     this.sourceFile = this.project.addSourceFileAtPath(uri)
     const jsxAttributes = this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    const usages: UsageSymbol[] = []
+    const usages: Symbol[] = []
 
     jsxAttributes.forEach((attr) => {
       if (attr.getNameNode().getText() !== "className") return
@@ -42,11 +43,11 @@ export class JsxParser implements ClientFileParser {
     return { line: line - 1, column: column - 1 }
   }
 
-  private parseText(text: string, startOffset: number): UsageSymbol[] {
+  private parseText(text: string, startOffset: number): Symbol[] {
     const names = text.split(/\s+/)
     let offset = 0
 
-    const usages: UsageSymbol[] = []
+    const usages: Symbol[] = []
 
     names.forEach((name) => {
       const idx = text.indexOf(name, offset)
@@ -67,8 +68,8 @@ export class JsxParser implements ClientFileParser {
     return usages
   }
 
-  private parseTemplateExpression(expression: TemplateExpression): UsageSymbol[] {
-    const usages: UsageSymbol[] = []
+  private parseTemplateExpression(expression: TemplateExpression): Symbol[] {
+    const usages: Symbol[] = []
 
     const head = expression.getHead()
     usages.push(...this.parseText(head.getLiteralText(), head.getStart()))

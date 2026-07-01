@@ -1,5 +1,5 @@
 import { CssClassIndex } from "../../../adapters/css-class-index"
-import type { CssClassSymbol } from "../../../adapters/css-parser"
+import type { Symbol } from "../../../dtos/symbol-dto"
 import { LoadDefinitions } from "../../../features/load-definitions/load-definitions-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
 
@@ -10,7 +10,7 @@ type LoadDefinitionsTestContext = {
 
 export class LoadDefinitionsTestContextBuilder {
   private index: IndexMap = new Map()
-  private definitions: CssClassSymbol[] = []
+  private definitions: Symbol[] = []
 
   withClasses(classNames: string[]): LoadDefinitionsTestContextBuilder {
     for (const className of classNames) {

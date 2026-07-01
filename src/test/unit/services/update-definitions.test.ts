@@ -1,9 +1,9 @@
 import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
-import type { CssClassSymbol } from "../../../adapters/css-parser"
 import type { Location } from "../../../domain/location"
 import type { CssFileDto } from "../../../dtos/css-file-dto"
+import type { Symbol } from "../../../dtos/symbol-dto"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
 
@@ -19,7 +19,7 @@ suite("UpdateDefinitions", () => {
     }
   }
 
-  function makeSymbol(className: string, line: number, column: number, uri: string): CssClassSymbol {
+  function makeSymbol(className: string, line: number, column: number, uri: string): Symbol {
     return {
       className,
       location: {

@@ -1,11 +1,11 @@
 import type { CssClassIndex } from "../../adapters/css-class-index"
-import { type CssClassSymbol } from "../../adapters/css-parser"
 import { CssClass } from "../../domain/css-class"
+import type { Symbol } from "../../dtos/symbol-dto"
 
 export class LoadDefinitions {
   constructor(
     private classes: CssClassIndex,
-    private parseAllSymbols: () => Promise<CssClassSymbol[]>
+    private parseAllSymbols: () => Promise<Symbol[]>
   ) {}
 
   async execute(): Promise<void> {

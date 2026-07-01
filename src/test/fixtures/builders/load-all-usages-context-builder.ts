@@ -1,5 +1,5 @@
-import type { UsageSymbol } from "../../../adapters/client-file-parsers/client-file-parser-port"
 import { CssClassIndex } from "../../../adapters/css-class-index"
+import type { Symbol } from "../../../dtos/symbol-dto"
 import { LoadAllUsages } from "../../../features/load-all-usages/load-all-usages-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
 
@@ -10,7 +10,7 @@ type LoadAllUsagesTestContext = {
 
 export class LoadAllUsagesContextBuilder {
   private index: IndexMap = new Map()
-  private usages: UsageSymbol[] = []
+  private usages: Symbol[] = []
 
   withClasses(classNames: string[]): LoadAllUsagesContextBuilder {
     for (const className of classNames) {
