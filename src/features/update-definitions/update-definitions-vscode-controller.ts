@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { uriToCssFileDto } from "../../modules/css-files/dtos/css-file-dto"
+import { uriToCssFileDto } from "../../dtos/css-file-dto"
 import type { ClassTreeDataProvider } from "../../ui/providers/class-tree/class-tree-data-provider"
 import { mapCssFiles } from "../../ui/providers/class-tree/css-file-data"
 import type { GetAllClasses } from "../get-all-classes/get-all-classes-query-handler"
