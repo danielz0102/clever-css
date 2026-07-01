@@ -1,4 +1,4 @@
-import type { CssClassModel, IndexMap } from "../../persistence/class-index"
+import type { CssClassModel, IndexMap } from "../../persistence/index-map"
 
 export class GetAllClasses {
   constructor(private index: IndexMap) {}

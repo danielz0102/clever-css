@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import type { CssClassModel } from "../../../persistence/class-index"
+import type { CssClassModel } from "../../../persistence/index-map"
 
 type CssClass = {
   name: string

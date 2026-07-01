@@ -16,7 +16,7 @@ import { UpdateDefinitionsVsCodeController } from "./features/update-definitions
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
 import { JsxParser } from "./modules/client-files/adapters/parsers/jsx-parser"
 import { parseCssClassSymbols } from "./modules/css-files/adapters/css-parser"
-import { index } from "./persistence/class-index"
+import { index } from "./persistence/index-map"
 import { openLocation } from "./ui/commands/open-location"
 import { ClassTreeDataProvider } from "./ui/providers/class-tree/class-tree-data-provider"
 import { mapCssFiles } from "./ui/providers/class-tree/css-file-data"

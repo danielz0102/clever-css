@@ -4,7 +4,7 @@ import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { ClientFilesFinder } from "../../../features/load-all-usages/find-client-files-adapter"
 import { LoadAllUsages } from "../../../features/load-all-usages/load-all-usages-command-handler"
 import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
-import type { IndexMap, CssClassModel } from "../../../persistence/class-index"
+import type { IndexMap, CssClassModel } from "../../../persistence/index-map"
 
 suite("LoadUsages", () => {
   test("loads usages for all classes in the repository", async () => {

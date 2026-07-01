@@ -3,7 +3,7 @@ import assert from "node:assert"
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import { LoadDefinitions } from "../../../features/load-definitions/load-definitions-command-handler"
 import type { CssClassSymbol } from "../../../modules/css-files/adapters/css-parser"
-import type { IndexMap, CssClassModel, LocationModel } from "../../../persistence/class-index"
+import type { IndexMap, CssClassModel, LocationModel } from "../../../persistence/index-map"
 
 suite("LoadDefinitions", () => {
   const FILE_A = "file:///a.css"

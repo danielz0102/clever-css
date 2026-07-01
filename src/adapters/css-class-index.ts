@@ -1,6 +1,6 @@
 import { CssClass } from "../domain/css-class"
 import type { CssClassRepository } from "../domain/css-class-repository"
-import type { CssClassModel, IndexMap } from "../persistence/class-index"
+import type { CssClassModel, IndexMap } from "../persistence/index-map"
 
 export class CssClassIndex implements CssClassRepository {
   constructor(private index: IndexMap) {}
