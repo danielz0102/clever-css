@@ -1,18 +1,14 @@
 import * as csstree from "css-tree"
 
+import type { Position } from "../domain/location"
+
 export type CssClassParser = (content: string) => Promise<CssClassSymbol[]>
 
 export type CssClassSymbol = {
   className: string
   location: {
-    start: {
-      line: number
-      column: number
-    }
-    end: {
-      line: number
-      column: number
-    }
+    start: Position
+    end: Position
   }
 }
 
