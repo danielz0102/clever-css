@@ -1,7 +1,7 @@
-import type { CssClassRepository } from "../../domain/css-class-repository"
+import type { CssClassIndex } from "../../adapters/css-class-index"
 
 export class DeleteDefinitions {
-  constructor(private classes: CssClassRepository) {}
+  constructor(private classes: CssClassIndex) {}
 
   async execute(uri: string): Promise<void> {
     const classes = await this.classes.getFromDefinitionUri(uri)

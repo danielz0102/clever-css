@@ -1,11 +1,11 @@
+import type { CssClassIndex } from "../../adapters/css-class-index"
 import type { CssClassParser } from "../../adapters/css-parser"
 import { CssClass } from "../../domain/css-class"
-import type { CssClassRepository } from "../../domain/css-class-repository"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 
 export class UpdateDefinitions {
   constructor(
-    private classes: CssClassRepository,
+    private classes: CssClassIndex,
     private parseSymbols: CssClassParser
   ) {}
 

@@ -2,12 +2,12 @@ import type {
   ClientFileParser,
   Usage,
 } from "../../adapters/client-file-parsers/client-file-parser-port"
+import type { CssClassIndex } from "../../adapters/css-class-index"
 import { CssClass } from "../../domain/css-class"
-import type { CssClassRepository } from "../../domain/css-class-repository"
 
 export class UpdateUsages {
   constructor(
-    private classes: CssClassRepository,
+    private classes: CssClassIndex,
     private parser: ClientFileParser
   ) {}
 

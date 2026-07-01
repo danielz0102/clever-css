@@ -1,8 +1,7 @@
 import { CssClass } from "../domain/css-class"
-import type { CssClassRepository } from "../domain/css-class-repository"
 import type { CssClassModel, IndexMap } from "../persistence/index-map"
 
-export class CssClassIndex implements CssClassRepository {
+export class CssClassIndex {
   constructor(private index: IndexMap) {}
 
   async findOne(className: string): Promise<CssClass | undefined> {

@@ -2,13 +2,13 @@ import type {
   ClientFileParser,
   Usage,
 } from "../../adapters/client-file-parsers/client-file-parser-port"
+import type { CssClassIndex } from "../../adapters/css-class-index"
 import { CssClass } from "../../domain/css-class"
-import type { CssClassRepository } from "../../domain/css-class-repository"
 import type { ClientFilesFinder } from "./find-client-files-adapter"
 
 export class LoadAllUsages {
   constructor(
-    private classes: CssClassRepository,
+    private classes: CssClassIndex,
     private parser: ClientFileParser,
     private findFiles: ClientFilesFinder
   ) {}
