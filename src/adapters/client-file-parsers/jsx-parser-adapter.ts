@@ -1,15 +1,16 @@
 import { Project, SyntaxKind, type SourceFile, type TemplateExpression } from "ts-morph"
 
-import type { ClientFileParser, Position, Usage } from "./client-file-parser-port"
+import type { Position } from "../../domain/location"
+import type { ClientFileParser, UsageSymbol } from "./client-file-parser-port"
 
 export class JsxParser implements ClientFileParser {
   private project = new Project()
   private sourceFile?: SourceFile
 
-  getUsagesFrom(path: string): Usage[] {
-    this.sourceFile = this.project.addSourceFileAtPath(path)
+  getUsagesFrom(uri: string): UsageSymbol[] {
+    this.sourceFile = this.project.addSourceFileAtPath(uri)
     const jsxAttributes = this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    const usages: Usage[] = []
+    const usages: UsageSymbol[] = []
 
     jsxAttributes.forEach((attr) => {
       if (attr.getNameNode().getText() !== "className") return
@@ -41,26 +42,33 @@ export class JsxParser implements ClientFileParser {
     return { line: line - 1, column: column - 1 }
   }
 
-  private parseText(text: string, startOffset: number): Usage[] {
+  private parseText(text: string, startOffset: number): UsageSymbol[] {
     const names = text.split(/\s+/)
     let offset = 0
 
-    const usages: Usage[] = []
+    const usages: UsageSymbol[] = []
 
     names.forEach((name) => {
       const idx = text.indexOf(name, offset)
       const start = startOffset + idx + 1
       const end = start + name.length
 
-      usages.push({ name, start: this.posAt(start), end: this.posAt(end) })
+      usages.push({
+        className: name,
+        location: {
+          uri: this.sourceFile!.getFilePath(),
+          start: this.posAt(start),
+          end: this.posAt(end),
+        },
+      })
       offset = idx + name.length
     })
 
     return usages
   }
 
-  private parseTemplateExpression(expression: TemplateExpression): Usage[] {
-    const usages: Usage[] = []
+  private parseTemplateExpression(expression: TemplateExpression): UsageSymbol[] {
+    const usages: UsageSymbol[] = []
 
     const head = expression.getHead()
     usages.push(...this.parseText(head.getLiteralText(), head.getStart()))

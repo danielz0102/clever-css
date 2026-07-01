@@ -1,6 +1,6 @@
 import type {
   ClientFileParser,
-  Usage,
+  UsageSymbol,
 } from "../../adapters/client-file-parsers/client-file-parser-port"
 import type { CssClassIndex } from "../../adapters/css-class-index"
 import { CssClass } from "../../domain/css-class"
@@ -22,10 +22,10 @@ export class LoadAllUsages {
     }
   }
 
-  private async saveUsages(usages: Usage[], uri: string): Promise<void> {
-    for (const { name, start, end } of usages) {
+  private async saveUsages(usages: UsageSymbol[], uri: string): Promise<void> {
+    for (const { className: name, location } of usages) {
       const cssClass = (await this.classes.findOne(name)) ?? new CssClass(name)
-      cssClass.usages.add({ uri, start, end })
+      cssClass.usages.add({ uri, start: location.start, end: location.end })
       await this.classes.save(cssClass)
     }
   }

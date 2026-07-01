@@ -1,4 +1,4 @@
-import type { Usage } from "../../../adapters/client-file-parsers/client-file-parser-port"
+import type { UsageSymbol } from "../../../adapters/client-file-parsers/client-file-parser-port"
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import { LoadAllUsages } from "../../../features/load-all-usages/load-all-usages-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
@@ -10,7 +10,7 @@ type LoadAllUsagesTestContext = {
 
 export class LoadAllUsagesContextBuilder {
   private index: IndexMap = new Map()
-  private usages: Usage[] = []
+  private usages: UsageSymbol[] = []
 
   withClasses(classNames: string[]): LoadAllUsagesContextBuilder {
     for (const className of classNames) {
@@ -42,9 +42,12 @@ export class LoadAllUsagesContextBuilder {
   withUsages(classNames: string[]): LoadAllUsagesContextBuilder {
     classNames.forEach((className, i) => {
       this.usages.push({
-        name: className,
-        start: { line: i, column: 0 },
-        end: { line: i, column: className.length + 1 },
+        className: className,
+        location: {
+          uri: "file:///test.tsx",
+          start: { line: i, column: 0 },
+          end: { line: i, column: className.length + 1 },
+        },
       })
     })
     return this

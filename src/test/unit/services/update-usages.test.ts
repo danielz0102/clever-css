@@ -48,8 +48,22 @@ suite("UpdateUsages", () => {
 
     const mockParser: ClientFileParser = {
       getUsagesFrom: () => [
-        { name: "my-class", start: { line: 0, column: 13 }, end: { line: 0, column: 21 } },
-        { name: "other-class", start: { line: 0, column: 22 }, end: { line: 0, column: 33 } },
+        {
+          className: "my-class",
+          location: {
+            uri: "file:///test.tsx",
+            start: { line: 0, column: 13 },
+            end: { line: 0, column: 21 },
+          },
+        },
+        {
+          className: "other-class",
+          location: {
+            uri: "file:///test.tsx",
+            start: { line: 0, column: 22 },
+            end: { line: 0, column: 33 },
+          },
+        },
       ],
     }
 

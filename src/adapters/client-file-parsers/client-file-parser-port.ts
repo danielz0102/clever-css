@@ -1,14 +1,10 @@
-export type Position = {
-  line: number
-  column: number
-}
+import type { Location } from "../../domain/location"
 
-export type Usage = {
-  name: string
-  start: Position
-  end: Position
+export type UsageSymbol = {
+  className: string
+  location: Location
 }
 
 export interface ClientFileParser {
-  getUsagesFrom(path: string): Usage[]
+  getUsagesFrom(uri: string): UsageSymbol[]
 }
