@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { UriMapper } from "../../modules/css-files/mappers/uri-mapper"
+import { uriToCssFileDto } from "../../modules/css-files/dtos/css-file-dto"
 import type { ClassTreeDataProvider } from "../../ui/providers/class-tree/class-tree-data-provider"
 import { mapCssFiles } from "../../ui/providers/class-tree/css-file-data"
 import type { GetAllClasses } from "../get-all-classes/get-all-classes-query-handler"
@@ -14,7 +14,7 @@ export class UpdateDefinitionsVsCodeController {
   ) {}
 
   async execute(uri: vscode.Uri): Promise<void> {
-    await this.saveFile.execute(await UriMapper.toCssFileDto(uri))
+    await this.saveFile.execute(await uriToCssFileDto(uri.toString()))
     this.tree.refresh(mapCssFiles(await this.getAll.execute()))
   }
 }
