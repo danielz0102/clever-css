@@ -1,19 +1,17 @@
 import * as csstree from "css-tree"
 
-import type { Position } from "../domain/location"
+import type { Location } from "../domain/location"
+import type { CssFileDto } from "../dtos/css-file-dto"
 
-export type CssClassParser = (content: string) => Promise<CssClassSymbol[]>
+export type CssClassParser = (file: CssFileDto) => Promise<CssClassSymbol[]>
 
 export type CssClassSymbol = {
   className: string
-  location: {
-    start: Position
-    end: Position
-  }
+  location: Location
 }
 
-export const parseCssClassSymbols: CssClassParser = async (content: string) => {
-  const ast = csstree.parse(content, { positions: true })
+export const parseCssClassSymbols: CssClassParser = async (file: CssFileDto) => {
+  const ast = csstree.parse(file.content, { positions: true })
   const classes: CssClassSymbol[] = []
 
   csstree.walk(ast, {
@@ -23,7 +21,7 @@ export const parseCssClassSymbols: CssClassParser = async (content: string) => {
 
       classes.push({
         className: node.name,
-        location: { start: node.loc.start, end: node.loc.end },
+        location: { uri: file.uri, start: node.loc.start, end: node.loc.end },
       })
     },
   })

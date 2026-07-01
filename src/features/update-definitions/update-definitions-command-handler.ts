@@ -11,16 +11,11 @@ export class UpdateDefinitions {
 
   async execute(file: CssFileDto): Promise<void> {
     await this.resetDefinitions(file)
-
-    const symbols = await this.parseSymbols(file.content)
+    const symbols = await this.parseSymbols(file)
 
     for (const { className, location } of symbols) {
       const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
-      cssClass.definitions.add({
-        uri: file.uri,
-        start: location.start,
-        end: location.end,
-      })
+      cssClass.definitions.add(location)
       await this.classes.save(cssClass)
     }
   }

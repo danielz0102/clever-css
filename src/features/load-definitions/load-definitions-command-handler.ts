@@ -14,21 +14,12 @@ export class LoadDefinitions {
     await this.classes.destroy()
 
     const files = await this.findCssFiles()
-    const symbols = (await Promise.all(files.map(this.parseFile))).flat()
+    const symbols = (await Promise.all(files.map(this.parseSymbols))).flat()
 
-    for (const { className, location, uri } of symbols) {
+    for (const { className, location } of symbols) {
       const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
-      cssClass.definitions.add({
-        uri,
-        start: location.start,
-        end: location.end,
-      })
+      cssClass.definitions.add(location)
       await this.classes.save(cssClass)
     }
-  }
-
-  private parseFile = async (file: CssFileDto) => {
-    const symbols = await this.parseSymbols(file.content)
-    return symbols.map((c) => ({ ...c, ...file }))
   }
 }

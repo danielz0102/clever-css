@@ -3,6 +3,7 @@ import assert from "node:assert"
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { CssClassSymbol } from "../../../adapters/css-parser"
 import type { Location } from "../../../domain/location"
+import type { CssFileDto } from "../../../dtos/css-file-dto"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
 
@@ -18,10 +19,11 @@ suite("UpdateDefinitions", () => {
     }
   }
 
-  function makeSymbol(className: string, line: number, column: number): CssClassSymbol {
+  function makeSymbol(className: string, line: number, column: number, uri: string): CssClassSymbol {
     return {
       className,
       location: {
+        uri,
         start: { line, column },
         end: { line, column: column + className.length + 1 },
       },
@@ -30,8 +32,8 @@ suite("UpdateDefinitions", () => {
 
   test("adds new classes found in the file", async () => {
     const index: IndexMap = new Map()
-    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [
-      makeSymbol("my-class", 1, 0),
+    const command = new UpdateDefinitions(new CssClassIndex(index), async (file: CssFileDto) => [
+      makeSymbol("my-class", 1, 0, file.uri),
     ])
 
     await command.execute({ uri: TEST_URI, content: ".my-class { color: red; }" })
@@ -56,8 +58,8 @@ suite("UpdateDefinitions", () => {
         },
       ],
     ])
-    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [
-      makeSymbol("my-class", 2, 0),
+    const command = new UpdateDefinitions(new CssClassIndex(index), async (file: CssFileDto) => [
+      makeSymbol("my-class", 2, 0, file.uri),
     ])
 
     await command.execute({ uri: TEST_URI, content: ".my-class { color: blue; }" })
@@ -83,7 +85,7 @@ suite("UpdateDefinitions", () => {
         },
       ],
     ])
-    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [])
+    const command = new UpdateDefinitions(new CssClassIndex(index), async (_file: CssFileDto) => [])
 
     await command.execute({ uri: TEST_URI, content: "" })
 
@@ -107,7 +109,7 @@ suite("UpdateDefinitions", () => {
         },
       ],
     ])
-    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [])
+    const command = new UpdateDefinitions(new CssClassIndex(index), async (_file: CssFileDto) => [])
 
     await command.execute({ uri: TEST_URI, content: "" })
 

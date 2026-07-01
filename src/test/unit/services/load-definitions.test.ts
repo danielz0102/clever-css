@@ -3,6 +3,7 @@ import assert from "node:assert"
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { CssClassSymbol } from "../../../adapters/css-parser"
 import type { Location } from "../../../domain/location"
+import type { CssFileDto } from "../../../dtos/css-file-dto"
 import { LoadDefinitions } from "../../../features/load-definitions/load-definitions-command-handler"
 import type { CssClassModel, IndexMap } from "../../../persistence/index-map"
 
@@ -18,10 +19,11 @@ suite("LoadDefinitions", () => {
     }
   }
 
-  function makeSymbol(className: string, line: number, column: number): CssClassSymbol {
+  function makeSymbol(className: string, line: number, column: number, uri: string): CssClassSymbol {
     return {
       className,
       location: {
+        uri,
         start: { line, column },
         end: { line, column: column + className.length + 1 },
       },
@@ -45,9 +47,9 @@ suite("LoadDefinitions", () => {
       { uri: FILE_A, content: ".foo { color: red; }" },
       { uri: FILE_B, content: ".bar { color: blue; }" },
     ]
-    const parseSymbols = async (content: string) => {
-      if (content.includes("foo")) return [makeSymbol("foo", 1, 0)]
-      if (content.includes("bar")) return [makeSymbol("bar", 2, 0)]
+    const parseSymbols = async (file: CssFileDto) => {
+      if (file.content.includes("foo")) return [makeSymbol("foo", 1, 0, file.uri)]
+      if (file.content.includes("bar")) return [makeSymbol("bar", 2, 0, file.uri)]
       return []
     }
 
@@ -78,7 +80,7 @@ suite("LoadDefinitions", () => {
     ])
 
     const findCssFiles = async () => []
-    const parseSymbols = async (_content: string) => []
+    const parseSymbols = async (_file: CssFileDto) => []
 
     const command = new LoadDefinitions(new CssClassIndex(index), findCssFiles, parseSymbols)
     await command.execute()
@@ -90,7 +92,7 @@ suite("LoadDefinitions", () => {
     const index: IndexMap = new Map()
 
     const findCssFiles = async () => [{ uri: FILE_A, content: ".foo { color: red; }" }]
-    const parseSymbols = async (_content: string) => [makeSymbol("foo", 1, 0)]
+    const parseSymbols = async (_file: CssFileDto) => [makeSymbol("foo", 1, 0, _file.uri)]
 
     const command = new LoadDefinitions(new CssClassIndex(index), findCssFiles, parseSymbols)
     await command.execute()
