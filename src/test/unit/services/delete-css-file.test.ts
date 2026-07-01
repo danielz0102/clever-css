@@ -1,7 +1,7 @@
 import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
-import { DeleteDefinitions } from "../../../modules/css-files/commands/delete-definitions/delete-definitions-command-handler"
+import { DeleteDefinitions } from "../../../features/delete-definitions/delete-definitions-command-handler"
 import type { IndexMap } from "../../../persistence/class-index"
 
 suite("DeleteDefinitions", () => {

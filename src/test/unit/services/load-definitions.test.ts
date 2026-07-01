@@ -1,8 +1,8 @@
 import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
+import { LoadDefinitions } from "../../../features/load-definitions/load-definitions-command-handler"
 import type { CssClassSymbol } from "../../../modules/css-files/adapters/css-parser"
-import { LoadDefinitions } from "../../../modules/css-files/commands/load-definitions/load-definitions-command-handler"
 import type { IndexMap, CssClassModel, LocationModel } from "../../../persistence/class-index"
 
 suite("LoadDefinitions", () => {

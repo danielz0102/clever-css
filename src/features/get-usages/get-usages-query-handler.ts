@@ -1,4 +1,4 @@
-import type { IndexMap, LocationModel } from "../../../../persistence/class-index"
+import type { IndexMap, LocationModel } from "../../persistence/class-index"
 
 export class GetUsages {
   constructor(private index: IndexMap) {}

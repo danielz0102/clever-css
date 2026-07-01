@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
-import type { CssFileDto } from "../../../dtos/css-file-dto"
-import { UriMapper } from "../../../mappers/uri-mapper"
+import type { CssFileDto } from "../../../modules/css-files/dtos/css-file-dto"
+import { UriMapper } from "../../../modules/css-files/mappers/uri-mapper"
 
 export async function findCssFiles(): Promise<CssFileDto[]> {
   const uris = await vscode.workspace.findFiles("**/*.css", "**/{node_modules,dist,build}/**")

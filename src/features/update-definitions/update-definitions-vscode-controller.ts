@@ -1,9 +1,9 @@
 import * as vscode from "vscode"
 
-import type { ClassTreeDataProvider } from "../../../../ui/providers/class-tree/class-tree-data-provider"
-import { mapCssFiles } from "../../../../ui/providers/class-tree/css-file-data"
-import { UriMapper } from "../../mappers/uri-mapper"
-import type { GetAllClasses } from "../../queries/get-all-classes/get-all-classes-query-handler"
+import { UriMapper } from "../../modules/css-files/mappers/uri-mapper"
+import type { ClassTreeDataProvider } from "../../ui/providers/class-tree/class-tree-data-provider"
+import { mapCssFiles } from "../../ui/providers/class-tree/css-file-data"
+import type { GetAllClasses } from "../get-all-classes/get-all-classes-query-handler"
 import type { UpdateDefinitions } from "./update-definitions-command-handler"
 
 export class UpdateDefinitionsVsCodeController {

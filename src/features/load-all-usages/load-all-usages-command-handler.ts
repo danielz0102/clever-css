@@ -1,7 +1,10 @@
-import { CssClass } from "../../../domain/css-class"
-import type { CssClassRepository } from "../../../domain/css-class-repository"
-import type { ClientFilesFinder } from "../adapters/find-client-files"
-import type { ClientFileParser, Usage } from "../adapters/parsers/client-file-parser"
+import { CssClass } from "../../domain/css-class"
+import type { CssClassRepository } from "../../domain/css-class-repository"
+import type { ClientFilesFinder } from "../../modules/client-files/adapters/find-client-files"
+import type {
+  ClientFileParser,
+  Usage,
+} from "../../modules/client-files/adapters/parsers/client-file-parser"
 
 export class LoadAllUsages {
   constructor(

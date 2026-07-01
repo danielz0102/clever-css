@@ -1,4 +1,4 @@
-import type { CssClassRepository } from "../../../../domain/css-class-repository"
+import type { CssClassRepository } from "../../domain/css-class-repository"
 
 export class DeleteDefinitions {
   constructor(private classes: CssClassRepository) {}

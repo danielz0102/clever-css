@@ -1,8 +1,8 @@
 import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
+import { UpdateUsages } from "../../../features/update-usages/update-usages-command-handler"
 import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
-import { UpdateUsages } from "../../../modules/client-files/commands/update-usages-command-handler"
 import type { IndexMap } from "../../../persistence/class-index"
 
 suite("UpdateUsages", () => {
