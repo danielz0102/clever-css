@@ -1,7 +1,6 @@
 import { type CssClassParser } from "../../adapters/css-parser"
 import { CssClass } from "../../domain/css-class"
 import type { CssClassRepository } from "../../domain/css-class-repository"
-import type { Location } from "../../domain/location"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 
 export class LoadDefinitions {
@@ -18,19 +17,12 @@ export class LoadDefinitions {
     const symbols = (await Promise.all(files.map(this.parseFile))).flat()
 
     for (const { className, location, uri } of symbols) {
-      const newDefinition: Location = {
+      const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
+      cssClass.definitions.add({
         uri,
         start: location.start,
         end: location.end,
-      }
-      const cssClass = await this.classes.findOne(className)
-
-      if (!cssClass) {
-        await this.classes.save(new CssClass(className, newDefinition))
-        continue
-      }
-
-      cssClass.definitions.add(newDefinition)
+      })
       await this.classes.save(cssClass)
     }
   }
