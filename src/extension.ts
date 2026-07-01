@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 
+import { CssClassIndex } from "./adapters/css-class-index"
 import { findClientFiles } from "./modules/client-files/adapters/find-client-files"
 import { JsxParser } from "./modules/client-files/adapters/parsers/jsx-parser"
 import { DeleteClientFile } from "./modules/client-files/commands/delete-client-file"
@@ -24,21 +25,23 @@ import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
-  const loadDefinitions = new LoadDefinitions(index, findCssFiles, parseCssClassSymbols)
+  const repo = new CssClassIndex(index)
+
+  const loadDefinitions = new LoadDefinitions(repo, findCssFiles, parseCssClassSymbols)
   await loadDefinitions.execute()
 
-  const loadUsages = new LoadUsages(index, new JsxParser(), findClientFiles)
+  const loadUsages = new LoadUsages(repo, new JsxParser(), findClientFiles)
   void loadUsages.execute()
 
   const getAll = new GetAllClasses(index)
   const classDataProvider = new ClassTreeDataProvider(mapCssFiles(await getAll.execute()))
   const saveCssFileController = new SaveCssFileVsCodeController(
-    new SaveCssFile(index, parseCssClassSymbols),
+    new SaveCssFile(repo, parseCssClassSymbols),
     getAll,
     classDataProvider
   )
   const deleteCssFileController = new DeleteCssFileVsCodeController(
-    new DeleteCssFile(index),
+    new DeleteCssFile(repo),
     getAll,
     classDataProvider
   )
@@ -47,8 +50,8 @@ export async function activate(context: vscode.ExtensionContext) {
     onDeleteFile: async (uri) => deleteCssFileController.execute(uri),
   })
 
-  const saveClientFile = new SaveClientFile(index, new JsxParser())
-  const deleteClientFile = new DeleteClientFile(index)
+  const saveClientFile = new SaveClientFile(repo, new JsxParser())
+  const deleteClientFile = new DeleteClientFile(repo)
   const clientFilesWatcher = watchClientFiles({
     saveFile: async (uri) => saveClientFile.execute(uri.fsPath),
     deleteFile: async (uri) => deleteClientFile.execute(uri.fsPath),

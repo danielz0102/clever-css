@@ -1,24 +1,32 @@
-import type { CssClassIndex } from "../../../persistence/class-index"
-import type { ClientFileParser } from "../adapters/parsers/client-file-parser"
+import { CssClass } from "../../../domain/css-class"
+import type { CssClassRepository } from "../../../domain/css-class-repository"
+import type { ClientFileParser, Usage } from "../adapters/parsers/client-file-parser"
 
 export class SaveClientFile {
   constructor(
-    private index: CssClassIndex,
+    private classes: CssClassRepository,
     private parser: ClientFileParser
   ) {}
 
   async execute(uri: string): Promise<void> {
-    for (const record of this.index.values()) {
-      record.usages = record.usages.filter((u) => u.uri !== uri)
+    await this.resetUsages(uri)
+    await this.saveUsages(this.parser.getUsagesFrom(uri), uri)
+  }
+
+  private async resetUsages(uri: string): Promise<void> {
+    const classes = await this.classes.getFromUsageUri(uri)
+
+    for (const cssClass of classes) {
+      cssClass.usages.removeFromUri(uri)
+      await this.classes.save(cssClass)
     }
+  }
 
-    const usages = this.parser.getUsagesFrom(uri)
-
-    usages.forEach(({ name, start, end }) => {
-      const record = this.index.get(name)
-      if (record) {
-        record.usages.push({ uri, start, end })
-      }
-    })
+  private async saveUsages(usages: Usage[], uri: string): Promise<void> {
+    for (const { name, start, end } of usages) {
+      const cssClass = (await this.classes.findOne(name)) ?? new CssClass(name)
+      cssClass.usages.add({ uri, start, end })
+      await this.classes.save(cssClass)
+    }
   }
 }

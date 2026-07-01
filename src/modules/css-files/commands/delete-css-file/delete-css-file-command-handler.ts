@@ -1,17 +1,19 @@
-import type { CssClassIndex } from "../../../../persistence/class-index"
+import type { CssClassRepository } from "../../../../domain/css-class-repository"
 
 export class DeleteCssFile {
-  constructor(private index: CssClassIndex) {}
+  constructor(private classes: CssClassRepository) {}
 
   async execute(uri: string): Promise<void> {
-    Array.from(this.index.entries())
-      .filter(([_, record]) => record.definitions.some((def) => def.uri === uri))
-      .forEach(([className, record]) => {
-        record.definitions = record.definitions.filter((def) => def.uri !== uri)
+    const classes = await this.classes.getFromDefinitionUri(uri)
 
-        if (record.definitions.length === 0) {
-          this.index.delete(className)
-        }
-      })
+    for (const cssClass of classes) {
+      cssClass.definitions.removeFromUri(uri)
+
+      if (!cssClass.exists) {
+        await this.classes.delete(cssClass)
+      } else {
+        await this.classes.save(cssClass)
+      }
+    }
   }
 }

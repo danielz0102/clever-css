@@ -1,12 +1,13 @@
 import assert from "node:assert"
 
+import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
 import { SaveClientFile } from "../../../modules/client-files/commands/save-client-file"
-import type { CssClassIndex } from "../../../persistence/class-index"
+import type { IndexMap } from "../../../persistence/class-index"
 
 suite("SaveClientFile", () => {
   test("loads all usages found", async () => {
-    const index: CssClassIndex = new Map([
+    const index: IndexMap = new Map([
       [
         "my-class",
         {
@@ -52,7 +53,7 @@ suite("SaveClientFile", () => {
       ],
     }
 
-    const saveClientFile = new SaveClientFile(index, mockParser)
+    const saveClientFile = new SaveClientFile(new CssClassIndex(index), mockParser)
     const uri = "/component.tsx"
 
     await saveClientFile.execute(uri)

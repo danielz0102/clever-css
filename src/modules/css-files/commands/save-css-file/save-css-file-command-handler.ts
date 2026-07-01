@@ -1,47 +1,41 @@
-import type { CssClassIndex, EditorLocation } from "../../../../persistence/class-index"
+import { CssClass } from "../../../../domain/css-class"
+import type { CssClassRepository } from "../../../../domain/css-class-repository"
 import { type CssClassParser } from "../../adapters/css-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 
 export class SaveCssFile {
   constructor(
-    private index: CssClassIndex,
+    private classes: CssClassRepository,
     private parseSymbols: CssClassParser
   ) {}
 
   async execute(file: CssFileDto): Promise<void> {
-    this.resetDefinitions(file)
+    await this.resetDefinitions(file)
 
     const symbols = await this.parseSymbols(file.content)
 
-    symbols.forEach(({ className, location }) => {
-      const record = this.index.get(className)
-      const newDefinition: EditorLocation = {
+    for (const { className, location } of symbols) {
+      const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
+      cssClass.definitions.add({
         uri: file.uri,
         start: location.start,
         end: location.end,
-      }
-
-      if (record) {
-        record.definitions.push(newDefinition)
-      } else {
-        this.index.set(className, {
-          className,
-          definitions: [newDefinition],
-          usages: [],
-        })
-      }
-    })
+      })
+      await this.classes.save(cssClass)
+    }
   }
 
-  private resetDefinitions(file: CssFileDto) {
-    Array.from(this.index.entries())
-      .filter(([_, record]) => record.definitions.some((d) => d.uri === file.uri))
-      .forEach(([_, record]) => {
-        record.definitions = record.definitions.filter((d) => d.uri !== file.uri)
+  private async resetDefinitions(file: CssFileDto) {
+    const classes = await this.classes.getFromDefinitionUri(file.uri)
 
-        if (record.definitions.length === 0) {
-          this.index.delete(record.className)
-        }
-      })
+    for (const cssClass of classes) {
+      cssClass.definitions.removeFromUri(file.uri)
+
+      if (!cssClass.exists) {
+        await this.classes.delete(cssClass)
+      } else {
+        await this.classes.save(cssClass)
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
-import type { CssClassIndex } from "../../../persistence/class-index"
+import type { CssClassRepository } from "../../../domain/css-class-repository"
 
 export class DeleteClientFile {
-  constructor(private _index: CssClassIndex) {}
+  constructor(private classes: CssClassRepository) {}
 
   async execute(_uri: string): Promise<void> {
     throw new Error("Not implemented yet.")

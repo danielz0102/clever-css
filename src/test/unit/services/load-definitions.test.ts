@@ -1,18 +1,15 @@
 import assert from "node:assert"
 
+import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { CssClassSymbol } from "../../../modules/css-files/adapters/css-parser"
 import { LoadDefinitions } from "../../../modules/css-files/commands/load-definitions/load-definitions-command-handler"
-import type {
-  CssClassIndex,
-  CssClassRecord,
-  EditorLocation,
-} from "../../../persistence/class-index"
+import type { IndexMap, CssClassModel, LocationModel } from "../../../persistence/class-index"
 
 suite("LoadDefinitions", () => {
   const FILE_A = "file:///a.css"
   const FILE_B = "file:///b.css"
 
-  function makeLocation(uri: string, line: number, column: number): EditorLocation {
+  function makeLocation(uri: string, line: number, column: number): LocationModel {
     return {
       uri,
       start: { line, column },
@@ -30,7 +27,7 @@ suite("LoadDefinitions", () => {
     }
   }
 
-  function makeRecord(className: string): CssClassRecord {
+  function makeRecord(className: string): CssClassModel {
     return {
       className,
       definitions: [makeLocation(FILE_A, 0, 0)],
@@ -41,7 +38,7 @@ suite("LoadDefinitions", () => {
   }
 
   test("loads all classes with their definitions", async () => {
-    const index: CssClassIndex = new Map()
+    const index: IndexMap = new Map()
 
     const findCssFiles = async () => [
       { uri: FILE_A, content: ".foo { color: red; }" },
@@ -53,7 +50,7 @@ suite("LoadDefinitions", () => {
       return []
     }
 
-    const command = new LoadDefinitions(index, findCssFiles, parseSymbols)
+    const command = new LoadDefinitions(new CssClassIndex(index), findCssFiles, parseSymbols)
     await command.execute()
 
     const foo = index.get("foo")
@@ -74,7 +71,7 @@ suite("LoadDefinitions", () => {
   })
 
   test("empty the index if there are no classes (this should fail)", async () => {
-    const index: CssClassIndex = new Map([
+    const index: IndexMap = new Map([
       ["foo", makeRecord("foo")],
       ["bar", makeRecord("bar")],
     ])
@@ -82,19 +79,19 @@ suite("LoadDefinitions", () => {
     const findCssFiles = async () => []
     const parseSymbols = async (_content: string) => []
 
-    const command = new LoadDefinitions(index, findCssFiles, parseSymbols)
+    const command = new LoadDefinitions(new CssClassIndex(index), findCssFiles, parseSymbols)
     await command.execute()
 
     assert(index.size === 0, "Expected index to be empty when no CSS files found")
   })
 
   test("doesn't load usages", async () => {
-    const index: CssClassIndex = new Map()
+    const index: IndexMap = new Map()
 
     const findCssFiles = async () => [{ uri: FILE_A, content: ".foo { color: red; }" }]
     const parseSymbols = async (_content: string) => [makeSymbol("foo", 1, 0)]
 
-    const command = new LoadDefinitions(index, findCssFiles, parseSymbols)
+    const command = new LoadDefinitions(new CssClassIndex(index), findCssFiles, parseSymbols)
     await command.execute()
 
     const foo = index.get("foo")

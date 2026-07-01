@@ -1,9 +1,9 @@
-import type { CssClassIndex, EditorLocation } from "../../../../persistence/class-index"
+import type { IndexMap, LocationModel } from "../../../../persistence/class-index"
 
 export class GetUsages {
-  constructor(private index: CssClassIndex) {}
+  constructor(private index: IndexMap) {}
 
-  async execute(className: string): Promise<EditorLocation[]> {
+  async execute(className: string): Promise<LocationModel[]> {
     return this.index.get(className)?.usages ?? []
   }
 }

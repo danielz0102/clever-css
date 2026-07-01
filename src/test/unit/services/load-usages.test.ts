@@ -1,13 +1,14 @@
 import assert from "node:assert"
 
+import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { ClientFilesFinder } from "../../../modules/client-files/adapters/find-client-files"
 import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
 import { LoadUsages } from "../../../modules/client-files/commands/load-usages"
-import type { CssClassIndex, CssClassRecord } from "../../../persistence/class-index"
+import type { IndexMap, CssClassModel } from "../../../persistence/class-index"
 
 suite("LoadUsages", () => {
   test("loads usages for all classes in the repository", async () => {
-    const index: CssClassIndex = new Map([["my-class", makeRecord("my-class")]])
+    const index: IndexMap = new Map([["my-class", makeRecord("my-class")]])
 
     const mockParser: ClientFileParser = {
       getUsagesFrom: () => [
@@ -16,7 +17,7 @@ suite("LoadUsages", () => {
     }
     const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
 
-    const loadUsages = new LoadUsages(index, mockParser, findFiles)
+    const loadUsages = new LoadUsages(new CssClassIndex(index), mockParser, findFiles)
     await loadUsages.execute()
 
     const record = index.get("my-class")
@@ -25,7 +26,7 @@ suite("LoadUsages", () => {
   })
 
   test("does not load usages for classes that are not used", async () => {
-    const index: CssClassIndex = new Map([["unused-class", makeRecord("unused-class")]])
+    const index: IndexMap = new Map([["unused-class", makeRecord("unused-class")]])
 
     const mockParser: ClientFileParser = {
       getUsagesFrom: () => [
@@ -34,7 +35,7 @@ suite("LoadUsages", () => {
     }
     const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
 
-    const loadUsages = new LoadUsages(index, mockParser, findFiles)
+    const loadUsages = new LoadUsages(new CssClassIndex(index), mockParser, findFiles)
     await loadUsages.execute()
 
     const record = index.get("unused-class")
@@ -43,7 +44,7 @@ suite("LoadUsages", () => {
   })
 
   test("set usages to 0 if there are no usages", async () => {
-    const index: CssClassIndex = new Map([["my-class", makeRecord("my-class")]])
+    const index: IndexMap = new Map([["my-class", makeRecord("my-class")]])
     index.get("my-class")!.usages.push({
       uri: "file:///ex-client.tsx",
       start: { line: 0, column: 0 },
@@ -55,7 +56,7 @@ suite("LoadUsages", () => {
     }
     const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
 
-    const loadUsages = new LoadUsages(index, mockParser, findFiles)
+    const loadUsages = new LoadUsages(new CssClassIndex(index), mockParser, findFiles)
     await loadUsages.execute()
 
     const record = index.get("my-class")
@@ -64,7 +65,7 @@ suite("LoadUsages", () => {
   })
 })
 
-function makeRecord(className: string): CssClassRecord {
+function makeRecord(className: string): CssClassModel {
   return {
     className,
     definitions: [

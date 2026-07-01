@@ -1,14 +1,14 @@
-export type EditorLocation = {
+export type LocationModel = {
   uri: string
   start: { line: number; column: number }
   end: { line: number; column: number }
 }
 
-export type CssClassRecord = {
+export type CssClassModel = {
   className: string
-  definitions: EditorLocation[]
-  usages: EditorLocation[]
+  definitions: LocationModel[]
+  usages: LocationModel[]
 }
 
-export const index = new Map<string, CssClassRecord>()
-export type CssClassIndex = typeof index
+export const index = new Map<string, CssClassModel>()
+export type IndexMap = typeof index

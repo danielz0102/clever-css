@@ -1,14 +1,15 @@
 import assert from "node:assert"
 
+import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { CssClassSymbol } from "../../../modules/css-files/adapters/css-parser"
 import { SaveCssFile } from "../../../modules/css-files/commands/save-css-file/save-css-file-command-handler"
-import type { CssClassIndex, EditorLocation } from "../../../persistence/class-index"
+import type { IndexMap, LocationModel } from "../../../persistence/class-index"
 
 suite("SaveCssFile", () => {
   const TEST_URI = "file:///test.css"
   const OTHER_URI = "file:///other.css"
 
-  function makeLocation(uri: string, line: number, column: number): EditorLocation {
+  function makeLocation(uri: string, line: number, column: number): LocationModel {
     return {
       uri,
       start: { line, column },
@@ -27,8 +28,10 @@ suite("SaveCssFile", () => {
   }
 
   test("adds new classes found in the file", async () => {
-    const index: CssClassIndex = new Map()
-    const command = new SaveCssFile(index, async () => [makeSymbol("my-class", 1, 0)])
+    const index: IndexMap = new Map()
+    const command = new SaveCssFile(new CssClassIndex(index), async () => [
+      makeSymbol("my-class", 1, 0),
+    ])
 
     await command.execute({ uri: TEST_URI, content: ".my-class { color: red; }" })
 
@@ -42,7 +45,7 @@ suite("SaveCssFile", () => {
   })
 
   test("adds new definitions of an existing class", async () => {
-    const index: CssClassIndex = new Map([
+    const index: IndexMap = new Map([
       [
         "my-class",
         {
@@ -52,7 +55,9 @@ suite("SaveCssFile", () => {
         },
       ],
     ])
-    const command = new SaveCssFile(index, async () => [makeSymbol("my-class", 2, 0)])
+    const command = new SaveCssFile(new CssClassIndex(index), async () => [
+      makeSymbol("my-class", 2, 0),
+    ])
 
     await command.execute({ uri: TEST_URI, content: ".my-class { color: blue; }" })
 
@@ -67,7 +72,7 @@ suite("SaveCssFile", () => {
   })
 
   test("removes definitions deleted from the file", async () => {
-    const index: CssClassIndex = new Map([
+    const index: IndexMap = new Map([
       [
         "my-class",
         {
@@ -77,7 +82,7 @@ suite("SaveCssFile", () => {
         },
       ],
     ])
-    const command = new SaveCssFile(index, async () => [])
+    const command = new SaveCssFile(new CssClassIndex(index), async () => [])
 
     await command.execute({ uri: TEST_URI, content: "" })
 
@@ -91,7 +96,7 @@ suite("SaveCssFile", () => {
   })
 
   test("removes classes with no definitions left", async () => {
-    const index: CssClassIndex = new Map([
+    const index: IndexMap = new Map([
       [
         "my-class",
         {
@@ -101,7 +106,7 @@ suite("SaveCssFile", () => {
         },
       ],
     ])
-    const command = new SaveCssFile(index, async () => [])
+    const command = new SaveCssFile(new CssClassIndex(index), async () => [])
 
     await command.execute({ uri: TEST_URI, content: "" })
 
