@@ -11,8 +11,8 @@ import { GetUsages } from "./features/get-usages/get-usages-query-handler"
 import { GetUsagesVsCodeController } from "./features/get-usages/get-usages-vscode-controller"
 import { findClientFiles } from "./features/load-all-usages/find-client-files-adapter"
 import { LoadAllUsages } from "./features/load-all-usages/load-all-usages-command-handler"
-import { findCssFiles } from "./features/load-definitions/find-css-files"
 import { LoadDefinitions } from "./features/load-definitions/load-definitions-command-handler"
+import { parseAllCssClassSymbols } from "./features/load-definitions/parse-all-symbols"
 import { UpdateDefinitions } from "./features/update-definitions/update-definitions-command-handler"
 import { UpdateDefinitionsVsCodeController } from "./features/update-definitions/update-definitions-vscode-controller"
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
@@ -27,7 +27,7 @@ import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 export async function activate(context: vscode.ExtensionContext) {
   const repo = new CssClassIndex(index)
 
-  const loadDefinitions = new LoadDefinitions(repo, findCssFiles, parseCssClassSymbols)
+  const loadDefinitions = new LoadDefinitions(repo, parseAllCssClassSymbols)
   await loadDefinitions.execute()
 
   const loadUsages = new LoadAllUsages(repo, new JsxParser(), findClientFiles)
