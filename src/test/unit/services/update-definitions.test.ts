@@ -1,8 +1,8 @@
 import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
+import type { CssClassSymbol } from "../../../adapters/css-parser"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
-import type { CssClassSymbol } from "../../../modules/css-files/adapters/css-parser"
 import type { IndexMap, LocationModel } from "../../../persistence/index-map"
 
 suite("UpdateDefinitions", () => {

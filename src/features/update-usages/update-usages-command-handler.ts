@@ -1,9 +1,9 @@
-import { CssClass } from "../../domain/css-class"
-import type { CssClassRepository } from "../../domain/css-class-repository"
 import type {
   ClientFileParser,
   Usage,
-} from "../../modules/client-files/adapters/parsers/client-file-parser"
+} from "../../adapters/client-file-parsers/client-file-parser-port"
+import { CssClass } from "../../domain/css-class"
+import type { CssClassRepository } from "../../domain/css-class-repository"
 
 export class UpdateUsages {
   constructor(

@@ -1,6 +1,6 @@
 import assert from "node:assert"
 
-import { JsxParser } from "../../../modules/client-files/adapters/parsers/jsx-parser"
+import { JsxParser } from "../../../adapters/client-file-parsers/jsx-parser-adapter"
 import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
 suite("JsxParser", () => {

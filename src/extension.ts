@@ -1,6 +1,8 @@
 import * as vscode from "vscode"
 
+import { JsxParser } from "./adapters/client-file-parsers/jsx-parser-adapter"
 import { CssClassIndex } from "./adapters/css-class-index"
+import { parseCssClassSymbols } from "./adapters/css-parser"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteDefinitionsVsCodeController } from "./features/delete-definitions/delete-definitions-vscode-controller"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
@@ -14,8 +16,6 @@ import { LoadDefinitions } from "./features/load-definitions/load-definitions-co
 import { UpdateDefinitions } from "./features/update-definitions/update-definitions-command-handler"
 import { UpdateDefinitionsVsCodeController } from "./features/update-definitions/update-definitions-vscode-controller"
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
-import { JsxParser } from "./modules/client-files/adapters/parsers/jsx-parser"
-import { parseCssClassSymbols } from "./modules/css-files/adapters/css-parser"
 import { index } from "./persistence/index-map"
 import { openLocation } from "./ui/commands/open-location"
 import { ClassTreeDataProvider } from "./ui/providers/class-tree/class-tree-data-provider"
