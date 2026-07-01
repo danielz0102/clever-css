@@ -3,7 +3,7 @@ import assert from "node:assert"
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { ClientFilesFinder } from "../../../modules/client-files/adapters/find-client-files"
 import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
-import { LoadUsages } from "../../../modules/client-files/commands/load-usages"
+import { LoadAllUsages } from "../../../modules/client-files/commands/load-all-usages-command-handler"
 import type { IndexMap, CssClassModel } from "../../../persistence/class-index"
 
 suite("LoadUsages", () => {
@@ -17,7 +17,7 @@ suite("LoadUsages", () => {
     }
     const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
 
-    const loadUsages = new LoadUsages(new CssClassIndex(index), mockParser, findFiles)
+    const loadUsages = new LoadAllUsages(new CssClassIndex(index), mockParser, findFiles)
     await loadUsages.execute()
 
     const record = index.get("my-class")
@@ -35,7 +35,7 @@ suite("LoadUsages", () => {
     }
     const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
 
-    const loadUsages = new LoadUsages(new CssClassIndex(index), mockParser, findFiles)
+    const loadUsages = new LoadAllUsages(new CssClassIndex(index), mockParser, findFiles)
     await loadUsages.execute()
 
     const record = index.get("unused-class")
@@ -56,7 +56,7 @@ suite("LoadUsages", () => {
     }
     const findFiles: ClientFilesFinder = async () => ["/file1.tsx", "/file2.tsx"]
 
-    const loadUsages = new LoadUsages(new CssClassIndex(index), mockParser, findFiles)
+    const loadUsages = new LoadAllUsages(new CssClassIndex(index), mockParser, findFiles)
     await loadUsages.execute()
 
     const record = index.get("my-class")

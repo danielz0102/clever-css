@@ -1,10 +1,10 @@
 import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
-import { DeleteCssFile } from "../../../modules/css-files/commands/delete-css-file/delete-css-file-command-handler"
+import { DeleteDefinitions } from "../../../modules/css-files/commands/delete-definitions/delete-definitions-command-handler"
 import type { IndexMap } from "../../../persistence/class-index"
 
-suite("DeleteCssFile", () => {
+suite("DeleteDefinitions", () => {
   test("removes all the definitions of a file", async () => {
     const testClass = "my-class"
     const index: IndexMap = new Map([
@@ -43,7 +43,7 @@ suite("DeleteCssFile", () => {
       ],
     ])
 
-    const command = new DeleteCssFile(new CssClassIndex(index))
+    const command = new DeleteDefinitions(new CssClassIndex(index))
     await command.execute("file:///test.css")
 
     assert(index.size === 1, `Expected 1 remaining class, got ${index.size}`)
@@ -75,7 +75,7 @@ suite("DeleteCssFile", () => {
       ],
     ])
 
-    const command = new DeleteCssFile(new CssClassIndex(index))
+    const command = new DeleteDefinitions(new CssClassIndex(index))
     await command.execute("file:///test.css")
 
     assert(index.get("my-class") === undefined, "Expected the class to be removed from the index")

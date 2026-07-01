@@ -3,7 +3,7 @@ import type { CssClassRepository } from "../../../../domain/css-class-repository
 import { type CssClassParser } from "../../adapters/css-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 
-export class SaveCssFile {
+export class UpdateDefinitions {
   constructor(
     private classes: CssClassRepository,
     private parseSymbols: CssClassParser

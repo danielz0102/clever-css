@@ -4,11 +4,11 @@ import type { ClassTreeDataProvider } from "../../../../ui/providers/class-tree/
 import { mapCssFiles } from "../../../../ui/providers/class-tree/css-file-data"
 import { UriMapper } from "../../mappers/uri-mapper"
 import type { GetAllClasses } from "../../queries/get-all-classes/get-all-classes-query-handler"
-import type { SaveCssFile } from "./save-css-file-command-handler"
+import type { UpdateDefinitions } from "./update-definitions-command-handler"
 
-export class SaveCssFileVsCodeController {
+export class UpdateDefinitionsVsCodeController {
   constructor(
-    private saveFile: SaveCssFile,
+    private saveFile: UpdateDefinitions,
     private getAll: GetAllClasses,
     private tree: ClassTreeDataProvider
   ) {}

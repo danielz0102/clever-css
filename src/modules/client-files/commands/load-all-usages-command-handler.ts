@@ -3,7 +3,7 @@ import type { CssClassRepository } from "../../../domain/css-class-repository"
 import type { ClientFilesFinder } from "../adapters/find-client-files"
 import type { ClientFileParser, Usage } from "../adapters/parsers/client-file-parser"
 
-export class LoadUsages {
+export class LoadAllUsages {
   constructor(
     private classes: CssClassRepository,
     private parser: ClientFileParser,

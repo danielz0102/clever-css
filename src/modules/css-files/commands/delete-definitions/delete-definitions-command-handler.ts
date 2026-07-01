@@ -1,6 +1,6 @@
 import type { CssClassRepository } from "../../../../domain/css-class-repository"
 
-export class DeleteCssFile {
+export class DeleteDefinitions {
   constructor(private classes: CssClassRepository) {}
 
   async execute(uri: string): Promise<void> {

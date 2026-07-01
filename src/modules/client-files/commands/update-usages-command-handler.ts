@@ -2,7 +2,7 @@ import { CssClass } from "../../../domain/css-class"
 import type { CssClassRepository } from "../../../domain/css-class-repository"
 import type { ClientFileParser, Usage } from "../adapters/parsers/client-file-parser"
 
-export class SaveClientFile {
+export class UpdateUsages {
   constructor(
     private classes: CssClassRepository,
     private parser: ClientFileParser

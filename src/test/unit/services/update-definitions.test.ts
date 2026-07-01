@@ -2,10 +2,10 @@ import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { CssClassSymbol } from "../../../modules/css-files/adapters/css-parser"
-import { SaveCssFile } from "../../../modules/css-files/commands/save-css-file/save-css-file-command-handler"
+import { UpdateDefinitions } from "../../../modules/css-files/commands/update-definitions/update-definitions-command-handler"
 import type { IndexMap, LocationModel } from "../../../persistence/class-index"
 
-suite("SaveCssFile", () => {
+suite("UpdateDefinitions", () => {
   const TEST_URI = "file:///test.css"
   const OTHER_URI = "file:///other.css"
 
@@ -29,7 +29,7 @@ suite("SaveCssFile", () => {
 
   test("adds new classes found in the file", async () => {
     const index: IndexMap = new Map()
-    const command = new SaveCssFile(new CssClassIndex(index), async () => [
+    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [
       makeSymbol("my-class", 1, 0),
     ])
 
@@ -55,7 +55,7 @@ suite("SaveCssFile", () => {
         },
       ],
     ])
-    const command = new SaveCssFile(new CssClassIndex(index), async () => [
+    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [
       makeSymbol("my-class", 2, 0),
     ])
 
@@ -82,7 +82,7 @@ suite("SaveCssFile", () => {
         },
       ],
     ])
-    const command = new SaveCssFile(new CssClassIndex(index), async () => [])
+    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [])
 
     await command.execute({ uri: TEST_URI, content: "" })
 
@@ -106,7 +106,7 @@ suite("SaveCssFile", () => {
         },
       ],
     ])
-    const command = new SaveCssFile(new CssClassIndex(index), async () => [])
+    const command = new UpdateDefinitions(new CssClassIndex(index), async () => [])
 
     await command.execute({ uri: TEST_URI, content: "" })
 

@@ -2,10 +2,10 @@ import assert from "node:assert"
 
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { ClientFileParser } from "../../../modules/client-files/adapters/parsers/client-file-parser"
-import { SaveClientFile } from "../../../modules/client-files/commands/save-client-file"
+import { UpdateUsages } from "../../../modules/client-files/commands/update-usages-command-handler"
 import type { IndexMap } from "../../../persistence/class-index"
 
-suite("SaveClientFile", () => {
+suite("UpdateUsages", () => {
   test("loads all usages found", async () => {
     const index: IndexMap = new Map([
       [
@@ -53,10 +53,10 @@ suite("SaveClientFile", () => {
       ],
     }
 
-    const saveClientFile = new SaveClientFile(new CssClassIndex(index), mockParser)
+    const update = new UpdateUsages(new CssClassIndex(index), mockParser)
     const uri = "/component.tsx"
 
-    await saveClientFile.execute(uri)
+    await update.execute(uri)
 
     const myClassUsages = index.get("my-class")!.usages
     const otherClassUsages = index.get("other-class")!.usages

@@ -3,11 +3,11 @@ import * as vscode from "vscode"
 import type { ClassTreeDataProvider } from "../../../../ui/providers/class-tree/class-tree-data-provider"
 import { mapCssFiles } from "../../../../ui/providers/class-tree/css-file-data"
 import type { GetAllClasses } from "../../queries/get-all-classes/get-all-classes-query-handler"
-import type { DeleteCssFile } from "./delete-css-file-command-handler"
+import type { DeleteDefinitions } from "./delete-definitions-command-handler"
 
-export class DeleteCssFileVsCodeController {
+export class DeleteDefinitionsVsCodeController {
   constructor(
-    private deleteFile: DeleteCssFile,
+    private deleteFile: DeleteDefinitions,
     private getAll: GetAllClasses,
     private tree: ClassTreeDataProvider
   ) {}
