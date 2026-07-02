@@ -1,5 +1,5 @@
 import { CssClass } from "../../../domain/css-class"
-import type { Position } from "../../../domain/location"
+import type { Location, Position } from "../../../domain/location"
 
 type CssClassOptions = {
   className: string
@@ -14,24 +14,20 @@ type LocationOptions = {
 export function CssClassMother(options: CssClassOptions) {
   const cssClass = new CssClass(options.className)
   if (options.definitions) {
-    cssClass.definitions.add(
-      ...options.definitions.map((def) => ({
-        uri: def.uri,
-        start: DefaultPostion(),
-        end: DefaultPostion(),
-      }))
-    )
+    cssClass.definitions.add(...options.definitions.map(({ uri }) => makeLocationFrom(uri)))
   }
   if (options.usages) {
-    cssClass.usages.add(
-      ...options.usages.map((usage) => ({
-        uri: usage.uri,
-        start: DefaultPostion(),
-        end: DefaultPostion(),
-      }))
-    )
+    cssClass.usages.add(...options.usages.map(({ uri }) => makeLocationFrom(uri)))
   }
   return cssClass
+}
+
+export function makeLocationFrom(uri: string): Location {
+  return {
+    uri,
+    start: DefaultPostion(),
+    end: DefaultPostion(),
+  }
 }
 
 function DefaultPostion(): Position {

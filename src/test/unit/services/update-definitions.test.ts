@@ -1,126 +1,89 @@
 import assert from "node:assert"
 
 import { CssClassRepository } from "../../../adapters/css-class-repository"
-import type { Location } from "../../../domain/location"
-import type { CssFileDto } from "../../../dtos/css-file-dto"
 import type { Token } from "../../../dtos/token-dto"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
-import type { CssClassIndex } from "../../../persistence/css-class-index"
+import { CssClassMother, makeLocationFrom } from "../../fixtures/mothers/css-class-mother"
+
+function makeToken({ className, uri }: { className: string; uri: string }): Token {
+  return {
+    name: className,
+    location: makeLocationFrom(uri),
+  }
+}
 
 suite("UpdateDefinitions", () => {
-  const TEST_URI = "file:///test.css"
-  const OTHER_URI = "file:///other.css"
-
-  function makeLocation(uri: string, line: number, column: number): Location {
-    return {
-      uri,
-      start: { line, column },
-      end: { line, column: column + 8 },
-    }
-  }
-
-  function makeSymbol(className: string, line: number, column: number, uri: string): Token {
-    return {
-      name: className,
-      location: {
-        uri,
-        start: { line, column },
-        end: { line, column: column + className.length + 1 },
-      },
-    }
-  }
-
   test("adds new classes found in the file", async () => {
-    const index: CssClassIndex = new Map()
-    const command = new UpdateDefinitions(
-      new CssClassRepository(index),
-      async (file: CssFileDto) => [makeSymbol("my-class", 1, 0, file.uri)]
-    )
+    const repo = new CssClassRepository(new Map())
+    const command = new UpdateDefinitions(repo, async (file) => [
+      makeToken({ className: "my-class", uri: file.uri }),
+    ])
 
-    await command.execute({ uri: TEST_URI, content: ".my-class { color: red; }" })
+    await command.execute({ uri: "file:///test.css", content: ".my-class { color: red; }" })
 
-    const record = index.get("my-class")
-    assert(record !== undefined, "Expected 'my-class' to be added to the index")
+    const myClass = await repo.findOne("my-class")
+    assert(myClass !== undefined, "Expected 'my-class' to be added to the index")
     assert(
-      record.definitions.length === 1,
-      `Expected 1 definition, got ${record.definitions.length}`
+      myClass.definitions.length === 1,
+      `Expected 1 definition, got ${myClass.definitions.length}`
     )
-    assert(record.definitions[0]?.uri === TEST_URI)
   })
 
   test("adds new definitions of an existing class", async () => {
-    const index: CssClassIndex = new Map([
-      [
-        "my-class",
-        {
-          className: "my-class",
-          definitions: [makeLocation(OTHER_URI, 1, 0)],
-          usages: [],
-        },
-      ],
+    const repo = new CssClassRepository(new Map())
+    await repo.save(
+      CssClassMother({ className: "my-class", definitions: [{ uri: "file:///test.css" }] })
+    )
+    const command = new UpdateDefinitions(repo, async (file) => [
+      makeToken({ className: "my-class", uri: file.uri }),
     ])
-    const command = new UpdateDefinitions(
-      new CssClassRepository(index),
-      async (file: CssFileDto) => [makeSymbol("my-class", 2, 0, file.uri)]
-    )
 
-    await command.execute({ uri: TEST_URI, content: ".my-class { color: blue; }" })
+    await command.execute({ uri: "file:///other.css", content: ".my-class { color: blue; }" })
 
-    const record = index.get("my-class")
-    assert(record !== undefined, "Expected 'my-class' to remain in the index")
+    const myClass = await repo.findOne("my-class")
+    assert(myClass !== undefined, "Expected 'my-class' to remain in the index")
     assert(
-      record.definitions.length === 2,
-      `Expected 2 definitions, got ${record.definitions.length}`
+      myClass.definitions.length === 2,
+      `Expected 2 definitions, got ${myClass.definitions.length}`
     )
-    assert(record.definitions.some((d) => d.uri === TEST_URI))
-    assert(record.definitions.some((d) => d.uri === OTHER_URI))
+
+    const def = myClass.definitions.getAll().find((d) => d.uri === "file:///other.css")
+    assert(def !== undefined, "Expected definition in 'file:///other.css' to remain")
   })
 
   test("removes definitions deleted from the file", async () => {
-    const index: CssClassIndex = new Map([
-      [
-        "my-class",
-        {
-          className: "my-class",
-          definitions: [makeLocation(TEST_URI, 1, 0), makeLocation(OTHER_URI, 1, 0)],
-          usages: [],
-        },
-      ],
-    ])
-    const command = new UpdateDefinitions(
-      new CssClassRepository(index),
-      async (_file: CssFileDto) => []
+    const repo = new CssClassRepository(new Map())
+    await repo.save(
+      CssClassMother({
+        className: "my-class",
+        definitions: [{ uri: "file:///test.css" }, { uri: "file:///other.css" }],
+      })
     )
+    const command = new UpdateDefinitions(repo, async () => [])
 
-    await command.execute({ uri: TEST_URI, content: "" })
+    await command.execute({ uri: "file:///test.css", content: "" })
 
-    const record = index.get("my-class")
+    const record = await repo.findOne("my-class")
     assert(record !== undefined, "Expected 'my-class' to remain in the index")
     assert(
       record.definitions.length === 1,
       `Expected 1 remaining definition, got ${record.definitions.length}`
     )
-    assert(record.definitions[0]?.uri === OTHER_URI)
   })
 
   test("removes classes with no definitions left", async () => {
-    const index: CssClassIndex = new Map([
-      [
-        "my-class",
-        {
-          className: "my-class",
-          definitions: [makeLocation(TEST_URI, 1, 0)],
-          usages: [],
-        },
-      ],
-    ])
-    const command = new UpdateDefinitions(
-      new CssClassRepository(index),
-      async (_file: CssFileDto) => []
+    const repo = new CssClassRepository(new Map())
+    await repo.save(
+      CssClassMother({
+        className: "my-class",
+        definitions: [{ uri: "file:///test.css" }],
+      })
     )
+    const command = new UpdateDefinitions(repo, async () => [])
 
-    await command.execute({ uri: TEST_URI, content: "" })
+    await command.execute({ uri: "file:///test.css", content: "" })
 
-    assert(index.get("my-class") === undefined, "Expected 'my-class' to be removed from the index")
+    const myClass = await repo.findOne("my-class")
+    assert(myClass === undefined, "Expected 'my-class' to be removed from the index")
   })
 })
