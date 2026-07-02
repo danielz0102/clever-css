@@ -1,16 +1,9 @@
 import assert from "node:assert"
 
 import { CssClassRepository } from "../../../adapters/css-class-repository"
-import type { Token } from "../../../dtos/token-dto"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
-import { CssClassMother, makeLocationFrom } from "../../fixtures/mothers/css-class-mother"
-
-function makeToken({ className, uri }: { className: string; uri: string }): Token {
-  return {
-    name: className,
-    location: makeLocationFrom(uri),
-  }
-}
+import { CssClassMother } from "../../fixtures/mothers/css-class-mother"
+import { makeToken } from "../../fixtures/mothers/make-token"
 
 suite("UpdateDefinitions", () => {
   test("adds new classes found in the file", async () => {

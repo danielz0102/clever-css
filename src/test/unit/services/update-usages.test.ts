@@ -1,86 +1,47 @@
 import assert from "node:assert"
 
-import type { ClientFileParser } from "../../../adapters/client-file-parsers/client-file-parser-port"
 import { CssClassRepository } from "../../../adapters/css-class-repository"
 import { UpdateUsages } from "../../../features/update-usages/update-usages-command-handler"
-import type { CssClassIndex } from "../../../persistence/css-class-index"
+import { CssClassMother } from "../../fixtures/mothers/css-class-mother"
+import { makeToken } from "../../fixtures/mothers/make-token"
 
 suite("UpdateUsages", () => {
   test("loads all usages found", async () => {
-    const index: CssClassIndex = new Map([
-      [
-        "my-class",
-        {
-          className: "my-class",
-          definitions: [
-            {
-              uri: "file:///test.css",
-              start: { line: 0, column: 0 },
-              end: { line: 0, column: 8 },
-            },
-          ],
-          usages: [
-            {
-              uri: "file:///load-trigger.tsx",
-              start: { line: 0, column: 0 },
-              end: { line: 0, column: 0 },
-            },
-          ],
-        },
-      ],
-      [
-        "other-class",
-        {
-          className: "other-class",
-          definitions: [
-            { uri: "file:///test.css", start: { line: 1, column: 0 }, end: { line: 1, column: 8 } },
-          ],
-          usages: [
-            {
-              uri: "file:///load-trigger.tsx",
-              start: { line: 0, column: 0 },
-              end: { line: 0, column: 0 },
-            },
-          ],
-        },
-      ],
-    ])
-
-    const mockParser: ClientFileParser = {
+    const repo = new CssClassRepository(new Map())
+    await repo.save(
+      CssClassMother({
+        className: "my-class",
+        definitions: [{ uri: "file:///styles.css" }],
+        usages: [{ uri: "file:///component.tsx" }],
+      })
+    )
+    await repo.save(
+      CssClassMother({
+        className: "other-class",
+        definitions: [{ uri: "file:///styles.css" }],
+        usages: [{ uri: "file:///component.tsx" }],
+      })
+    )
+    const update = new UpdateUsages(repo, {
       getUsagesFrom: () => [
-        {
-          name: "my-class",
-          location: {
-            uri: "file:///test.tsx",
-            start: { line: 0, column: 13 },
-            end: { line: 0, column: 21 },
-          },
-        },
-        {
-          name: "other-class",
-          location: {
-            uri: "file:///test.tsx",
-            start: { line: 0, column: 22 },
-            end: { line: 0, column: 33 },
-          },
-        },
+        makeToken({ className: "my-class", uri: "file:///component.tsx" }),
+        makeToken({ className: "other-class", uri: "file:///component.tsx" }),
       ],
-    }
+    })
 
-    const update = new UpdateUsages(new CssClassRepository(index), mockParser)
-    const uri = "/component.tsx"
+    await update.execute("/component.tsx")
 
-    await update.execute(uri)
-
-    const myClassUsages = index.get("my-class")!.usages
-    const otherClassUsages = index.get("other-class")!.usages
+    const myClass = await repo.findOne("my-class")
+    const otherClass = await repo.findOne("other-class")
+    assert(myClass !== undefined, "Expected 'my-class' to remain in the index")
+    assert(otherClass !== undefined, "Expected 'other-class' to remain in the index")
     assert(
-      myClassUsages.length === 2,
-      `Expected 2 usages for 'my-class', got ${myClassUsages.length}`
+      myClass.usages.length === 2,
+      `Expected 2 usages for 'my-class', got ${myClass.usages.length}`
     )
     assert(
-      otherClassUsages.length === 2,
-      `Expected 2 usages for 'other-class', got ${otherClassUsages.length}`
+      otherClass.usages.length === 2,
+      `Expected 2 usages for 'other-class', got ${otherClass.usages.length}`
     )
   })
 })
