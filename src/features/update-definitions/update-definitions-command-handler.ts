@@ -13,7 +13,7 @@ export class UpdateDefinitions {
     await this.resetDefinitions(file)
     const symbols = await this.parseSymbols(file)
 
-    for (const { className, location } of symbols) {
+    for (const { name: className, location } of symbols) {
       const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
       cssClass.definitions.add(location)
       await this.classes.save(cssClass)

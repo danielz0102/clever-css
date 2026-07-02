@@ -30,13 +30,13 @@ suite("JsxParser", () => {
 
     const usages = parser.getUsagesFrom(file.fsPath)
 
-    const classOneUsages = usages.filter((u) => u.className === "class-one")
+    const classOneUsages = usages.filter((u) => u.name === "class-one")
     assert(
       classOneUsages.length === 1,
       `Expected 1 usage for 'class-one', found ${classOneUsages.length}`
     )
 
-    const classTwoUsages = usages.filter((u) => u.className === "class-two")
+    const classTwoUsages = usages.filter((u) => u.name === "class-two")
     assert(
       classTwoUsages.length === 1,
       `Expected 1 usage for 'class-two', found ${classTwoUsages.length}`
@@ -51,7 +51,7 @@ suite("JsxParser", () => {
 
     const usages = parser.getUsagesFrom(file.fsPath)
 
-    const classUsages = usages.filter((u) => u.className === "duplicate-class")
+    const classUsages = usages.filter((u) => u.name === "duplicate-class")
     assert(
       classUsages.length === 2,
       `Expected 2 usages for 'duplicate-class', found ${classUsages.length}`
@@ -66,7 +66,7 @@ suite("JsxParser", () => {
 
     const usages = parser.getUsagesFrom(file.fsPath)
 
-    const classUsages = usages.filter((u) => u.className === "my-class")
+    const classUsages = usages.filter((u) => u.name === "my-class")
     assert(classUsages.length === 1, `Expected 1 usage, found ${classUsages.length}`)
   })
 
@@ -78,10 +78,10 @@ suite("JsxParser", () => {
 
     const usages = parser.getUsagesFrom(file.fsPath)
 
-    const myClassUsages = usages.filter((u) => u.className === "my-class")
+    const myClassUsages = usages.filter((u) => u.name === "my-class")
     assert(myClassUsages.length === 1, `Expected 1 usage, found ${myClassUsages.length}`)
 
-    const anotherClassUsages = usages.filter((u) => u.className === "another-class")
+    const anotherClassUsages = usages.filter((u) => u.name === "another-class")
     assert(anotherClassUsages.length === 1, `Expected 1 usage, found ${anotherClassUsages.length}`)
   })
 })

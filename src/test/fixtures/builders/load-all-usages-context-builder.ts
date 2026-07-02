@@ -1,5 +1,5 @@
 import { CssClassIndex } from "../../../adapters/css-class-index"
-import type { Symbol } from "../../../dtos/symbol-dto"
+import type { Token } from "../../../dtos/token-dto"
 import { LoadAllUsages } from "../../../features/load-all-usages/load-all-usages-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
 
@@ -10,7 +10,7 @@ type LoadAllUsagesTestContext = {
 
 export class LoadAllUsagesContextBuilder {
   private index: IndexMap = new Map()
-  private usages: Symbol[] = []
+  private usages: Token[] = []
 
   withClasses(classNames: string[]): LoadAllUsagesContextBuilder {
     for (const className of classNames) {
@@ -42,7 +42,7 @@ export class LoadAllUsagesContextBuilder {
   withUsages(classNames: string[]): LoadAllUsagesContextBuilder {
     classNames.forEach((className, i) => {
       this.usages.push({
-        className: className,
+        name: className,
         location: {
           uri: "file:///test.tsx",
           start: { line: i, column: 0 },

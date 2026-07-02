@@ -1,12 +1,12 @@
 import * as vscode from "vscode"
 
-import { parseCssClassSymbols } from "../../adapters/css-parser"
+import { parseCssClassTokens } from "../../adapters/css-parser"
 import { uriToCssFileDto, type CssFileDto } from "../../dtos/css-file-dto"
-import type { Symbol } from "../../dtos/symbol-dto"
+import type { Token } from "../../dtos/token-dto"
 
-export async function parseAllCssClassSymbols(): Promise<Symbol[]> {
+export async function parseAllCssClassSymbols(): Promise<Token[]> {
   const cssFiles = await findCssFiles()
-  const symbols = cssFiles.map((file) => parseCssClassSymbols(file))
+  const symbols = cssFiles.map((file) => parseCssClassTokens(file))
   return (await Promise.all(symbols)).flat()
 }
 

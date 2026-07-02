@@ -1,7 +1,7 @@
 import type { ClientFileParser } from "../../adapters/client-file-parsers/client-file-parser-port"
 import type { CssClassIndex } from "../../adapters/css-class-index"
 import { CssClass } from "../../domain/css-class"
-import type { Symbol } from "../../dtos/symbol-dto"
+import type { Token } from "../../dtos/token-dto"
 
 export class UpdateUsages {
   constructor(
@@ -23,8 +23,8 @@ export class UpdateUsages {
     }
   }
 
-  private async saveUsages(usages: Symbol[], uri: string): Promise<void> {
-    for (const { className: name, location } of usages) {
+  private async saveUsages(usages: Token[], uri: string): Promise<void> {
+    for (const { name, location } of usages) {
       const cssClass = (await this.classes.findOne(name)) ?? new CssClass(name)
       cssClass.usages.add({ uri, start: location.start, end: location.end })
       await this.classes.save(cssClass)

@@ -1,11 +1,11 @@
 import type { CssClassIndex } from "../../adapters/css-class-index"
 import { CssClass } from "../../domain/css-class"
-import type { Symbol } from "../../dtos/symbol-dto"
+import type { Token } from "../../dtos/token-dto"
 
 export class LoadDefinitions {
   constructor(
     private classes: CssClassIndex,
-    private parseAllSymbols: () => Promise<Symbol[]>
+    private parseAllSymbols: () => Promise<Token[]>
   ) {}
 
   async execute(): Promise<void> {
@@ -13,7 +13,7 @@ export class LoadDefinitions {
 
     const symbols = await this.parseAllSymbols()
 
-    for (const { className, location } of symbols) {
+    for (const { name: className, location } of symbols) {
       const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
       cssClass.definitions.add(location)
       await this.classes.save(cssClass)

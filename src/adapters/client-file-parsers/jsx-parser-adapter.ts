@@ -1,17 +1,17 @@
 import { Project, SyntaxKind, type SourceFile, type TemplateExpression } from "ts-morph"
 
 import type { Position } from "../../domain/location"
-import type { Symbol } from "../../dtos/symbol-dto"
+import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
 export class JsxParser implements ClientFileParser {
   private project = new Project()
   private sourceFile?: SourceFile
 
-  getUsagesFrom(uri: string): Symbol[] {
+  getUsagesFrom(uri: string): Token[] {
     this.sourceFile = this.project.addSourceFileAtPath(uri)
     const jsxAttributes = this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    const usages: Symbol[] = []
+    const usages: Token[] = []
 
     jsxAttributes.forEach((attr) => {
       if (attr.getNameNode().getText() !== "className") return
@@ -43,11 +43,11 @@ export class JsxParser implements ClientFileParser {
     return { line: line - 1, column: column - 1 }
   }
 
-  private parseText(text: string, startOffset: number): Symbol[] {
+  private parseText(text: string, startOffset: number): Token[] {
     const names = text.split(/\s+/)
     let offset = 0
 
-    const usages: Symbol[] = []
+    const usages: Token[] = []
 
     names.forEach((name) => {
       const idx = text.indexOf(name, offset)
@@ -55,7 +55,7 @@ export class JsxParser implements ClientFileParser {
       const end = start + name.length
 
       usages.push({
-        className: name,
+        name: name,
         location: {
           uri: this.sourceFile!.getFilePath(),
           start: this.posAt(start),
@@ -68,8 +68,8 @@ export class JsxParser implements ClientFileParser {
     return usages
   }
 
-  private parseTemplateExpression(expression: TemplateExpression): Symbol[] {
-    const usages: Symbol[] = []
+  private parseTemplateExpression(expression: TemplateExpression): Token[] {
+    const usages: Token[] = []
 
     const head = expression.getHead()
     usages.push(...this.parseText(head.getLiteralText(), head.getStart()))

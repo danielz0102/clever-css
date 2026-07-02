@@ -1,5 +1,5 @@
 import { CssClassIndex } from "../../../adapters/css-class-index"
-import type { Symbol } from "../../../dtos/symbol-dto"
+import type { Token } from "../../../dtos/token-dto"
 import { LoadDefinitions } from "../../../features/load-definitions/load-definitions-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
 
@@ -10,7 +10,7 @@ type LoadDefinitionsTestContext = {
 
 export class LoadDefinitionsTestContextBuilder {
   private index: IndexMap = new Map()
-  private definitions: Symbol[] = []
+  private definitions: Token[] = []
 
   withClasses(classNames: string[]): LoadDefinitionsTestContextBuilder {
     for (const className of classNames) {
@@ -28,7 +28,7 @@ export class LoadDefinitionsTestContextBuilder {
   withDefinitions(classNames: string[]): LoadDefinitionsTestContextBuilder {
     classNames.forEach((className, i) => {
       this.definitions.push({
-        className,
+        name: className,
         location: {
           uri: "file:///test.css",
           start: { line: i, column: 0 },

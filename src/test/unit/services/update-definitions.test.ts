@@ -3,7 +3,7 @@ import assert from "node:assert"
 import { CssClassIndex } from "../../../adapters/css-class-index"
 import type { Location } from "../../../domain/location"
 import type { CssFileDto } from "../../../dtos/css-file-dto"
-import type { Symbol } from "../../../dtos/symbol-dto"
+import type { Token } from "../../../dtos/token-dto"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
 import type { IndexMap } from "../../../persistence/index-map"
 
@@ -19,9 +19,9 @@ suite("UpdateDefinitions", () => {
     }
   }
 
-  function makeSymbol(className: string, line: number, column: number, uri: string): Symbol {
+  function makeSymbol(className: string, line: number, column: number, uri: string): Token {
     return {
-      className,
+      name: className,
       location: {
         uri,
         start: { line, column },

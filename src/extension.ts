@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 
 import { JsxParser } from "./adapters/client-file-parsers/jsx-parser-adapter"
 import { CssClassIndex } from "./adapters/css-class-index"
-import { parseCssClassSymbols } from "./adapters/css-parser"
+import { parseCssClassTokens } from "./adapters/css-parser"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteDefinitionsVsCodeController } from "./features/delete-definitions/delete-definitions-vscode-controller"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
@@ -36,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const getAll = new GetAllClasses(index)
   const classDataProvider = new ClassTreeDataProvider(mapCssFiles(await getAll.execute()))
   const saveCssFileController = new UpdateDefinitionsVsCodeController(
-    new UpdateDefinitions(repo, parseCssClassSymbols),
+    new UpdateDefinitions(repo, parseCssClassTokens),
     getAll,
     classDataProvider
   )

@@ -1,5 +1,5 @@
-import type { Symbol } from "../../dtos/symbol-dto"
+import type { Token } from "../../dtos/token-dto"
 
 export interface ClientFileParser {
-  getUsagesFrom(uri: string): Symbol[]
+  getUsagesFrom(uri: string): Token[]
 }
