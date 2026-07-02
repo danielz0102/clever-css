@@ -1,23 +1,28 @@
 import assert from "node:assert"
 
-import { LoadDefinitionsTestContextBuilder } from "../../fixtures/builders/load-definitions-context-builder"
+import { CssClassRepository } from "../../../adapters/css-class-repository"
+import { LoadDefinitions } from "../../../features/load-definitions/load-definitions-command-handler"
+import { CssClassMother } from "../../fixtures/mothers/css-class-mother"
+import { makeToken } from "../../fixtures/mothers/make-token"
 
 suite("LoadDefinitions", () => {
   test("loads all classes with their definitions", async () => {
-    const { command, index } = new LoadDefinitionsTestContextBuilder()
-      .withDefinitions(["foo", "bar"])
-      .build()
+    const repo = new CssClassRepository(new Map())
+    const command = new LoadDefinitions(repo, async () => [
+      makeToken({ className: "foo", uri: "file:///foo.css" }),
+      makeToken({ className: "bar", uri: "file:///bar.css" }),
+    ])
 
     await command.execute()
 
-    const foo = index.get("foo")
+    const foo = await repo.findOne("foo")
     assert(foo !== undefined, "Expected 'foo' to be in the index")
     assert(
       foo.definitions.length === 1,
       `Expected 'foo' to have 1 definition, got ${foo.definitions.length}`
     )
 
-    const bar = index.get("bar")
+    const bar = await repo.findOne("bar")
     assert(bar !== undefined, "Expected 'bar' to be in the index")
     assert(
       bar.definitions.length === 1,
@@ -25,24 +30,31 @@ suite("LoadDefinitions", () => {
     )
   })
 
-  test("empty the index if there are no classes", async () => {
-    const { command, index } = new LoadDefinitionsTestContextBuilder()
-      .withClasses(["foo", "bar"])
-      .build()
+  test("removes classes if they're not definitions", async () => {
+    const repo = new CssClassRepository(new Map())
+    await repo.save(CssClassMother({ className: "foo", definitions: [{ uri: "file:///foo.css" }] }))
+    await repo.save(CssClassMother({ className: "bar", definitions: [{ uri: "file:///bar.css" }] }))
+    const command = new LoadDefinitions(repo, async () => [])
 
     await command.execute()
 
-    assert(index.size === 0, "Expected index to be empty when no definitions are found")
+    const foo = await repo.findOne("foo")
+    assert(foo === undefined, "Expected 'foo' to be removed from the index")
+
+    const bar = await repo.findOne("bar")
+    assert(bar === undefined, "Expected 'bar' to be removed from the index")
   })
 
   test("doesn't load usages", async () => {
-    const { command, index } = new LoadDefinitionsTestContextBuilder()
-      .withDefinitions(["foo"])
-      .build()
+    const repo = new CssClassRepository(new Map())
+    const command = new LoadDefinitions(repo, async () => [
+      makeToken({ className: "foo", uri: "file:///foo.css" }),
+      makeToken({ className: "bar", uri: "file:///bar.css" }),
+    ])
 
     await command.execute()
 
-    const foo = index.get("foo")
+    const foo = await repo.findOne("foo")
     assert(foo !== undefined)
     assert(foo.usages.length === 0, "Expected usages to be empty")
   })
