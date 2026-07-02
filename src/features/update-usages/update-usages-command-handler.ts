@@ -11,7 +11,7 @@ export class UpdateUsages {
 
   async execute(uri: string): Promise<void> {
     await this.resetUsages(uri)
-    await this.saveUsages(this.parser.getUsagesFrom(uri), uri)
+    await this.saveUsages(this.parser.getUsagesFrom(uri))
   }
 
   private async resetUsages(uri: string): Promise<void> {
@@ -23,10 +23,10 @@ export class UpdateUsages {
     }
   }
 
-  private async saveUsages(usages: Token[], uri: string): Promise<void> {
+  private async saveUsages(usages: Token[]): Promise<void> {
     for (const { name, location } of usages) {
       const cssClass = (await this.classes.findOne(name)) ?? new CssClass(name)
-      cssClass.usages.add({ uri, start: location.start, end: location.end })
+      cssClass.usages.add(location)
       await this.classes.save(cssClass)
     }
   }
