@@ -54,13 +54,7 @@ export class LoadAllUsagesContextBuilder {
   }
 
   build(): LoadAllUsagesTestContext {
-    const command = new LoadAllUsages(
-      new CssClassIndex(this.index),
-      {
-        getUsagesFrom: () => this.usages,
-      },
-      async () => ["file:///test.tsx"]
-    )
+    const command = new LoadAllUsages(new CssClassIndex(this.index), async () => this.usages)
     return { index: this.index, command }
   }
 }

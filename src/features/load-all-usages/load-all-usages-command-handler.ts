@@ -1,29 +1,22 @@
-import type { ClientFileParser } from "../../adapters/client-file-parsers/client-file-parser-port"
 import type { CssClassIndex } from "../../adapters/css-class-index"
 import { CssClass } from "../../domain/css-class"
 import type { Token } from "../../dtos/token-dto"
-import type { ClientFilesFinder } from "./find-client-files-adapter"
 
 export class LoadAllUsages {
   constructor(
     private classes: CssClassIndex,
-    private parser: ClientFileParser,
-    private findFiles: ClientFilesFinder
+    private getAllUsages: () => Promise<Token[]>
   ) {}
 
   async execute(): Promise<void> {
     await this.classes.resetAllUsages()
-    const files = await this.findFiles()
-
-    for (const uri of files) {
-      await this.saveUsages(this.parser.getUsagesFrom(uri), uri)
-    }
+    await this.saveUsages(await this.getAllUsages())
   }
 
-  private async saveUsages(usages: Token[], uri: string): Promise<void> {
+  private async saveUsages(usages: Token[]): Promise<void> {
     for (const { name, location } of usages) {
       const cssClass = (await this.classes.findOne(name)) ?? new CssClass(name)
-      cssClass.usages.add({ uri, start: location.start, end: location.end })
+      cssClass.usages.add(location)
       await this.classes.save(cssClass)
     }
   }

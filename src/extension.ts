@@ -9,7 +9,7 @@ import { DeleteUsages } from "./features/delete-usages/delete-usages-command-han
 import { GetAllClasses } from "./features/get-all-classes/get-all-classes-query-handler"
 import { GetUsages } from "./features/get-usages/get-usages-query-handler"
 import { GetUsagesVsCodeController } from "./features/get-usages/get-usages-vscode-controller"
-import { findClientFiles } from "./features/load-all-usages/find-client-files-adapter"
+import { parseAllUsages } from "./features/load-all-usages/find-client-files-adapter"
 import { LoadAllUsages } from "./features/load-all-usages/load-all-usages-command-handler"
 import { LoadDefinitions } from "./features/load-definitions/load-definitions-command-handler"
 import { parseAllCssClassSymbols } from "./features/load-definitions/parse-all-symbols"
@@ -30,7 +30,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const loadDefinitions = new LoadDefinitions(repo, parseAllCssClassSymbols)
   await loadDefinitions.execute()
 
-  const loadUsages = new LoadAllUsages(repo, new JsxParser(), findClientFiles)
+  const loadUsages = new LoadAllUsages(repo, parseAllUsages)
   void loadUsages.execute()
 
   const getAll = new GetAllClasses(index)
