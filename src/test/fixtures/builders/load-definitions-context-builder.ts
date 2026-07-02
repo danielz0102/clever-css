@@ -1,15 +1,15 @@
-import { CssClassIndex } from "../../../adapters/css-class-index"
+import { CssClassRepository } from "../../../adapters/css-class-repository"
 import type { Token } from "../../../dtos/token-dto"
 import { LoadDefinitions } from "../../../features/load-definitions/load-definitions-command-handler"
-import type { IndexMap } from "../../../persistence/index-map"
+import type { CssClassIndex } from "../../../persistence/css-class-index"
 
 type LoadDefinitionsTestContext = {
-  index: IndexMap
+  index: CssClassIndex
   command: LoadDefinitions
 }
 
 export class LoadDefinitionsTestContextBuilder {
-  private index: IndexMap = new Map()
+  private index: CssClassIndex = new Map()
   private definitions: Token[] = []
 
   withClasses(classNames: string[]): LoadDefinitionsTestContextBuilder {
@@ -40,7 +40,10 @@ export class LoadDefinitionsTestContextBuilder {
   }
 
   build(): LoadDefinitionsTestContext {
-    const command = new LoadDefinitions(new CssClassIndex(this.index), async () => this.definitions)
+    const command = new LoadDefinitions(
+      new CssClassRepository(this.index),
+      async () => this.definitions
+    )
     return { index: this.index, command }
   }
 }

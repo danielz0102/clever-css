@@ -1,7 +1,7 @@
-import type { CssClassIndex } from "../../adapters/css-class-index"
+import type { CssClassRepository } from "../../adapters/css-class-repository"
 
 export class DeleteUsages {
-  constructor(private classes: CssClassIndex) {}
+  constructor(private classes: CssClassRepository) {}
 
   async execute(_uri: string): Promise<void> {
     throw new Error("Not implemented yet.")

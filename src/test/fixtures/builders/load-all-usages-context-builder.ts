@@ -1,15 +1,15 @@
-import { CssClassIndex } from "../../../adapters/css-class-index"
+import { CssClassRepository } from "../../../adapters/css-class-repository"
 import type { Token } from "../../../dtos/token-dto"
 import { LoadAllUsages } from "../../../features/load-all-usages/load-all-usages-command-handler"
-import type { IndexMap } from "../../../persistence/index-map"
+import type { CssClassIndex } from "../../../persistence/css-class-index"
 
 type LoadAllUsagesTestContext = {
-  index: IndexMap
+  index: CssClassIndex
   command: LoadAllUsages
 }
 
 export class LoadAllUsagesContextBuilder {
-  private index: IndexMap = new Map()
+  private index: CssClassIndex = new Map()
   private usages: Token[] = []
 
   withClasses(classNames: string[]): LoadAllUsagesContextBuilder {
@@ -54,7 +54,7 @@ export class LoadAllUsagesContextBuilder {
   }
 
   build(): LoadAllUsagesTestContext {
-    const command = new LoadAllUsages(new CssClassIndex(this.index), async () => this.usages)
+    const command = new LoadAllUsages(new CssClassRepository(this.index), async () => this.usages)
     return { index: this.index, command }
   }
 }

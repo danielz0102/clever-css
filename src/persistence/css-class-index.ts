@@ -7,4 +7,4 @@ export type CssClassModel = {
 }
 
 export const index = new Map<string, CssClassModel>()
-export type IndexMap = typeof index
+export type CssClassIndex = typeof index

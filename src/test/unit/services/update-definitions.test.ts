@@ -1,11 +1,11 @@
 import assert from "node:assert"
 
-import { CssClassIndex } from "../../../adapters/css-class-index"
+import { CssClassRepository } from "../../../adapters/css-class-repository"
 import type { Location } from "../../../domain/location"
 import type { CssFileDto } from "../../../dtos/css-file-dto"
 import type { Token } from "../../../dtos/token-dto"
 import { UpdateDefinitions } from "../../../features/update-definitions/update-definitions-command-handler"
-import type { IndexMap } from "../../../persistence/index-map"
+import type { CssClassIndex } from "../../../persistence/css-class-index"
 
 suite("UpdateDefinitions", () => {
   const TEST_URI = "file:///test.css"
@@ -31,10 +31,11 @@ suite("UpdateDefinitions", () => {
   }
 
   test("adds new classes found in the file", async () => {
-    const index: IndexMap = new Map()
-    const command = new UpdateDefinitions(new CssClassIndex(index), async (file: CssFileDto) => [
-      makeSymbol("my-class", 1, 0, file.uri),
-    ])
+    const index: CssClassIndex = new Map()
+    const command = new UpdateDefinitions(
+      new CssClassRepository(index),
+      async (file: CssFileDto) => [makeSymbol("my-class", 1, 0, file.uri)]
+    )
 
     await command.execute({ uri: TEST_URI, content: ".my-class { color: red; }" })
 
@@ -48,7 +49,7 @@ suite("UpdateDefinitions", () => {
   })
 
   test("adds new definitions of an existing class", async () => {
-    const index: IndexMap = new Map([
+    const index: CssClassIndex = new Map([
       [
         "my-class",
         {
@@ -58,9 +59,10 @@ suite("UpdateDefinitions", () => {
         },
       ],
     ])
-    const command = new UpdateDefinitions(new CssClassIndex(index), async (file: CssFileDto) => [
-      makeSymbol("my-class", 2, 0, file.uri),
-    ])
+    const command = new UpdateDefinitions(
+      new CssClassRepository(index),
+      async (file: CssFileDto) => [makeSymbol("my-class", 2, 0, file.uri)]
+    )
 
     await command.execute({ uri: TEST_URI, content: ".my-class { color: blue; }" })
 
@@ -75,7 +77,7 @@ suite("UpdateDefinitions", () => {
   })
 
   test("removes definitions deleted from the file", async () => {
-    const index: IndexMap = new Map([
+    const index: CssClassIndex = new Map([
       [
         "my-class",
         {
@@ -85,7 +87,10 @@ suite("UpdateDefinitions", () => {
         },
       ],
     ])
-    const command = new UpdateDefinitions(new CssClassIndex(index), async (_file: CssFileDto) => [])
+    const command = new UpdateDefinitions(
+      new CssClassRepository(index),
+      async (_file: CssFileDto) => []
+    )
 
     await command.execute({ uri: TEST_URI, content: "" })
 
@@ -99,7 +104,7 @@ suite("UpdateDefinitions", () => {
   })
 
   test("removes classes with no definitions left", async () => {
-    const index: IndexMap = new Map([
+    const index: CssClassIndex = new Map([
       [
         "my-class",
         {
@@ -109,7 +114,10 @@ suite("UpdateDefinitions", () => {
         },
       ],
     ])
-    const command = new UpdateDefinitions(new CssClassIndex(index), async (_file: CssFileDto) => [])
+    const command = new UpdateDefinitions(
+      new CssClassRepository(index),
+      async (_file: CssFileDto) => []
+    )
 
     await command.execute({ uri: TEST_URI, content: "" })
 

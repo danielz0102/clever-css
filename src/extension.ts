@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 
 import { JsxParser } from "./adapters/client-file-parsers/jsx-parser-adapter"
-import { CssClassIndex } from "./adapters/css-class-index"
+import { CssClassRepository } from "./adapters/css-class-repository"
 import { parseCssClassTokens } from "./adapters/css-parser"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteDefinitionsVsCodeController } from "./features/delete-definitions/delete-definitions-vscode-controller"
@@ -16,7 +16,7 @@ import { parseAllCssClassSymbols } from "./features/load-definitions/parse-all-s
 import { UpdateDefinitions } from "./features/update-definitions/update-definitions-command-handler"
 import { UpdateDefinitionsVsCodeController } from "./features/update-definitions/update-definitions-vscode-controller"
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
-import { index } from "./persistence/index-map"
+import { index } from "./persistence/css-class-index"
 import { openLocation } from "./ui/commands/open-location"
 import { ClassTreeDataProvider } from "./ui/providers/class-tree/class-tree-data-provider"
 import { mapCssFiles } from "./ui/providers/class-tree/css-file-data"
@@ -25,7 +25,7 @@ import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
-  const repo = new CssClassIndex(index)
+  const repo = new CssClassRepository(index)
 
   const loadDefinitions = new LoadDefinitions(repo, parseAllCssClassSymbols)
   await loadDefinitions.execute()

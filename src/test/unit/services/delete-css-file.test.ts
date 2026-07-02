@@ -1,13 +1,13 @@
 import assert from "node:assert"
 
-import { CssClassIndex } from "../../../adapters/css-class-index"
+import { CssClassRepository } from "../../../adapters/css-class-repository"
 import { DeleteDefinitions } from "../../../features/delete-definitions/delete-definitions-command-handler"
-import type { IndexMap } from "../../../persistence/index-map"
+import type { CssClassIndex } from "../../../persistence/css-class-index"
 
 suite("DeleteDefinitions", () => {
   test("removes all the definitions of a file", async () => {
     const testClass = "my-class"
-    const index: IndexMap = new Map([
+    const index: CssClassIndex = new Map([
       [
         testClass,
         {
@@ -43,7 +43,7 @@ suite("DeleteDefinitions", () => {
       ],
     ])
 
-    const command = new DeleteDefinitions(new CssClassIndex(index))
+    const command = new DeleteDefinitions(new CssClassRepository(index))
     await command.execute("file:///test.css")
 
     assert(index.size === 1, `Expected 1 remaining class, got ${index.size}`)
@@ -58,7 +58,7 @@ suite("DeleteDefinitions", () => {
   })
 
   test("removes classes from the index if they have no definitions left", async () => {
-    const index: IndexMap = new Map([
+    const index: CssClassIndex = new Map([
       [
         "my-class",
         {
@@ -75,7 +75,7 @@ suite("DeleteDefinitions", () => {
       ],
     ])
 
-    const command = new DeleteDefinitions(new CssClassIndex(index))
+    const command = new DeleteDefinitions(new CssClassRepository(index))
     await command.execute("file:///test.css")
 
     assert(index.get("my-class") === undefined, "Expected the class to be removed from the index")

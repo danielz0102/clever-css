@@ -1,11 +1,11 @@
 import type { ClientFileParser } from "../../adapters/client-file-parsers/client-file-parser-port"
-import type { CssClassIndex } from "../../adapters/css-class-index"
+import type { CssClassRepository } from "../../adapters/css-class-repository"
 import { CssClass } from "../../domain/css-class"
 import type { Token } from "../../dtos/token-dto"
 
 export class UpdateUsages {
   constructor(
-    private classes: CssClassIndex,
+    private classes: CssClassRepository,
     private parser: ClientFileParser
   ) {}
 

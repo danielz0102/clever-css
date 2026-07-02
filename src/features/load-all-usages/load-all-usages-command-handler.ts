@@ -1,10 +1,10 @@
-import type { CssClassIndex } from "../../adapters/css-class-index"
+import type { CssClassRepository } from "../../adapters/css-class-repository"
 import { CssClass } from "../../domain/css-class"
 import type { Token } from "../../dtos/token-dto"
 
 export class LoadAllUsages {
   constructor(
-    private classes: CssClassIndex,
+    private classes: CssClassRepository,
     private getAllUsages: () => Promise<Token[]>
   ) {}
 

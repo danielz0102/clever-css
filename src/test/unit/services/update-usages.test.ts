@@ -1,13 +1,13 @@
 import assert from "node:assert"
 
 import type { ClientFileParser } from "../../../adapters/client-file-parsers/client-file-parser-port"
-import { CssClassIndex } from "../../../adapters/css-class-index"
+import { CssClassRepository } from "../../../adapters/css-class-repository"
 import { UpdateUsages } from "../../../features/update-usages/update-usages-command-handler"
-import type { IndexMap } from "../../../persistence/index-map"
+import type { CssClassIndex } from "../../../persistence/css-class-index"
 
 suite("UpdateUsages", () => {
   test("loads all usages found", async () => {
-    const index: IndexMap = new Map([
+    const index: CssClassIndex = new Map([
       [
         "my-class",
         {
@@ -67,7 +67,7 @@ suite("UpdateUsages", () => {
       ],
     }
 
-    const update = new UpdateUsages(new CssClassIndex(index), mockParser)
+    const update = new UpdateUsages(new CssClassRepository(index), mockParser)
     const uri = "/component.tsx"
 
     await update.execute(uri)
