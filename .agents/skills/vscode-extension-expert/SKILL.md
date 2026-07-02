@@ -59,15 +59,15 @@ extension-name/
 ### Extension Entry Point Pattern
 
 ```typescript
-import * as vscode from 'vscode';
+import * as vscode from "vscode"
 
 export function activate(context: vscode.ExtensionContext) {
   // Register commands, providers, listeners
-  const disposable = vscode.commands.registerCommand('ext.command', () => {
+  const disposable = vscode.commands.registerCommand("ext.command", () => {
     // Command implementation
-  });
+  })
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable)
 }
 
 export function deactivate() {
@@ -79,14 +79,14 @@ export function deactivate() {
 
 Choose the most specific activation event to minimize startup impact:
 
-| Event | Use Case | Example |
-|-------|----------|---------|
-| `onLanguage:<lang>` | Language-specific features | `onLanguage:python` |
-| `onCommand:<command>` | Command-driven extensions | `onCommand:ext.showPanel` |
-| `onView:<viewId>` | Sidebar view expansion | `onView:myTreeView` |
-| `workspaceContains:<glob>` | Project-specific features | `workspaceContains:**/.eslintrc*` |
-| `onFileSystem:<scheme>` | Custom file systems | `onFileSystem:sftp` |
-| `onStartupFinished` | Background tasks | (prefer over `*`) |
+| Event                      | Use Case                   | Example                           |
+| -------------------------- | -------------------------- | --------------------------------- |
+| `onLanguage:<lang>`        | Language-specific features | `onLanguage:python`               |
+| `onCommand:<command>`      | Command-driven extensions  | `onCommand:ext.showPanel`         |
+| `onView:<viewId>`          | Sidebar view expansion     | `onView:myTreeView`               |
+| `workspaceContains:<glob>` | Project-specific features  | `workspaceContains:**/.eslintrc*` |
+| `onFileSystem:<scheme>`    | Custom file systems        | `onFileSystem:sftp`               |
+| `onStartupFinished`        | Background tasks           | (prefer over `*`)                 |
 
 **Critical**: Avoid using `*` as it activates on every VS Code startup.
 
@@ -97,12 +97,14 @@ Choose the most specific activation event to minimize startup impact:
 ```json
 {
   "contributes": {
-    "commands": [{
-      "command": "ext.doSomething",
-      "title": "Do Something",
-      "category": "My Extension",
-      "icon": "$(symbol-method)"
-    }]
+    "commands": [
+      {
+        "command": "ext.doSomething",
+        "title": "Do Something",
+        "category": "My Extension",
+        "icon": "$(symbol-method)"
+      }
+    ]
   }
 }
 ```
@@ -132,17 +134,21 @@ Choose the most specific activation event to minimize startup impact:
 {
   "contributes": {
     "views": {
-      "explorer": [{
-        "id": "myTreeView",
-        "name": "My View"
-      }]
+      "explorer": [
+        {
+          "id": "myTreeView",
+          "name": "My View"
+        }
+      ]
     },
     "viewsContainers": {
-      "activitybar": [{
-        "id": "myContainer",
-        "title": "My Extension",
-        "icon": "resources/icon.svg"
-      }]
+      "activitybar": [
+        {
+          "id": "myContainer",
+          "title": "My Extension",
+          "icon": "resources/icon.svg"
+        }
+      ]
     }
   }
 }
@@ -154,44 +160,46 @@ Choose the most specific activation event to minimize startup impact:
 
 ```typescript
 // Show messages
-vscode.window.showInformationMessage('Hello!');
-vscode.window.showErrorMessage('Error occurred');
+vscode.window.showInformationMessage("Hello!")
+vscode.window.showErrorMessage("Error occurred")
 
 // Quick picks
-const item = await vscode.window.showQuickPick(['Option 1', 'Option 2']);
+const item = await vscode.window.showQuickPick(["Option 1", "Option 2"])
 
 // Input boxes
-const input = await vscode.window.showInputBox({ prompt: 'Enter value' });
+const input = await vscode.window.showInputBox({ prompt: "Enter value" })
 
 // Active editor
-const editor = vscode.window.activeTextEditor;
+const editor = vscode.window.activeTextEditor
 ```
 
 ### workspace API
 
 ```typescript
 // Read configuration
-const config = vscode.workspace.getConfiguration('myExtension');
-const value = config.get<boolean>('enabled');
+const config = vscode.workspace.getConfiguration("myExtension")
+const value = config.get<boolean>("enabled")
 
 // Watch files
-const watcher = vscode.workspace.createFileSystemWatcher('**/*.ts');
-watcher.onDidChange(uri => { /* handle change */ });
+const watcher = vscode.workspace.createFileSystemWatcher("**/*.ts")
+watcher.onDidChange((uri) => {
+  /* handle change */
+})
 
 // Open documents
-const doc = await vscode.workspace.openTextDocument(uri);
+const doc = await vscode.workspace.openTextDocument(uri)
 ```
 
 ### commands API
 
 ```typescript
 // Register
-const disposable = vscode.commands.registerCommand('ext.cmd', (arg) => {
+const disposable = vscode.commands.registerCommand("ext.cmd", (arg) => {
   // Implementation
-});
+})
 
 // Execute
-await vscode.commands.executeCommand('ext.cmd', argument);
+await vscode.commands.executeCommand("ext.cmd", argument)
 ```
 
 ## WebView Development
@@ -202,7 +210,7 @@ await vscode.commands.executeCommand('ext.cmd', argument);
 
 ```typescript
 function getWebviewContent(webview: vscode.Webview): string {
-  const nonce = getNonce();
+  const nonce = getNonce()
 
   return `<!DOCTYPE html>
   <html>
@@ -221,7 +229,7 @@ function getWebviewContent(webview: vscode.Webview): string {
       // Use vscode.postMessage() for communication
     </script>
   </body>
-  </html>`;
+  </html>`
 }
 ```
 
@@ -233,41 +241,41 @@ function getWebviewContent(webview: vscode.Webview): string {
 
 ```typescript
 // Extension → WebView
-panel.webview.postMessage({ type: 'update', data: payload });
+panel.webview.postMessage({ type: "update", data: payload })
 
 // WebView → Extension
-panel.webview.onDidReceiveMessage(message => {
+panel.webview.onDidReceiveMessage((message) => {
   switch (message.type) {
-    case 'action':
-      handleAction(message.data);
-      break;
+    case "action":
+      handleAction(message.data)
+      break
   }
-});
+})
 
 // In WebView JavaScript
-window.addEventListener('message', event => {
-  const message = event.data;
+window.addEventListener("message", (event) => {
+  const message = event.data
   // Handle message
-});
+})
 
-vscode.postMessage({ type: 'action', data: result });
+vscode.postMessage({ type: "action", data: result })
 ```
 
 ### State Persistence
 
 ```typescript
 // Simple state (survives webview hide/show)
-const state = webview.getState() || { count: 0 };
-webview.setState({ count: state.count + 1 });
+const state = webview.getState() || { count: 0 }
+webview.setState({ count: state.count + 1 })
 
 // Full persistence (survives VS Code restart)
 class MySerializer implements vscode.WebviewPanelSerializer {
   async deserializeWebviewPanel(panel: vscode.WebviewPanel, state: any) {
-    panel.webview.html = getHtmlForWebview(panel.webview, state);
+    panel.webview.html = getHtmlForWebview(panel.webview, state)
   }
 }
 
-vscode.window.registerWebviewPanelSerializer('myWebview', new MySerializer());
+vscode.window.registerWebviewPanelSerializer("myWebview", new MySerializer())
 ```
 
 ## Language Server Protocol (LSP)
@@ -285,89 +293,87 @@ vscode.window.registerWebviewPanelSerializer('myWebview', new MySerializer());
 ### Client Implementation
 
 ```typescript
-import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
+import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node"
 
 const serverOptions: ServerOptions = {
   run: { module: serverPath, transport: TransportKind.ipc },
-  debug: { module: serverPath, transport: TransportKind.ipc }
-};
+  debug: { module: serverPath, transport: TransportKind.ipc },
+}
 
 const clientOptions: LanguageClientOptions = {
-  documentSelector: [{ scheme: 'file', language: 'mylang' }],
+  documentSelector: [{ scheme: "file", language: "mylang" }],
   synchronize: {
-    fileEvents: vscode.workspace.createFileSystemWatcher('**/*.mylang')
-  }
-};
+    fileEvents: vscode.workspace.createFileSystemWatcher("**/*.mylang"),
+  },
+}
 
-const client = new LanguageClient('mylang', 'My Language', serverOptions, clientOptions);
-client.start();
+const client = new LanguageClient("mylang", "My Language", serverOptions, clientOptions)
+client.start()
 ```
 
 ### Server Implementation
 
 ```typescript
-import { createConnection, TextDocuments, ProposedFeatures } from 'vscode-languageserver/node';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { createConnection, TextDocuments, ProposedFeatures } from "vscode-languageserver/node"
+import { TextDocument } from "vscode-languageserver-textdocument"
 
-const connection = createConnection(ProposedFeatures.all);
-const documents = new TextDocuments(TextDocument);
+const connection = createConnection(ProposedFeatures.all)
+const documents = new TextDocuments(TextDocument)
 
 connection.onInitialize((params) => {
   return {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       completionProvider: { resolveProvider: true },
-      hoverProvider: true
-    }
-  };
-});
+      hoverProvider: true,
+    },
+  }
+})
 
 connection.onCompletion((params) => {
-  return [
-    { label: 'suggestion1', kind: CompletionItemKind.Text }
-  ];
-});
+  return [{ label: "suggestion1", kind: CompletionItemKind.Text }]
+})
 
-documents.listen(connection);
-connection.listen();
+documents.listen(connection)
+connection.listen()
 ```
 
 ## Tree View Implementation
 
 ```typescript
 class MyTreeDataProvider implements vscode.TreeDataProvider<MyItem> {
-  private _onDidChangeTreeData = new vscode.EventEmitter<MyItem | undefined>();
-  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+  private _onDidChangeTreeData = new vscode.EventEmitter<MyItem | undefined>()
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event
 
   refresh(): void {
-    this._onDidChangeTreeData.fire(undefined);
+    this._onDidChangeTreeData.fire(undefined)
   }
 
   getTreeItem(element: MyItem): vscode.TreeItem {
     return {
       label: element.name,
-      collapsibleState: element.children ?
-        vscode.TreeItemCollapsibleState.Collapsed :
-        vscode.TreeItemCollapsibleState.None,
+      collapsibleState: element.children
+        ? vscode.TreeItemCollapsibleState.Collapsed
+        : vscode.TreeItemCollapsibleState.None,
       command: {
-        command: 'ext.selectItem',
-        title: 'Select',
-        arguments: [element]
-      }
-    };
+        command: "ext.selectItem",
+        title: "Select",
+        arguments: [element],
+      },
+    }
   }
 
   getChildren(element?: MyItem): Thenable<MyItem[]> {
     if (!element) {
-      return Promise.resolve(this.getRootItems());
+      return Promise.resolve(this.getRootItems())
     }
-    return Promise.resolve(element.children || []);
+    return Promise.resolve(element.children || [])
   }
 }
 
 // Register
-const provider = new MyTreeDataProvider();
-vscode.window.registerTreeDataProvider('myTreeView', provider);
+const provider = new MyTreeDataProvider()
+vscode.window.registerTreeDataProvider("myTreeView", provider)
 ```
 
 ## Performance Best Practices
@@ -376,13 +382,13 @@ vscode.window.registerTreeDataProvider('myTreeView', provider);
 
 ```typescript
 // Delay expensive imports
-let heavyModule: typeof import('./heavyModule') | undefined;
+let heavyModule: typeof import("./heavyModule") | undefined
 
 async function getHeavyModule() {
   if (!heavyModule) {
-    heavyModule = await import('./heavyModule');
+    heavyModule = await import("./heavyModule")
   }
-  return heavyModule;
+  return heavyModule
 }
 ```
 
@@ -392,18 +398,18 @@ Use esbuild for fast bundling:
 
 ```javascript
 // esbuild.config.js
-const esbuild = require('esbuild');
+const esbuild = require("esbuild")
 
 esbuild.build({
-  entryPoints: ['./src/extension.ts'],
+  entryPoints: ["./src/extension.ts"],
   bundle: true,
-  outfile: './out/extension.js',
-  external: ['vscode'],
-  format: 'cjs',
-  platform: 'node',
-  minify: process.env.NODE_ENV === 'production',
-  sourcemap: true
-});
+  outfile: "./out/extension.js",
+  external: ["vscode"],
+  format: "cjs",
+  platform: "node",
+  minify: process.env.NODE_ENV === "production",
+  sourcemap: true,
+})
 ```
 
 ### Resource Cleanup
@@ -431,37 +437,37 @@ export function deactivate() {
 
 ```typescript
 // .vscode-test.js
-const { defineConfig } = require('@vscode/test-cli');
+const { defineConfig } = require("@vscode/test-cli")
 
 module.exports = defineConfig({
-  files: 'out/test/**/*.test.js',
-  version: 'stable',
-  workspaceFolder: './test-fixtures',
+  files: "out/test/**/*.test.js",
+  version: "stable",
+  workspaceFolder: "./test-fixtures",
   mocha: {
-    timeout: 20000  // Note: @vscode/test-cli uses Mocha for VS Code extension host tests
-  }
-});
+    timeout: 20000, // Note: @vscode/test-cli uses Mocha for VS Code extension host tests
+  },
+})
 ```
 
 ### Test Structure
 
 ```typescript
-import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as assert from "assert"
+import * as vscode from "vscode"
 
-suite('Extension Test Suite', () => {
-  vscode.window.showInformationMessage('Start tests.');
+suite("Extension Test Suite", () => {
+  vscode.window.showInformationMessage("Start tests.")
 
-  test('Command registration', async () => {
-    const commands = await vscode.commands.getCommands();
-    assert.ok(commands.includes('ext.myCommand'));
-  });
+  test("Command registration", async () => {
+    const commands = await vscode.commands.getCommands()
+    assert.ok(commands.includes("ext.myCommand"))
+  })
 
-  test('Configuration access', () => {
-    const config = vscode.workspace.getConfiguration('myExtension');
-    assert.strictEqual(config.get('enabled'), true);
-  });
-});
+  test("Configuration access", () => {
+    const config = vscode.workspace.getConfiguration("myExtension")
+    assert.strictEqual(config.get("enabled"), true)
+  })
+})
 ```
 
 ## Common Pitfalls and Solutions
@@ -516,9 +522,11 @@ suite('Extension Test Suite', () => {
 ## Resources
 
 For detailed reference documentation, see:
+
 - `references/api-reference.md` - Complete VS Code API documentation
 - `references/webview-security.md` - WebView security guidelines
 - `references/lsp-guide.md` - Language Server Protocol implementation guide
 
 For working examples, reference the official samples:
+
 - https://github.com/microsoft/vscode-extension-samples
