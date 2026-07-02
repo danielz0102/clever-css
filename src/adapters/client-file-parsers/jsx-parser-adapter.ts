@@ -5,11 +5,18 @@ import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
 export class JsxParser implements ClientFileParser {
-  private project = new Project()
-  private sourceFile?: SourceFile
+  private readonly project = new Project()
 
   getUsagesFrom(uri: string): Token[] {
-    this.sourceFile = this.project.addSourceFileAtPath(uri)
+    const sourceFile = this.project.addSourceFileAtPath(uri)
+    return new JsxFileParser(sourceFile).parse()
+  }
+}
+
+class JsxFileParser {
+  constructor(private readonly sourceFile: SourceFile) {}
+
+  parse(): Token[] {
     const jsxAttributes = this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)
     const usages: Token[] = []
 
@@ -17,14 +24,12 @@ export class JsxParser implements ClientFileParser {
       if (attr.getNameNode().getText() !== "className") return
 
       const initializer = attr.getInitializer()
-
       if (!initializer) return
 
       if (initializer.isKind(SyntaxKind.StringLiteral)) {
         usages.push(...this.parseText(initializer.getLiteralValue(), initializer.getStart()))
       } else if (initializer.isKind(SyntaxKind.JsxExpression)) {
         const expression = initializer.getExpression()
-
         if (!expression) return
 
         if (expression.isKind(SyntaxKind.NoSubstitutionTemplateLiteral)) {
@@ -38,13 +43,8 @@ export class JsxParser implements ClientFileParser {
     return usages
   }
 
-  private posAt(offset: number): Position {
-    const { line, column } = this.sourceFile!.getLineAndColumnAtPos(offset)
-    return { line: line - 1, column: column - 1 }
-  }
-
   private parseText(text: string, startOffset: number): Token[] {
-    const names = text.split(/\s+/)
+    const names = text.split(/\s+/).filter((name) => name.length > 0)
     let offset = 0
 
     const usages: Token[] = []
@@ -57,7 +57,7 @@ export class JsxParser implements ClientFileParser {
       usages.push({
         name: name,
         location: {
-          uri: this.sourceFile!.getFilePath(),
+          uri: this.sourceFile.getFilePath(),
           start: this.posAt(start),
           end: this.posAt(end),
         },
@@ -69,19 +69,19 @@ export class JsxParser implements ClientFileParser {
   }
 
   private parseTemplateExpression(expression: TemplateExpression): Token[] {
-    const usages: Token[] = []
-
     const head = expression.getHead()
-    usages.push(...this.parseText(head.getLiteralText(), head.getStart()))
+    const usages = this.parseText(head.getLiteralText(), head.getStart())
 
     expression.getTemplateSpans().forEach((span) => {
       const literal = span.getLiteral()
-
-      if (literal.isKind(SyntaxKind.TemplateMiddle) || literal.isKind(SyntaxKind.TemplateTail)) {
-        usages.push(...this.parseText(literal.getLiteralText(), literal.getStart()))
-      }
+      usages.push(...this.parseText(literal.getLiteralText(), literal.getStart()))
     })
 
     return usages
+  }
+
+  private posAt(offset: number): Position {
+    const { line, column } = this.sourceFile.getLineAndColumnAtPos(offset)
+    return { line: line - 1, column: column - 1 }
   }
 }
