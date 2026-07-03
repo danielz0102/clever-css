@@ -1,6 +1,6 @@
 {
-  "name": "css-viewer",
-  "displayName": "CSS Viewer",
+  "name": "clever-css",
+  "displayName": "Clever CSS",
   "version": "0.0.1",
   "description": "",
   "categories": [
@@ -43,21 +43,21 @@
   "contributes": {
     "commands": [
       {
-        "command": "css-viewer.openClass",
+        "command": "cleverCss.openClass",
         "title": "Open CSS Class"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "cssViewer",
-          "title": "CSS Viewer",
+          "id": "cleverCss",
+          "title": "Clever CSS",
           "icon": "$(symbol-color)"
         }
       ]
     },
     "views": {
-      "cssViewer": [
+      "cleverCss": [
         {
           "id": "classes",
           "name": "Classes",

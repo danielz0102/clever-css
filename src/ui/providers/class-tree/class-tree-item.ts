@@ -16,7 +16,7 @@ export class ClassItem extends vscode.TreeItem {
     super(`.${className}`)
 
     this.command = {
-      command: "css-viewer.openClass",
+      command: "cleverCss.openClass",
       title: "Open Class",
       arguments: [fileUri, range],
     }

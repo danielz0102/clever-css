@@ -60,7 +60,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const getUsagesController = new GetUsagesVsCodeController(new GetUsages(index))
   const referenceProvider = createFindReferencesProvider((c) => getUsagesController.execute(c))
 
-  context.subscriptions.push(vscode.commands.registerCommand("css-viewer.openClass", openLocation))
+  context.subscriptions.push(vscode.commands.registerCommand("cleverCss.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
   context.subscriptions.push(cssFilesWatcher)
   context.subscriptions.push(clientFilesWatcher)
