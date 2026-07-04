@@ -12,6 +12,6 @@ export async function parseAllCssClassSymbols(): Promise<Token[]> {
 
 async function findCssFiles(): Promise<CssFileDto[]> {
   const uris = await vscode.workspace.findFiles("**/*.css", "**/{node_modules,dist,build}/**")
-  const files = uris.map(async (u) => uriToCssFileDto(u.toString()))
+  const files = uris.map(async (u) => uriToCssFileDto(u))
   return Promise.all(files)
 }

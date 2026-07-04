@@ -5,7 +5,7 @@ export type CssFileDto = {
   content: string
 }
 
-export async function uriToCssFileDto(uri: string): Promise<CssFileDto> {
+export async function uriToCssFileDto(uri: vscode.Uri): Promise<CssFileDto> {
   const doc = await vscode.workspace.openTextDocument(uri)
-  return { uri: uri.toString(), content: doc.getText() }
+  return { uri: uri.fsPath, content: doc.getText() }
 }

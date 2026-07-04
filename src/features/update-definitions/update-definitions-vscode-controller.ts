@@ -14,7 +14,7 @@ export class UpdateDefinitionsVsCodeController {
   ) {}
 
   async execute(uri: vscode.Uri): Promise<void> {
-    await this.saveFile.execute(await uriToCssFileDto(uri.toString()))
+    await this.saveFile.execute(await uriToCssFileDto(uri))
     this.tree.refresh(mapCssFiles(await this.getAll.execute()))
   }
 }
