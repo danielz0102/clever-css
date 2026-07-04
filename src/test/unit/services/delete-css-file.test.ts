@@ -21,7 +21,7 @@ suite("DeleteDefinitions", () => {
     )
 
     const command = new DeleteDefinitions(repo)
-    await command.execute("file:///test.css")
+    await command.from("file:///test.css")
 
     const anotherClass = await repo.findOne("another-class")
     assert(anotherClass === undefined, "Expected 'another-class' to be removed")
@@ -41,7 +41,7 @@ suite("DeleteDefinitions", () => {
     )
 
     const command = new DeleteDefinitions(repo)
-    await command.execute("file:///test.css")
+    await command.from("file:///test.css")
 
     const myClass = await repo.findOne("my-class")
     assert(myClass === undefined, "Expected the class to be removed from the index")

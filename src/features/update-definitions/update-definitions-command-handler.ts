@@ -9,7 +9,7 @@ export class UpdateDefinitions {
     private parseSymbols: CssClassParser
   ) {}
 
-  async execute(file: CssFileDto): Promise<void> {
+  async from(file: CssFileDto): Promise<void> {
     await this.resetDefinitions(file)
     const symbols = await this.parseSymbols(file)
 

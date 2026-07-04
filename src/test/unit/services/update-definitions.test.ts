@@ -12,7 +12,7 @@ suite("UpdateDefinitions", () => {
       makeToken({ className: "my-class", uri: file.uri }),
     ])
 
-    await command.execute({ uri: "file:///test.css", content: ".my-class { color: red; }" })
+    await command.from({ uri: "file:///test.css", content: ".my-class { color: red; }" })
 
     const myClass = await repo.findOne("my-class")
     assert(myClass !== undefined, "Expected 'my-class' to be added to the index")
@@ -31,7 +31,7 @@ suite("UpdateDefinitions", () => {
       makeToken({ className: "my-class", uri: file.uri }),
     ])
 
-    await command.execute({ uri: "file:///other.css", content: ".my-class { color: blue; }" })
+    await command.from({ uri: "file:///other.css", content: ".my-class { color: blue; }" })
 
     const myClass = await repo.findOne("my-class")
     assert(myClass !== undefined, "Expected 'my-class' to remain in the index")
@@ -54,7 +54,7 @@ suite("UpdateDefinitions", () => {
     )
     const command = new UpdateDefinitions(repo, async () => [])
 
-    await command.execute({ uri: "file:///test.css", content: "" })
+    await command.from({ uri: "file:///test.css", content: "" })
 
     const record = await repo.findOne("my-class")
     assert(record !== undefined, "Expected 'my-class' to remain in the index")
@@ -74,7 +74,7 @@ suite("UpdateDefinitions", () => {
     )
     const command = new UpdateDefinitions(repo, async () => [])
 
-    await command.execute({ uri: "file:///test.css", content: "" })
+    await command.from({ uri: "file:///test.css", content: "" })
 
     const myClass = await repo.findOne("my-class")
     assert(myClass === undefined, "Expected 'my-class' to be removed from the index")

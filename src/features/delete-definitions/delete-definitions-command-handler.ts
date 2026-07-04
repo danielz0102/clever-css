@@ -3,7 +3,7 @@ import type { CssClassRepository } from "../../adapters/css-class-repository"
 export class DeleteDefinitions {
   constructor(private classes: CssClassRepository) {}
 
-  async execute(uri: string): Promise<void> {
+  async from(uri: string): Promise<void> {
     const classes = await this.classes.getFromDefinitionUri(uri)
 
     for (const cssClass of classes) {
