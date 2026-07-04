@@ -28,10 +28,16 @@ export async function activate(context: vscode.ExtensionContext) {
   const repo = new CssClassRepository(index)
 
   const loadDefinitions = new LoadDefinitions(repo, parseAllCssClassSymbols)
-  await loadDefinitions.execute()
+  await loadDefinitions.execute().catch((err) => {
+    console.error("Error loading definitions:", err)
+    vscode.window.showErrorMessage("[Clever CSS]: Error loading CSS definitions")
+  })
 
   const loadUsages = new LoadAllUsages(repo, parseAllUsages)
-  void loadUsages.execute()
+  void loadUsages.execute().catch((err) => {
+    console.error("Error loading usages:", err)
+    vscode.window.showErrorMessage("[Clever CSS]: Error loading CSS usages")
+  })
 
   const getAll = new GetAllClasses(index)
   const classDataProvider = new ClassTreeDataProvider(mapCssFiles(await getAll.execute()))
