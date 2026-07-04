@@ -29,7 +29,7 @@ suite("UpdateUsages", () => {
       ],
     })
 
-    await update.execute("/component.tsx")
+    await update.from("/component.tsx")
 
     const myClass = await repo.findOne("my-class")
     const otherClass = await repo.findOne("other-class")

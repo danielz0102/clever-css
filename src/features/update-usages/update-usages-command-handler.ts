@@ -9,7 +9,7 @@ export class UpdateUsages {
     private parser: ClientFileParser
   ) {}
 
-  async execute(uri: string): Promise<void> {
+  async from(uri: string): Promise<void> {
     await this.resetUsages(uri)
     await this.saveUsages(this.parser.getUsagesFrom(uri))
   }

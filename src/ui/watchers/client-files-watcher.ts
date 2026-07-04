@@ -12,8 +12,8 @@ export function watchClientFiles({
 }): vscode.FileSystemWatcher {
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.{ts,tsx,js,jsx}")
 
-  watcher.onDidChange((uri) => updateUsages.execute(uri.fsPath))
-  watcher.onDidDelete((uri) => deleteUsages.execute(uri.fsPath))
+  watcher.onDidChange((uri) => updateUsages.from(uri.fsPath))
+  watcher.onDidDelete((uri) => deleteUsages.from(uri.fsPath))
 
   return watcher
 }
