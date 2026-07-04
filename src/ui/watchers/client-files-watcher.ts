@@ -1,16 +1,19 @@
 import * as vscode from "vscode"
 
+import type { DeleteUsages } from "../../features/delete-usages/delete-usages-command-handler"
+import type { UpdateUsages } from "../../features/update-usages/update-usages-command-handler"
+
 export function watchClientFiles({
-  saveFile,
-  deleteFile,
+  updateUsages,
+  deleteUsages,
 }: {
-  saveFile: (uri: vscode.Uri) => Promise<void>
-  deleteFile: (uri: vscode.Uri) => Promise<void>
+  updateUsages: UpdateUsages
+  deleteUsages: DeleteUsages
 }): vscode.FileSystemWatcher {
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.{ts,tsx,js,jsx}")
 
-  watcher.onDidChange(saveFile)
-  watcher.onDidDelete(deleteFile)
+  watcher.onDidChange((uri) => updateUsages.execute(uri.fsPath))
+  watcher.onDidDelete((uri) => deleteUsages.execute(uri.fsPath))
 
   return watcher
 }

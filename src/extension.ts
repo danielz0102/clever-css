@@ -55,18 +55,17 @@ export async function activate(context: vscode.ExtensionContext) {
     onDeleteFile: async (uri) => deleteCssFileController.execute(uri),
   })
 
-  const saveClientFile = new UpdateUsages(repo, new JsxParser())
-  const deleteClientFile = new DeleteUsages(repo)
   const clientFilesWatcher = watchClientFiles({
-    saveFile: async (uri) => saveClientFile.execute(uri.fsPath),
-    deleteFile: async (uri) => deleteClientFile.execute(uri.fsPath),
+    updateUsages: new UpdateUsages(repo, new JsxParser()),
+    deleteUsages: new DeleteUsages(repo),
   })
+  const referenceProvider = createFindReferencesProvider(new GetAllReferences(index))
 
   context.subscriptions.push(vscode.commands.registerCommand("cleverCss.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
   context.subscriptions.push(cssFilesWatcher)
   context.subscriptions.push(clientFilesWatcher)
-  context.subscriptions.push(createFindReferencesProvider(new GetAllReferences(index)))
+  context.subscriptions.push(referenceProvider)
 }
 
 export function deactivate() {}
