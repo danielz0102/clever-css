@@ -14,10 +14,10 @@ export type CssFile = {
 
 export type FilesIndex = Map<string, CssFile>
 
-export function mapCssFiles(records: CssClassModel[]): FilesIndex {
+export function mapCssFiles(models: CssClassModel[]): FilesIndex {
   const files: FilesIndex = new Map()
 
-  records.forEach((record) => {
+  models.forEach((record) => {
     const definition = record.definitions[0]
 
     if (!definition) {
