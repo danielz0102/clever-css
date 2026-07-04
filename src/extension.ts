@@ -7,8 +7,8 @@ import { DeleteDefinitions } from "./features/delete-definitions/delete-definiti
 import { DeleteDefinitionsVsCodeController } from "./features/delete-definitions/delete-definitions-vscode-controller"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
 import { GetAllClasses } from "./features/get-all-classes/get-all-classes-query-handler"
-import { GetUsages } from "./features/get-usages/get-usages-query-handler"
-import { GetUsagesVsCodeController } from "./features/get-usages/get-usages-vscode-controller"
+import { GetAllReferences } from "./features/get-usages/get-all-references-query-handler"
+import { createFindReferencesProvider } from "./features/get-usages/vscode-references-provider-controller"
 import { parseAllUsages } from "./features/load-all-usages/find-client-files-adapter"
 import { LoadAllUsages } from "./features/load-all-usages/load-all-usages-command-handler"
 import { LoadDefinitions } from "./features/load-definitions/load-definitions-command-handler"
@@ -20,7 +20,6 @@ import { index } from "./persistence/css-class-index"
 import { openLocation } from "./ui/commands/open-location"
 import { ClassTreeDataProvider } from "./ui/providers/class-tree/class-tree-data-provider"
 import { mapCssFiles } from "./ui/providers/class-tree/css-file-data"
-import { createFindReferencesProvider } from "./ui/providers/references-provider"
 import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
@@ -63,14 +62,11 @@ export async function activate(context: vscode.ExtensionContext) {
     deleteFile: async (uri) => deleteClientFile.execute(uri.fsPath),
   })
 
-  const getUsagesController = new GetUsagesVsCodeController(new GetUsages(index))
-  const referenceProvider = createFindReferencesProvider((c) => getUsagesController.execute(c))
-
   context.subscriptions.push(vscode.commands.registerCommand("cleverCss.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", classDataProvider))
   context.subscriptions.push(cssFilesWatcher)
   context.subscriptions.push(clientFilesWatcher)
-  context.subscriptions.push(referenceProvider)
+  context.subscriptions.push(createFindReferencesProvider(new GetAllReferences(index)))
 }
 
 export function deactivate() {}
