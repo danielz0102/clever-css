@@ -1,4 +1,10 @@
-import { Project, SyntaxKind, type SourceFile, type TemplateExpression } from "ts-morph"
+import {
+  Project,
+  SyntaxKind,
+  type JsxAttribute,
+  type SourceFile,
+  type TemplateExpression,
+} from "ts-morph"
 
 import type { Position } from "../../domain/location"
 import type { Token } from "../../dtos/token-dto"
@@ -34,21 +40,33 @@ class JsxFileParser {
       const initializer = attr.getInitializer()
       if (!initializer) return
 
-      if (initializer.isKind(SyntaxKind.StringLiteral)) {
-        usages.push(...this.parseText(initializer.getLiteralValue(), initializer.getStart()))
-      } else if (initializer.isKind(SyntaxKind.JsxExpression)) {
-        const expression = initializer.getExpression()
-        if (!expression) return
-
-        if (expression.isKind(SyntaxKind.NoSubstitutionTemplateLiteral)) {
-          usages.push(...this.parseText(expression.getLiteralValue(), expression.getStart()))
-        } else if (expression.isKind(SyntaxKind.TemplateExpression)) {
-          usages.push(...this.parseTemplateExpression(expression))
-        }
-      }
+      usages.push(...this.parseInitializer(initializer))
     })
 
     return usages
+  }
+
+  private parseInitializer(
+    initializer: Exclude<ReturnType<JsxAttribute["getInitializer"]>, undefined>
+  ): Token[] {
+    if (initializer.isKind(SyntaxKind.StringLiteral)) {
+      return this.parseText(initializer.getLiteralValue(), initializer.getStart())
+    }
+
+    if (!initializer.isKind(SyntaxKind.JsxExpression)) return []
+
+    const expression = initializer.getExpression()
+    if (!expression) return []
+
+    if (expression.isKind(SyntaxKind.NoSubstitutionTemplateLiteral)) {
+      return this.parseText(expression.getLiteralValue(), expression.getStart())
+    }
+
+    if (expression.isKind(SyntaxKind.TemplateExpression)) {
+      return this.parseTemplateExpression(expression)
+    }
+
+    return []
   }
 
   private parseText(text: string, startOffset: number): Token[] {
