@@ -31,6 +31,9 @@ suite("UpdateUsages", () => {
 
     await update.from("/component.tsx")
 
+    const classesFound = await repo.getFromUsageUri("file:///component.tsx")
+    assert(classesFound.length === 2, `Expected 2 classes, found ${classesFound.length}`)
+
     const myClass = await repo.findOne("my-class")
     const otherClass = await repo.findOne("other-class")
     assert(myClass !== undefined, "Expected 'my-class' to remain in the index")
@@ -43,5 +46,20 @@ suite("UpdateUsages", () => {
       otherClass.usages.length === 2,
       `Expected 2 usages for 'other-class', got ${otherClass.usages.length}`
     )
+  })
+
+  test("doesn't add classes that don't exist in the index", async () => {
+    const repo = new CssClassRepository(new Map())
+    const update = new UpdateUsages(repo, {
+      getUsagesFrom: () => [
+        makeToken({ className: "my-class", uri: "file:///component.tsx" }),
+        makeToken({ className: "other-class", uri: "file:///component.tsx" }),
+      ],
+    })
+
+    await update.from("file:///component.tsx")
+
+    const classesFound = await repo.getFromUsageUri("file:///component.tsx")
+    assert(classesFound.length === 0, `Expected 0 classes, found ${classesFound.length}`)
   })
 })

@@ -56,4 +56,16 @@ suite("LoadUsages", () => {
     assert(record !== undefined)
     assert(record.usages.length === 0, `Expected 0 usages, found ${record.usages.length}`)
   })
+
+  test("does not add a new class if it does not exist in the repository", async () => {
+    const repo = new CssClassRepository(new Map())
+    const command = new LoadAllUsages(repo, async () => [
+      makeToken({ className: "new-class", uri: "file:///index.html" }),
+    ])
+
+    await command.execute()
+
+    const cssClass = await repo.findOne("new-class")
+    assert(cssClass === undefined, `Expected no record, found ${cssClass?.className}`)
+  })
 })
