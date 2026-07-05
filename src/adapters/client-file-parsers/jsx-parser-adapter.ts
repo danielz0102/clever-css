@@ -32,18 +32,14 @@ class JsxFileParser {
 
   parse(): Token[] {
     const jsxAttributes = this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    const usages: Token[] = []
-
-    jsxAttributes.forEach((attr) => {
-      if (attr.getNameNode().getText() !== "className") return
+    return jsxAttributes.flatMap((attr) => {
+      if (attr.getNameNode().getText() !== "className") return []
 
       const initializer = attr.getInitializer()
-      if (!initializer) return
+      if (!initializer) return []
 
-      usages.push(...this.parseInitializer(initializer))
+      return this.parseInitializer(initializer)
     })
-
-    return usages
   }
 
   private parseInitializer(
