@@ -6,9 +6,9 @@ export class CssClass {
 
   constructor(
     readonly className: string,
-    ...definition: Location[]
+    ...definitions: Location[]
   ) {
-    this.definitions.add(...definition)
+    this.definitions.add(...definitions)
   }
 
   get exists(): boolean {
