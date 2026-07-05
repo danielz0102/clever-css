@@ -8,8 +8,16 @@ export class JsxParser implements ClientFileParser {
   private readonly project = new Project()
 
   getUsagesFrom(uri: string): Token[] {
+    this.removeCache(uri)
     const sourceFile = this.project.addSourceFileAtPath(uri)
     return new JsxFileParser(sourceFile).parse()
+  }
+
+  private removeCache(uri: string): void {
+    const existing = this.project.getSourceFile(uri)
+    if (existing) {
+      this.project.removeSourceFile(existing)
+    }
   }
 }
 

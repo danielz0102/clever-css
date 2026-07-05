@@ -88,4 +88,18 @@ suite("JsxParser", () => {
     const anotherClassUsages = usages.filter((u) => u.name === "another-class")
     assert(anotherClassUsages.length === 1, `Expected 1 usage, found ${anotherClassUsages.length}`)
   })
+
+  test("doesn't cache the result of parsing a file", async () => {
+    const parser = new JsxParser()
+    const file = await workspace.createFile("caching.tsx", `<div className="cached-class" />`)
+
+    parser.getUsagesFrom(file.fsPath)
+    await workspace.createFile("caching.tsx", `<div className="cached-class modified-class" />`)
+
+    const usages = parser.getUsagesFrom(file.fsPath)
+    assert(
+      usages.length === 2,
+      "Should not cache the result of parsing a file, should detect both classes"
+    )
+  })
 })
