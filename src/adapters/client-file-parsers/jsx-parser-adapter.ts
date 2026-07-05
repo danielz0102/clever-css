@@ -31,8 +31,7 @@ class JsxFileParser {
   constructor(private readonly sourceFile: SourceFile) {}
 
   parse(): Token[] {
-    const jsxAttributes = this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)
-    return jsxAttributes.flatMap((attr) => {
+    return this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute).flatMap((attr) => {
       if (attr.getNameNode().getText() !== "className") return []
 
       const initializer = attr.getInitializer()
