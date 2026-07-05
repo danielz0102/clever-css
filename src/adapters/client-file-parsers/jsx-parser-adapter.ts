@@ -52,26 +52,21 @@ class JsxFileParser {
   }
 
   private parseText(text: string, startOffset: number): Token[] {
-    const names = text.split(/\s+/).filter((name) => name.length > 0)
-    let offset = 0
-
     const usages: Token[] = []
 
-    names.forEach((name) => {
-      const idx = text.indexOf(name, offset)
-      const start = startOffset + idx + 1
-      const end = start + name.length
+    for (const match of text.matchAll(/\S+/g)) {
+      const name = match[0]
+      const start = startOffset + match.index + 1
 
       usages.push({
         name: name,
         location: {
           uri: this.sourceFile.getFilePath(),
           start: this.posAt(start),
-          end: this.posAt(end),
+          end: this.posAt(start + name.length),
         },
       })
-      offset = idx + name.length
-    })
+    }
 
     return usages
   }
