@@ -17,7 +17,7 @@ suite("JsxParser", () => {
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
     )
 
-    const usages = parser.getUsagesFrom(file.fsPath)
+    const usages = parser.parseUsagesFrom(file.fsPath)
 
     assert(usages.length === 0, "Should not detect class name in casual text")
   })
@@ -29,7 +29,7 @@ suite("JsxParser", () => {
       `<div className="class-one class-two" />`
     )
 
-    const usages = parser.getUsagesFrom(file.fsPath)
+    const usages = parser.parseUsagesFrom(file.fsPath)
 
     const classOneUsages = usages.filter((u) => u.name === "class-one")
     assert(
@@ -51,7 +51,7 @@ suite("JsxParser", () => {
       `<div className="duplicate-class duplicate-class" />`
     )
 
-    const usages = parser.getUsagesFrom(file.fsPath)
+    const usages = parser.parseUsagesFrom(file.fsPath)
 
     const classUsages = usages.filter((u) => u.name === "duplicate-class")
     assert(
@@ -67,7 +67,7 @@ suite("JsxParser", () => {
       `<div className={\`my-class\`} />`
     )
 
-    const usages = parser.getUsagesFrom(file.fsPath)
+    const usages = parser.parseUsagesFrom(file.fsPath)
 
     const classUsages = usages.filter((u) => u.name === "my-class")
     assert(classUsages.length === 1, `Expected 1 usage, found ${classUsages.length}`)
@@ -80,7 +80,7 @@ suite("JsxParser", () => {
       `<div className={\`my-class \${variable} another-class \`} />`
     )
 
-    const usages = parser.getUsagesFrom(file.fsPath)
+    const usages = parser.parseUsagesFrom(file.fsPath)
 
     const myClassUsages = usages.filter((u) => u.name === "my-class")
     assert(myClassUsages.length === 1, `Expected 1 usage, found ${myClassUsages.length}`)
@@ -93,10 +93,10 @@ suite("JsxParser", () => {
     const parser = new JsxParser()
     const file = await workspace.createFile("caching.tsx", `<div className="cached-class" />`)
 
-    parser.getUsagesFrom(file.fsPath)
+    parser.parseUsagesFrom(file.fsPath)
     await workspace.createFile("caching.tsx", `<div className="cached-class modified-class" />`)
 
-    const usages = parser.getUsagesFrom(file.fsPath)
+    const usages = parser.parseUsagesFrom(file.fsPath)
     assert(
       usages.length === 2,
       "Should not cache the result of parsing a file, should detect both classes"

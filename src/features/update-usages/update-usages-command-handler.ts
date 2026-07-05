@@ -10,7 +10,7 @@ export class UpdateUsages {
 
   async from(uri: string): Promise<void> {
     await this.resetUsages(uri)
-    await this.saveUsages(this.parser.getUsagesFrom(uri))
+    await this.saveUsages(this.parser.parseUsagesFrom(uri))
   }
 
   private async resetUsages(uri: string): Promise<void> {

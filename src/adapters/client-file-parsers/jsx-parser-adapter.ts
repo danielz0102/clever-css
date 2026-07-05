@@ -7,7 +7,7 @@ import type { ClientFileParser } from "./client-file-parser-port"
 export class JsxParser implements ClientFileParser {
   private readonly project = new Project()
 
-  getUsagesFrom(uri: string): Token[] {
+  parseUsagesFrom(uri: string): Token[] {
     this.removeCache(uri)
     const sourceFile = this.project.addSourceFileAtPath(uri)
     return new JsxFileParser(sourceFile).parse()

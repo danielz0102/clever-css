@@ -23,7 +23,7 @@ suite("UpdateUsages", () => {
       })
     )
     const update = new UpdateUsages(repo, {
-      getUsagesFrom: () => [
+      parseUsagesFrom: () => [
         makeToken({ className: "my-class", uri: "file:///component.tsx" }),
         makeToken({ className: "other-class", uri: "file:///component.tsx" }),
       ],
@@ -51,7 +51,7 @@ suite("UpdateUsages", () => {
   test("doesn't add classes that don't exist in the index", async () => {
     const repo = new CssClassRepository(new Map())
     const update = new UpdateUsages(repo, {
-      getUsagesFrom: () => [
+      parseUsagesFrom: () => [
         makeToken({ className: "my-class", uri: "file:///component.tsx" }),
         makeToken({ className: "other-class", uri: "file:///component.tsx" }),
       ],

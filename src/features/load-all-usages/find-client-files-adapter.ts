@@ -8,7 +8,7 @@ export type ClientFilesFinder = () => Promise<string[]>
 export async function parseAllUsages(): Promise<Token[]> {
   const files = await findClientFiles()
   const parser = new JsxParser()
-  return files.flatMap((uri) => parser.getUsagesFrom(uri))
+  return files.flatMap((uri) => parser.parseUsagesFrom(uri))
 }
 
 export const findClientFiles: ClientFilesFinder = async () => {
