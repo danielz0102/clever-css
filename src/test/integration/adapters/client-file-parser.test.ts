@@ -5,13 +5,13 @@ import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
 suite("JsxParser", () => {
   const workspace = new TemporalWorkspaceFixture()
-  const parser = new JsxParser()
 
   teardown(async () => {
     await workspace.teardown()
   })
 
   test("does not match class name in casual text", async () => {
+    const parser = new JsxParser()
     const file = await workspace.createFile(
       "index.tsx",
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
@@ -23,6 +23,7 @@ suite("JsxParser", () => {
   })
 
   test("detects multiple classes in a single className attribute", async () => {
+    const parser = new JsxParser()
     const file = await workspace.createFile(
       "multiple-classes.tsx",
       `<div className="class-one class-two" />`
@@ -44,6 +45,7 @@ suite("JsxParser", () => {
   })
 
   test("detects the same class used multiple times in a single className attribute", async () => {
+    const parser = new JsxParser()
     const file = await workspace.createFile(
       "duplicate-classes.tsx",
       `<div className="duplicate-class duplicate-class" />`
@@ -59,6 +61,7 @@ suite("JsxParser", () => {
   })
 
   test("supports classes inside template strings", async () => {
+    const parser = new JsxParser()
     const file = await workspace.createFile(
       "with-template-strings.tsx",
       `<div className={\`my-class\`} />`
@@ -71,6 +74,7 @@ suite("JsxParser", () => {
   })
 
   test("supports classes inside template strings with expressions", async () => {
+    const parser = new JsxParser()
     const file = await workspace.createFile(
       "with-template-expressions.tsx",
       `<div className={\`my-class \${variable} another-class \`} />`
