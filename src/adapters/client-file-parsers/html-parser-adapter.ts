@@ -22,13 +22,7 @@ export class HtmlParser implements ClientFileParser {
     return this.extractClasses(document, uri, content)
   }
 
-  private extractClasses(
-    node: { childNodes?: ChildNode[] },
-    uri: string,
-    content: string
-  ): Token[] {
-    if (!node.childNodes) return []
-
+  private extractClasses(node: { childNodes: ChildNode[] }, uri: string, content: string): Token[] {
     const tokens: Token[] = []
 
     for (const child of node.childNodes) {
