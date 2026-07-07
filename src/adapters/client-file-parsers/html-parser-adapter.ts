@@ -59,9 +59,10 @@ export class HtmlParser implements ClientFileParser {
   private parseClassAttribute(attr: ClassAttributeData, uri: string, content: string): Token[] {
     const tokens: Token[] = []
 
-    const attrSource = content.slice(attr.location.startOffset, attr.location.endOffset)
-    const valueIndexInAttrSource = this.indexOfAttributeValue(attrSource)
-    if (valueIndexInAttrSource === -1) return tokens
+    const valueIndexInAttrSource = this.indexOfAttributeValue(
+      content.slice(attr.location.startOffset, attr.location.endOffset)
+    )
+    if (!valueIndexInAttrSource) return tokens
 
     const valueStartOffset = attr.location.startOffset + valueIndexInAttrSource
 
@@ -81,14 +82,17 @@ export class HtmlParser implements ClientFileParser {
     return tokens
   }
 
-  private indexOfAttributeValue(attrSource: string): number {
+  private indexOfAttributeValue(attrSource: string): number | undefined {
     const eqIndex = attrSource.indexOf("=")
-    if (eqIndex === -1) return -1
+    if (eqIndex === -1) return
+
     let pos = eqIndex + 1
     while (pos < attrSource.length && attrSource[pos] === " ") pos++
+
     if (pos < attrSource.length && (attrSource[pos] === '"' || attrSource[pos] === "'")) {
       pos++
     }
+
     return pos
   }
 
