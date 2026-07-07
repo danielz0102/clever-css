@@ -1,19 +1,19 @@
 import { readFileSync } from "node:fs"
 
-import { parse, type DefaultTreeAdapterMap } from "parse5"
+import * as parse5 from "parse5"
 
 import type { Position } from "../../domain/location"
 import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
-type ChildNode = DefaultTreeAdapterMap["childNode"]
-type Element = DefaultTreeAdapterMap["element"]
-type Template = DefaultTreeAdapterMap["template"]
+type ChildNode = parse5.DefaultTreeAdapterMap["childNode"]
+type Element = parse5.DefaultTreeAdapterMap["element"]
+type Template = parse5.DefaultTreeAdapterMap["template"]
 
 export class HtmlParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
     const content = readFileSync(uri, "utf-8")
-    const document = parse(content, { sourceCodeLocationInfo: true })
+    const document = parse5.parse(content, { sourceCodeLocationInfo: true })
     return this.extractClasses(document, uri, content)
   }
 
