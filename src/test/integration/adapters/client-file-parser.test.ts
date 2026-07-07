@@ -1,9 +1,6 @@
 import assert from "node:assert"
 
-import {
-  HtmlParserTextContext,
-  JsxParserTextContext,
-} from "../../fixtures/parser-context"
+import { HtmlParserTextContext, JsxParserTextContext } from "../../fixtures/parser-context"
 import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
 suite("Client File Parsers", () => {
@@ -25,7 +22,7 @@ suite("Client File Parsers", () => {
 
         const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
 
-        assert(usages.length === 0, "Should not detect class name in casual text")
+        assert(usages.length === 0, `Expected 0 usages, found ${usages.length}`)
       })
 
       test("detects multiple classes in a single attribute", async () => {
