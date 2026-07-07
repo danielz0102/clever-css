@@ -61,6 +61,17 @@ suite("Client File Parsers", () => {
         assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
       })
 
+      test("returns an empty array when there are no classes", async () => {
+        const file = await workspace.writeFile(
+          `no-classes.${ctx.extension}`,
+          `<div><span></span></div>`
+        )
+
+        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+
+        assert(usages.length === 0, `Expected 0 usages, found ${usages.length}.`)
+      })
+
       test("does not match class name in casual text", async () => {
         const file = await workspace.writeFile(
           `index.${ctx.extension}`,
