@@ -30,10 +30,12 @@ export class HtmlParser implements ClientFileParser {
       if (!this.nodeHasAttributes(child)) continue
 
       const classAttr = child.attrs.find((a) => a.name === "class")
-      if (classAttr && child.sourceCodeLocation?.attrs?.["class"]) {
-        const attrLocation = child.sourceCodeLocation.attrs["class"]
-        tokens.push(...this.parseClassAttribute(classAttr.value, attrLocation, uri, content))
-      }
+      if (!classAttr) continue
+
+      if (!child.sourceCodeLocation?.attrs?.["class"]) continue
+
+      const attrLocation = child.sourceCodeLocation.attrs["class"]
+      tokens.push(...this.parseClassAttribute(classAttr.value, attrLocation, uri, content))
       tokens.push(...this.extractClasses(child, uri, content))
     }
 
