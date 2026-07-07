@@ -10,6 +10,11 @@ type ChildNode = parse5.DefaultTreeAdapterMap["childNode"]
 type Element = parse5.DefaultTreeAdapterMap["element"]
 type Template = parse5.DefaultTreeAdapterMap["template"]
 
+type ClassAttributeData = {
+  value: string
+  location: parse5.Token.Location
+}
+
 export class HtmlParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
     const content = readFileSync(uri, "utf-8")
@@ -32,14 +37,14 @@ export class HtmlParser implements ClientFileParser {
       const classAttr = this.getClassAttribute(child)
       if (!classAttr) continue
 
-      tokens.push(...this.parseClassAttribute(classAttr.value, classAttr.location, uri, content))
+      tokens.push(...this.parseClassAttribute(classAttr, uri, content))
       tokens.push(...this.extractClasses(child, uri, content))
     }
 
     return tokens
   }
 
-  private getClassAttribute(node: Element | Template) {
+  private getClassAttribute(node: Element | Template): ClassAttributeData | undefined {
     const classAttr = node.attrs.find((a) => a.name === "class")
     if (!classAttr) return
 
@@ -53,21 +58,16 @@ export class HtmlParser implements ClientFileParser {
     return "attrs" in node
   }
 
-  private parseClassAttribute(
-    value: string,
-    attrLocation: { startOffset: number; endOffset: number },
-    uri: string,
-    content: string
-  ): Token[] {
+  private parseClassAttribute(attr: ClassAttributeData, uri: string, content: string): Token[] {
     const tokens: Token[] = []
 
-    const attrSource = content.slice(attrLocation.startOffset, attrLocation.endOffset)
+    const attrSource = content.slice(attr.location.startOffset, attr.location.endOffset)
     const valueIndexInAttrSource = this.indexOfAttributeValue(attrSource)
     if (valueIndexInAttrSource === -1) return tokens
 
-    const valueStartOffset = attrLocation.startOffset + valueIndexInAttrSource
+    const valueStartOffset = attr.location.startOffset + valueIndexInAttrSource
 
-    for (const match of value.matchAll(/\S+/g)) {
+    for (const match of attr.value.matchAll(/\S+/g)) {
       const name = match[0]
       const startOffset = valueStartOffset + match.index
       const endOffset = startOffset + name.length
