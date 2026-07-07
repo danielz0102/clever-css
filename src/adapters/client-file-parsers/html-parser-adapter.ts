@@ -34,7 +34,7 @@ export class HtmlParser implements ClientFileParser {
     for (const child of node.childNodes) {
       if (!this.nodeHasAttributes(child)) continue
 
-      const classAttr = this.getClassAttribute(child)
+      const classAttr = this.getAttributeData(child, "class")
       if (!classAttr) continue
 
       tokens.push(...this.parseClassAttribute(classAttr, uri, content))
@@ -44,18 +44,21 @@ export class HtmlParser implements ClientFileParser {
     return tokens
   }
 
-  private getClassAttribute(node: Element | Template): ClassAttributeData | undefined {
-    const classAttr = node.attrs.find((a) => a.name === "class")
+  private nodeHasAttributes(node: ChildNode): node is Element | Template {
+    return "attrs" in node
+  }
+
+  private getAttributeData(
+    node: Element | Template,
+    attrName: string
+  ): ClassAttributeData | undefined {
+    const classAttr = node.attrs.find((a) => a.name === attrName)
     if (!classAttr) return
 
-    const location = node.sourceCodeLocation?.attrs?.["class"]
+    const location = node.sourceCodeLocation?.attrs?.[attrName]
     if (!location) return
 
     return { value: classAttr.value, location }
-  }
-
-  private nodeHasAttributes(node: ChildNode): node is Element | Template {
-    return "attrs" in node
   }
 
   private parseClassAttribute(attr: ClassAttributeData, uri: string, content: string): Token[] {
