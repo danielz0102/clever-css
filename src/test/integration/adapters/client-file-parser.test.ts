@@ -7,7 +7,7 @@ import {
 } from "../../fixtures/parser-context"
 import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
-function testParsers(
+function testParserContexts(
   contexts: ClientFileParserTextContext[],
   title: string,
   testFn: (parser: ClientFileParserTextContext) => void | Promise<void>
@@ -28,7 +28,7 @@ suite("Client File Parsers", () => {
     await workspace.teardown()
   })
 
-  testParsers(allContexts, "does not match class name in casual text", async (ctx) => {
+  testParserContexts(allContexts, "does not match class name in casual text", async (ctx) => {
     const file = await workspace.writeFile(
       `index.${ctx.extension}`,
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
@@ -39,7 +39,7 @@ suite("Client File Parsers", () => {
     assert(usages.length === 0, "Should not detect class name in casual text")
   })
 
-  testParsers(allContexts, "detects multiple classes in a single attribute", async (ctx) => {
+  testParserContexts(allContexts, "detects multiple classes in a single attribute", async (ctx) => {
     const file = await workspace.writeFile(
       `multiple-classes.${ctx.extension}`,
       `<div ${ctx.classNameAttribute}="class-one class-two"></div>`
@@ -60,7 +60,7 @@ suite("Client File Parsers", () => {
     )
   })
 
-  testParsers(
+  testParserContexts(
     allContexts,
     "detects the same class used multiple times in a single attribute",
     async (ctx) => {
@@ -79,7 +79,7 @@ suite("Client File Parsers", () => {
     }
   )
 
-  testParsers(jsContexts, "supports classes inside template strings", async (ctx) => {
+  testParserContexts(jsContexts, "supports classes inside template strings", async (ctx) => {
     const file = await workspace.writeFile(
       `with-template-strings.${ctx.extension}`,
       `<div ${ctx.classNameAttribute}={\`my-class\`} />`
@@ -91,7 +91,7 @@ suite("Client File Parsers", () => {
     assert(classUsages.length === 1, `Expected 1 usage, found ${classUsages.length}`)
   })
 
-  testParsers(
+  testParserContexts(
     jsContexts,
     "supports classes inside template strings with expressions",
     async (ctx) => {
@@ -113,7 +113,7 @@ suite("Client File Parsers", () => {
     }
   )
 
-  testParsers(allContexts, "doesn't cache the result of parsing a file", async (ctx) => {
+  testParserContexts(allContexts, "doesn't cache the result of parsing a file", async (ctx) => {
     const file = await workspace.writeFile(
       `caching.${ctx.extension}`,
       `<div ${ctx.classNameAttribute}="cached-class"></div>`
