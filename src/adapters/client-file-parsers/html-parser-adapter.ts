@@ -7,6 +7,8 @@ import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
 type ChildNode = DefaultTreeAdapterMap["childNode"]
+type Element = DefaultTreeAdapterMap["element"]
+type Template = DefaultTreeAdapterMap["template"]
 
 export class HtmlParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
@@ -20,20 +22,26 @@ export class HtmlParser implements ClientFileParser {
     uri: string,
     content: string
   ): Token[] {
+    if (!node.childNodes) return []
+
     const tokens: Token[] = []
-    if (!node.childNodes) return tokens
 
     for (const child of node.childNodes) {
-      if ("tagName" in child) {
-        const classAttr = child.attrs.find((a) => a.name === "class")
-        if (classAttr && child.sourceCodeLocation?.attrs?.["class"]) {
-          const attrLocation = child.sourceCodeLocation.attrs["class"]
-          tokens.push(...this.parseClassAttribute(classAttr.value, attrLocation, uri, content))
-        }
-        tokens.push(...this.extractClasses(child, uri, content))
+      if (!this.nodeHasAttributes(child)) continue
+
+      const classAttr = child.attrs.find((a) => a.name === "class")
+      if (classAttr && child.sourceCodeLocation?.attrs?.["class"]) {
+        const attrLocation = child.sourceCodeLocation.attrs["class"]
+        tokens.push(...this.parseClassAttribute(classAttr.value, attrLocation, uri, content))
       }
+      tokens.push(...this.extractClasses(child, uri, content))
     }
+
     return tokens
+  }
+
+  private nodeHasAttributes(node: ChildNode): node is Element | Template {
+    return "attrs" in node
   }
 
   private parseClassAttribute(
