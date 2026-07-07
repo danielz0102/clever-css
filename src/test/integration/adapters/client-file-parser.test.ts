@@ -1,75 +1,75 @@
 import assert from "node:assert"
 
-import type { ClientFileParser } from "../../../adapters/client-file-parsers/client-file-parser-port"
-import { JsxParser } from "../../../adapters/client-file-parsers/jsx-parser-adapter"
+import {
+  HtmlParserTextContext,
+  JsxParserTextContext,
+  type ClientFileParserTextContext,
+} from "../../fixtures/parser-context"
 import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
 function testParsers(
-  parsers: ClientFileParser[],
+  contexts: ClientFileParserTextContext[],
   title: string,
-  testFn: (parser: ClientFileParser) => void | Promise<void>
+  testFn: (parser: ClientFileParserTextContext) => void | Promise<void>
 ) {
-  for (const parser of parsers) {
-    test(`${parser.constructor.name}: ${title}`, async () => {
-      await testFn(parser)
+  for (const ctx of contexts) {
+    test(`${ctx.parserName}: ${title}`, async () => {
+      await testFn(ctx)
     })
   }
 }
 
 suite("Client File Parsers", () => {
   const workspace = new TemporalWorkspaceFixture()
-  const allParsers = [new JsxParser()]
+  const jsContexts = [new JsxParserTextContext()]
+  const allContexts = [new JsxParserTextContext(), new HtmlParserTextContext()]
 
   teardown(async () => {
     await workspace.teardown()
   })
 
-  testParsers(allParsers, "does not match class name in casual text", async (parser) => {
+  testParsers(allContexts, "does not match class name in casual text", async (ctx) => {
     const file = await workspace.createFile(
-      "index.tsx",
+      `index.${ctx.extension}`,
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
     )
 
-    const usages = parser.parseUsagesFrom(file.fsPath)
+    const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
 
     assert(usages.length === 0, "Should not detect class name in casual text")
   })
 
-  testParsers(
-    allParsers,
-    "detects multiple classes in a single className attribute",
-    async (parser) => {
-      const file = await workspace.createFile(
-        "multiple-classes.tsx",
-        `<div className="class-one class-two" />`
-      )
+  testParsers(allContexts, "detects multiple classes in a single attribute", async (ctx) => {
+    const file = await workspace.createFile(
+      `multiple-classes.${ctx.extension}`,
+      `<div ${ctx.classNameAttribute}="class-one class-two"></div>`
+    )
 
-      const usages = parser.parseUsagesFrom(file.fsPath)
+    const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
 
-      const classOneUsages = usages.filter((u) => u.name === "class-one")
-      assert(
-        classOneUsages.length === 1,
-        `Expected 1 usage for 'class-one', found ${classOneUsages.length}`
-      )
+    const classOneUsages = usages.filter((u) => u.name === "class-one")
+    assert(
+      classOneUsages.length === 1,
+      `Expected 1 usage for 'class-one', found ${classOneUsages.length}`
+    )
 
-      const classTwoUsages = usages.filter((u) => u.name === "class-two")
-      assert(
-        classTwoUsages.length === 1,
-        `Expected 1 usage for 'class-two', found ${classTwoUsages.length}`
-      )
-    }
-  )
+    const classTwoUsages = usages.filter((u) => u.name === "class-two")
+    assert(
+      classTwoUsages.length === 1,
+      `Expected 1 usage for 'class-two', found ${classTwoUsages.length}`
+    )
+  })
 
   testParsers(
-    allParsers,
-    "detects the same class used multiple times in a single className attribute",
-    async (parser) => {
+    allContexts,
+    "detects the same class used multiple times in a single attribute",
+    async (ctx) => {
       const file = await workspace.createFile(
-        "duplicate-classes.tsx",
-        `<div className="duplicate-class duplicate-class" />`
+        `duplicate-classes.${ctx.extension}`,
+        `<div ${ctx.classNameAttribute}="duplicate-class duplicate-class"></div>`
       )
 
-      const usages = parser.parseUsagesFrom(file.fsPath)
+      const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
 
       const classUsages = usages.filter((u) => u.name === "duplicate-class")
       assert(
@@ -79,28 +79,28 @@ suite("Client File Parsers", () => {
     }
   )
 
-  testParsers(allParsers, "supports classes inside template strings", async (parser) => {
+  testParsers(jsContexts, "supports classes inside template strings", async (ctx) => {
     const file = await workspace.createFile(
-      "with-template-strings.tsx",
-      `<div className={\`my-class\`} />`
+      `with-template-strings.${ctx.extension}`,
+      `<div ${ctx.classNameAttribute}={\`my-class\`} />`
     )
 
-    const usages = parser.parseUsagesFrom(file.fsPath)
+    const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
 
     const classUsages = usages.filter((u) => u.name === "my-class")
     assert(classUsages.length === 1, `Expected 1 usage, found ${classUsages.length}`)
   })
 
   testParsers(
-    allParsers,
+    jsContexts,
     "supports classes inside template strings with expressions",
-    async (parser) => {
+    async (ctx) => {
       const file = await workspace.createFile(
-        "with-template-expressions.tsx",
-        `<div className={\`my-class \${variable} another-class \`} />`
+        `with-template-expressions.${ctx.extension}`,
+        `<div ${ctx.classNameAttribute}={\`my-class \${variable} another-class \`} />`
       )
 
-      const usages = parser.parseUsagesFrom(file.fsPath)
+      const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
 
       const myClassUsages = usages.filter((u) => u.name === "my-class")
       assert(myClassUsages.length === 1, `Expected 1 usage, found ${myClassUsages.length}`)
@@ -113,11 +113,18 @@ suite("Client File Parsers", () => {
     }
   )
 
-  testParsers(allParsers, "doesn't cache the result of parsing a file", async (parser) => {
-    const file = await workspace.createFile("caching.tsx", `<div className="cached-class" />`)
+  testParsers(allContexts, "doesn't cache the result of parsing a file", async (ctx) => {
+    const file = await workspace.createFile(
+      `caching.${ctx.extension}`,
+      `<div ${ctx.classNameAttribute}="cached-class"></div>`
+    )
+    const parser = ctx.createParser()
 
     parser.parseUsagesFrom(file.fsPath)
-    await workspace.createFile("caching.tsx", `<div className="cached-class modified-class" />`)
+    await workspace.createFile(
+      `caching.${ctx.extension}`,
+      `<div ${ctx.classNameAttribute}="cached-class modified-class"></div>`
+    )
 
     const usages = parser.parseUsagesFrom(file.fsPath)
     assert(
