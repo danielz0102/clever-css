@@ -127,9 +127,6 @@ suite("Client File Parsers", () => {
     )
 
     const usages = parser.parseUsagesFrom(file.fsPath)
-    assert(
-      usages.length === 2,
-      "Should not cache the result of parsing a file, should detect both classes"
-    )
+    assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
   })
 })
