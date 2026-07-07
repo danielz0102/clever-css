@@ -14,17 +14,6 @@ suite("Client File Parsers", () => {
 
   allContexts.forEach((ctx) => {
     suite(ctx.parserName, () => {
-      test("does not match class name in casual text", async () => {
-        const file = await workspace.writeFile(
-          `index.${ctx.extension}`,
-          "<p>A paragraph that has the text button which is casually the same name of a class</p>"
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
-
-        assert(usages.length === 0, `Expected 0 usages, found ${usages.length}`)
-      })
-
       test("detects multiple classes in a single attribute", async () => {
         const file = await workspace.writeFile(
           `multiple-classes.${ctx.extension}`,
@@ -61,7 +50,29 @@ suite("Client File Parsers", () => {
         )
       })
 
-      test("doesn't cache the result of parsing a file", async () => {
+      test("detects nested elements with classes", async () => {
+        const file = await workspace.writeFile(
+          `nested-elements.${ctx.extension}`,
+          `<div ${ctx.classNameAttribute}="outer-class"><span ${ctx.classNameAttribute}="inner-class"></span></div>`
+        )
+
+        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+
+        assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
+      })
+
+      test("does not match class name in casual text", async () => {
+        const file = await workspace.writeFile(
+          `index.${ctx.extension}`,
+          "<p>A paragraph that has the text button which is casually the same name of a class</p>"
+        )
+
+        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+
+        assert(usages.length === 0, `Expected 0 usages, found ${usages.length}`)
+      })
+
+      test("does not cache the result of parsing a file", async () => {
         const file = await workspace.writeFile(
           `caching.${ctx.extension}`,
           `<div ${ctx.classNameAttribute}="cached-class"></div>`
@@ -75,17 +86,6 @@ suite("Client File Parsers", () => {
         )
 
         const usages = parser.parseUsagesFrom(file.fsPath)
-        assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
-      })
-
-      test("detects nested elements with classes", async () => {
-        const file = await workspace.writeFile(
-          `nested-elements.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}="outer-class"><span ${ctx.classNameAttribute}="inner-class"></span></div>`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
-
         assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
       })
     })
