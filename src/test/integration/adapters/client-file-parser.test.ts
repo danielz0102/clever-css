@@ -79,6 +79,23 @@ suite("Client File Parsers", () => {
     }
   )
 
+  testParserContexts(allContexts, "doesn't cache the result of parsing a file", async (ctx) => {
+    const file = await workspace.writeFile(
+      `caching.${ctx.extension}`,
+      `<div ${ctx.classNameAttribute}="cached-class"></div>`
+    )
+    const parser = ctx.createParser()
+
+    parser.parseUsagesFrom(file.fsPath)
+    await workspace.writeFile(
+      `caching.${ctx.extension}`,
+      `<div ${ctx.classNameAttribute}="cached-class modified-class"></div>`
+    )
+
+    const usages = parser.parseUsagesFrom(file.fsPath)
+    assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
+  })
+
   testParserContexts(jsContexts, "supports classes inside template strings", async (ctx) => {
     const file = await workspace.writeFile(
       `with-template-strings.${ctx.extension}`,
@@ -112,21 +129,4 @@ suite("Client File Parsers", () => {
       )
     }
   )
-
-  testParserContexts(allContexts, "doesn't cache the result of parsing a file", async (ctx) => {
-    const file = await workspace.writeFile(
-      `caching.${ctx.extension}`,
-      `<div ${ctx.classNameAttribute}="cached-class"></div>`
-    )
-    const parser = ctx.createParser()
-
-    parser.parseUsagesFrom(file.fsPath)
-    await workspace.writeFile(
-      `caching.${ctx.extension}`,
-      `<div ${ctx.classNameAttribute}="cached-class modified-class"></div>`
-    )
-
-    const usages = parser.parseUsagesFrom(file.fsPath)
-    assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
-  })
 })
