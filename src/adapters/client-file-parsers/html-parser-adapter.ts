@@ -6,7 +6,6 @@ import type { Position } from "../../domain/location"
 import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
-type ElementNode = DefaultTreeAdapterMap["element"]
 type ChildNode = DefaultTreeAdapterMap["childNode"]
 
 export class HtmlParser implements ClientFileParser {
@@ -26,13 +25,12 @@ export class HtmlParser implements ClientFileParser {
 
     for (const child of node.childNodes) {
       if ("tagName" in child) {
-        const element = child as ElementNode
-        const classAttr = element.attrs.find((a) => a.name === "class")
-        if (classAttr && element.sourceCodeLocation?.attrs?.["class"]) {
-          const attrLocation = element.sourceCodeLocation.attrs["class"]
+        const classAttr = child.attrs.find((a) => a.name === "class")
+        if (classAttr && child.sourceCodeLocation?.attrs?.["class"]) {
+          const attrLocation = child.sourceCodeLocation.attrs["class"]
           tokens.push(...this.parseClassAttribute(classAttr.value, attrLocation, uri, content))
         }
-        tokens.push(...this.extractClasses(element, uri, content))
+        tokens.push(...this.extractClasses(child, uri, content))
       }
     }
     return tokens
