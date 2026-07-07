@@ -29,7 +29,7 @@ suite("Client File Parsers", () => {
   })
 
   testParsers(allContexts, "does not match class name in casual text", async (ctx) => {
-    const file = await workspace.createFile(
+    const file = await workspace.writeFile(
       `index.${ctx.extension}`,
       "<p>A paragraph that has the text button which is casually the same name of a class</p>"
     )
@@ -40,7 +40,7 @@ suite("Client File Parsers", () => {
   })
 
   testParsers(allContexts, "detects multiple classes in a single attribute", async (ctx) => {
-    const file = await workspace.createFile(
+    const file = await workspace.writeFile(
       `multiple-classes.${ctx.extension}`,
       `<div ${ctx.classNameAttribute}="class-one class-two"></div>`
     )
@@ -64,7 +64,7 @@ suite("Client File Parsers", () => {
     allContexts,
     "detects the same class used multiple times in a single attribute",
     async (ctx) => {
-      const file = await workspace.createFile(
+      const file = await workspace.writeFile(
         `duplicate-classes.${ctx.extension}`,
         `<div ${ctx.classNameAttribute}="duplicate-class duplicate-class"></div>`
       )
@@ -80,7 +80,7 @@ suite("Client File Parsers", () => {
   )
 
   testParsers(jsContexts, "supports classes inside template strings", async (ctx) => {
-    const file = await workspace.createFile(
+    const file = await workspace.writeFile(
       `with-template-strings.${ctx.extension}`,
       `<div ${ctx.classNameAttribute}={\`my-class\`} />`
     )
@@ -95,7 +95,7 @@ suite("Client File Parsers", () => {
     jsContexts,
     "supports classes inside template strings with expressions",
     async (ctx) => {
-      const file = await workspace.createFile(
+      const file = await workspace.writeFile(
         `with-template-expressions.${ctx.extension}`,
         `<div ${ctx.classNameAttribute}={\`my-class \${variable} another-class \`} />`
       )
@@ -114,14 +114,14 @@ suite("Client File Parsers", () => {
   )
 
   testParsers(allContexts, "doesn't cache the result of parsing a file", async (ctx) => {
-    const file = await workspace.createFile(
+    const file = await workspace.writeFile(
       `caching.${ctx.extension}`,
       `<div ${ctx.classNameAttribute}="cached-class"></div>`
     )
     const parser = ctx.createParser()
 
     parser.parseUsagesFrom(file.fsPath)
-    await workspace.createFile(
+    await workspace.writeFile(
       `caching.${ctx.extension}`,
       `<div ${ctx.classNameAttribute}="cached-class modified-class"></div>`
     )
