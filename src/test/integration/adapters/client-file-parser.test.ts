@@ -61,6 +61,39 @@ suite("Client File Parsers", () => {
         assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
       })
 
+      test("returns correct positions", async () => {
+        const file = await workspace.writeFile(
+          `positions.${ctx.extension}`,
+          `<div ${ctx.classNameAttribute}="positioned-class"></div>`
+        )
+
+        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+
+        const positionedClass = usages.find((u) => u.name === "positioned-class")
+        assert(positionedClass)
+
+        assert(
+          positionedClass.location.start.line === 0,
+          `Expected start line 0, found ${positionedClass.location.start.line}`
+        )
+        assert(
+          positionedClass.location.end.line === 0,
+          `Expected end line 0, found ${positionedClass.location.end.line}`
+        )
+
+        const startColumn = 4 + ctx.classNameAttribute.length + 3
+        assert(
+          positionedClass.location.start.column === startColumn,
+          `Expected start column ${startColumn}, found ${positionedClass.location.start.column}`
+        )
+
+        const endColumn = startColumn + "positioned-class".length
+        assert(
+          positionedClass.location.end.column === endColumn,
+          `Expected end column ${endColumn}, found ${positionedClass.location.end.column}`
+        )
+      })
+
       test("returns an empty array when there are no classes", async () => {
         const file = await workspace.writeFile(
           `no-classes.${ctx.extension}`,
