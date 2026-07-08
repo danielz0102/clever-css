@@ -15,28 +15,42 @@ type ClassAttributeData = {
   location: parse5.Token.Location
 }
 
+type ClassUsage = {
+  name: string
+  start: Position
+  end: Position
+}
+
 export class HtmlParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
     const content = readFileSync(uri, "utf-8")
     const document = parse5.parse(content, { sourceCodeLocationInfo: true })
-    return this.extractClasses(document, uri, content)
+    const usages = this.extractClasses(document, content)
+    return usages.map((u) => ({
+      name: u.name,
+      location: {
+        uri,
+        start: u.start,
+        end: u.end,
+      },
+    }))
   }
 
-  private extractClasses(node: { childNodes: ChildNode[] }, uri: string, content: string): Token[] {
-    const tokens: Token[] = []
+  private extractClasses(node: { childNodes: ChildNode[] }, content: string): ClassUsage[] {
+    const usages: ClassUsage[] = []
 
     for (const child of node.childNodes) {
       if (!this.nodeHasAttributes(child)) continue
 
       const classAttr = this.getAttributeData(child, "class")
       if (classAttr) {
-        tokens.push(...this.parseClassAttribute(classAttr, uri, content))
+        usages.push(...this.parseClassAttribute(classAttr, content))
       }
 
-      tokens.push(...this.extractClasses(child, uri, content))
+      usages.push(...this.extractClasses(child, content))
     }
 
-    return tokens
+    return usages
   }
 
   private nodeHasAttributes(node: ChildNode): node is Element | Template {
@@ -56,13 +70,13 @@ export class HtmlParser implements ClientFileParser {
     return { value: classAttr.value, location }
   }
 
-  private parseClassAttribute(attr: ClassAttributeData, uri: string, content: string): Token[] {
-    const tokens: Token[] = []
+  private parseClassAttribute(attr: ClassAttributeData, content: string): ClassUsage[] {
+    const usages: ClassUsage[] = []
 
     const valueIndexInAttrSource = this.indexOfAttributeValue(
       content.slice(attr.location.startOffset, attr.location.endOffset)
     )
-    if (!valueIndexInAttrSource) return tokens
+    if (!valueIndexInAttrSource) return usages
 
     const valueStartOffset = attr.location.startOffset + valueIndexInAttrSource
 
@@ -70,16 +84,14 @@ export class HtmlParser implements ClientFileParser {
       const name = match[0]
       const startOffset = valueStartOffset + match.index
       const endOffset = startOffset + name.length
-      tokens.push({
+      usages.push({
         name,
-        location: {
-          uri,
-          start: this.offsetToPosition(content, startOffset),
-          end: this.offsetToPosition(content, endOffset),
-        },
+        start: this.offsetToPosition(content, startOffset),
+        end: this.offsetToPosition(content, endOffset),
       })
     }
-    return tokens
+
+    return usages
   }
 
   private indexOfAttributeValue(attrSource: string): number | undefined {
