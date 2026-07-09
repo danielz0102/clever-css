@@ -4,6 +4,7 @@ import type { ClientFileParser } from "../../adapters/client-file-parsers/client
 import { HtmlParser } from "../../adapters/client-file-parsers/html-parser-adapter"
 import { JsxParser } from "../../adapters/client-file-parsers/jsx-parser-adapter"
 import type { Token } from "../../dtos/token-dto"
+import { CLIENT_FILES_GLOB_PATTERN } from "../../shared/glob-patterns"
 
 export async function parseAllUsages(): Promise<Token[]> {
   const files = await findClientFiles()
@@ -19,7 +20,7 @@ export async function parseAllUsages(): Promise<Token[]> {
 }
 
 async function findClientFiles(): Promise<string[]> {
-  const files = await vscode.workspace.findFiles("**/*.{jsx,tsx,html}", "**/node_modules/**")
+  const files = await vscode.workspace.findFiles(CLIENT_FILES_GLOB_PATTERN, "**/node_modules/**")
   return files.map((uri) => uri.fsPath)
 }
 
