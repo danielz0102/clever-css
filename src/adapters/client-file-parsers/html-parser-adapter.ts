@@ -4,6 +4,7 @@ import * as parse5 from "parse5"
 
 import type { Position } from "../../domain/location"
 import type { Token } from "../../dtos/token-dto"
+import { toZeroBased } from "../../shared/to-zero-based"
 import type { ClientFileParser } from "./client-file-parser-port"
 
 export class HtmlParser implements ClientFileParser {
@@ -79,23 +80,23 @@ class ClassAttribute {
   ) {}
 
   getClasses(): ClassValue[] {
-    const start = this.location.startCol + this.source.search(/["']/) + 1
+    const quoteOffset = this.source.search(/["']/) + 1
 
     return Array.from(this.value.matchAll(/\S+/g)).map((match) => {
       const name = match[0]
-      const startCol = start + match.index
+      const startCol = quoteOffset + match.index
 
       return {
         value: name,
         location: {
-          start: {
-            line: this.location.startLine - 1,
-            column: startCol - 1,
-          },
-          end: {
-            line: this.location.endLine - 1,
-            column: startCol + name.length - 1,
-          },
+          start: toZeroBased({
+            line: this.location.startLine,
+            column: startCol,
+          }),
+          end: toZeroBased({
+            line: this.location.endLine,
+            column: startCol + name.length,
+          }),
         },
       }
     })
