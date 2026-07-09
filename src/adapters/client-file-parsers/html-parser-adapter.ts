@@ -36,9 +36,11 @@ export class HtmlParser implements ClientFileParser {
     }))
   }
 
-  private extractClasses(node: { childNodes: ChildNode[] }, content: string): ClassUsage[] {
-    const usages: ClassUsage[] = []
-
+  private extractClasses(
+    node: { childNodes: ChildNode[] },
+    content: string,
+    usages: ClassUsage[] = []
+  ): ClassUsage[] {
     for (const child of node.childNodes) {
       if (!this.nodeHasAttributes(child)) continue
 
@@ -47,7 +49,7 @@ export class HtmlParser implements ClientFileParser {
         usages.push(...this.parseClassAttribute(classAttr, content))
       }
 
-      usages.push(...this.extractClasses(child, content))
+      usages.push(...this.extractClasses(child, content, usages))
     }
 
     return usages
