@@ -13,14 +13,14 @@ import type { ClientFileParser } from "./client-file-parser-port"
 export class JsxParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
     const sourceFile = new Project().addSourceFileAtPath(uri)
-    return new JsxFileParser(sourceFile).parse()
+    return new JsxAst(sourceFile).getClasses()
   }
 }
 
-class JsxFileParser {
+class JsxAst {
   constructor(private readonly sourceFile: SourceFile) {}
 
-  parse(): Token[] {
+  getClasses(): Token[] {
     return this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute).flatMap((attr) => {
       if (attr.getNameNode().getText() !== "className") return []
 
