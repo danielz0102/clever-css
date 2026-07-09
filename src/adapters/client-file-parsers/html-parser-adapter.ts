@@ -80,11 +80,11 @@ class ClassAttribute {
   ) {}
 
   getClasses(): ClassValue[] {
-    const quoteOffset = this.source.search(/["']/) + 1
+    const start = this.location.startCol + this.source.search(/["']/) + 1
 
     return Array.from(this.value.matchAll(/\S+/g)).map((match) => {
       const name = match[0]
-      const startCol = quoteOffset + match.index
+      const startCol = start + match.index
 
       return {
         value: name,
