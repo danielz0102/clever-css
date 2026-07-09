@@ -49,7 +49,7 @@ export class HtmlParser implements ClientFileParser {
         usages.push(...this.parseClassAttribute(classAttr, content))
       }
 
-      usages.push(...this.extractClasses(child, content, usages))
+      usages.push(...this.extractClasses(child, content))
     }
 
     return usages
