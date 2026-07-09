@@ -11,19 +11,9 @@ import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
 export class JsxParser implements ClientFileParser {
-  private readonly project = new Project()
-
   parseUsagesFrom(uri: string): Token[] {
-    this.removeCache(uri)
-    const sourceFile = this.project.addSourceFileAtPath(uri)
+    const sourceFile = new Project().addSourceFileAtPath(uri)
     return new JsxFileParser(sourceFile).parse()
-  }
-
-  private removeCache(uri: string): void {
-    const existing = this.project.getSourceFile(uri)
-    if (existing) {
-      this.project.removeSourceFile(existing)
-    }
   }
 }
 
