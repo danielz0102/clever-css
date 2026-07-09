@@ -13,7 +13,7 @@ export class TemporalWorkspaceFixture {
     this.tempDirUri = vscode.Uri.joinPath(workspaceFolder.uri, `temp-${Date.now()}`)
   }
 
-  async createFile(filename: string, content: string): Promise<vscode.Uri> {
+  async writeFile(filename: string, content: string): Promise<vscode.Uri> {
     const fileUri = vscode.Uri.joinPath(this.tempDirUri, filename)
     await vscode.workspace.fs.writeFile(fileUri, Buffer.from(content))
     return fileUri

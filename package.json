@@ -24,12 +24,14 @@
   },
   "dependencies": {
     "css-tree": "^3.2.1",
+    "parse5": "^8.0.1",
     "ts-morph": "^28.0.0"
   },
   "devDependencies": {
     "@types/css-tree": "^2.3.11",
     "@types/mocha": "^10.0.10",
     "@types/node": "25.9.2",
+    "@types/parse5": "^7.0.0",
     "@types/vscode": "^1.120.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
