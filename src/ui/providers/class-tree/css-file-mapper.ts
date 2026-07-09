@@ -15,27 +15,26 @@ export type CssFile = {
 export type FilesIndex = Map<string, CssFile>
 
 export function mapCssFiles(models: CssClassModel[]): FilesIndex {
-  const files: FilesIndex = new Map()
+  const index: FilesIndex = new Map()
 
-  models.forEach((record) => {
-    const definition = record.definitions[0]
-
+  models.forEach((model) => {
+    const definition = model.definitions[0]
     if (!definition) {
-      throw new Error(`CSS class ${record.className} has no definition`)
+      throw new Error(`CSS class ${model.className} has no definition`)
     }
 
     const uri = vscode.Uri.parse(definition.uri)
     const key = uri.toString()
 
-    let file = files.get(key)
+    let file = index.get(key)
 
     if (!file) {
       file = { uri, classes: [] }
-      files.set(key, file)
+      index.set(key, file)
     }
 
     file.classes.push({
-      name: record.className,
+      name: model.className,
       range: new vscode.Range(
         definition.start.line,
         definition.start.column,
@@ -45,5 +44,5 @@ export function mapCssFiles(models: CssClassModel[]): FilesIndex {
     })
   })
 
-  return files
+  return index
 }
