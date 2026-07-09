@@ -6,116 +6,98 @@ import type { Position } from "../../domain/location"
 import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
-type ChildNode = parse5.DefaultTreeAdapterMap["childNode"]
-type Element = parse5.DefaultTreeAdapterMap["element"]
-type Template = parse5.DefaultTreeAdapterMap["template"]
-
-type ClassAttributeData = {
-  value: string
-  location: parse5.Token.Location
-}
-
-type ClassUsage = {
-  name: string
-  start: Position
-  end: Position
-}
-
 export class HtmlParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
     const content = readFileSync(uri, "utf-8")
-    const document = parse5.parse(content, { sourceCodeLocationInfo: true })
-    const usages = this.extractClasses(document, content)
-    return usages.map((u) => ({
-      name: u.name,
+    return new HtmlAst(content).getClasses().map((u) => ({
+      name: u.value,
       location: {
         uri,
-        start: u.start,
-        end: u.end,
+        start: u.location.start,
+        end: u.location.end,
       },
     }))
   }
+}
 
-  private extractClasses(
-    node: { childNodes: ChildNode[] },
-    content: string,
-    usages: ClassUsage[] = []
-  ): ClassUsage[] {
-    for (const child of node.childNodes) {
-      if (!this.nodeHasAttributes(child)) continue
+class HtmlAst {
+  private readonly document: parse5.DefaultTreeAdapterTypes.Document
 
-      const classAttr = this.getAttributeData(child, "class")
-      if (classAttr) {
-        usages.push(...this.parseClassAttribute(classAttr, content))
+  constructor(private readonly content: string) {
+    this.document = parse5.parse(content, { sourceCodeLocationInfo: true })
+  }
+
+  getClasses(): ClassValue[] {
+    const classes: ClassValue[] = []
+
+    const traverse = (node: parse5.DefaultTreeAdapterTypes.ChildNode) => {
+      const attr = this.toClassAttribute(node)
+      if (attr) {
+        classes.push(...attr.getClasses())
       }
 
-      usages.push(...this.extractClasses(child, content))
+      if ("childNodes" in node) {
+        node.childNodes.forEach(traverse)
+      }
     }
 
-    return usages
+    this.document.childNodes.forEach(traverse)
+    return classes
   }
 
-  private nodeHasAttributes(node: ChildNode): node is Element | Template {
-    return "attrs" in node
+  private toClassAttribute(
+    node: parse5.DefaultTreeAdapterTypes.ChildNode
+  ): ClassAttribute | undefined {
+    if (!("attrs" in node)) return
+
+    const className = node.attrs.find(({ name }) => name === "class")
+    if (!className) return
+
+    const location = node.sourceCodeLocation?.attrs?.[className.name]
+    if (!location) {
+      throw new Error(`Missing source code location for class attribute: ${className.name}`)
+    }
+
+    const source = this.content.slice(location.startOffset, location.endOffset)
+    return new ClassAttribute(className.value, location, source)
   }
+}
 
-  private getAttributeData(
-    node: Element | Template,
-    attrName: string
-  ): ClassAttributeData | undefined {
-    const classAttr = node.attrs.find((a) => a.name === attrName)
-    if (!classAttr) return
-
-    const location = node.sourceCodeLocation?.attrs?.[attrName]
-    if (!location) return
-
-    return { value: classAttr.value, location }
+type ClassValue = {
+  value: string
+  location: {
+    start: Position
+    end: Position
   }
+}
 
-  private parseClassAttribute(attr: ClassAttributeData, content: string): ClassUsage[] {
-    const usages: ClassUsage[] = []
+class ClassAttribute {
+  constructor(
+    private value: string,
+    private location: parse5.Token.Location,
+    private source: string
+  ) {}
 
-    const valueIndexInAttrSource = this.indexOfAttributeValue(
-      content.slice(attr.location.startOffset, attr.location.endOffset)
-    )
-    if (!valueIndexInAttrSource) return usages
+  getClasses(): ClassValue[] {
+    const start = this.location.startCol + this.source.search(/["']/) + 1
 
-    const valueStartOffset = attr.location.startOffset + valueIndexInAttrSource
-
-    for (const match of attr.value.matchAll(/\S+/g)) {
+    return Array.from(this.value.matchAll(/\S+/g)).map((match) => {
       const name = match[0]
-      const startOffset = valueStartOffset + match.index
-      const endOffset = startOffset + name.length
-      usages.push({
-        name,
-        start: this.offsetToPosition(content, startOffset),
-        end: this.offsetToPosition(content, endOffset),
-      })
-    }
+      const startCol = start + match.index
 
-    return usages
-  }
-
-  private indexOfAttributeValue(attrSource: string): number | undefined {
-    const eqIndex = attrSource.indexOf("=")
-    if (eqIndex === -1) return
-
-    let pos = eqIndex + 1
-    while (pos < attrSource.length && attrSource[pos] === " ") pos++
-
-    if (pos < attrSource.length && (attrSource[pos] === '"' || attrSource[pos] === "'")) {
-      pos++
-    }
-
-    return pos
-  }
-
-  private offsetToPosition(content: string, offset: number): Position {
-    const before = content.slice(0, offset)
-    const lastNewline = before.lastIndexOf("\n")
-    return {
-      line: before.split("\n").length - 1,
-      column: offset - lastNewline - 1,
-    }
+      return {
+        value: name,
+        location: {
+          start: {
+            line: this.location.startLine - 1,
+            column: startCol - 1,
+          },
+          end: {
+            line: this.location.endLine - 1,
+            column: startCol + name.length - 1,
+          },
+        },
+      }
+    })
   }
 }
