@@ -1,8 +1,6 @@
 import * as vscode from "vscode"
 
-import type { ClientFileParser } from "../../adapters/client-file-parsers/client-file-parser-port"
-import { HtmlParser } from "../../adapters/client-file-parsers/html-parser-adapter"
-import { JsxParser } from "../../adapters/client-file-parsers/jsx-parser-adapter"
+import { selectParser } from "../../adapters/client-file-parsers/select-parser"
 import type { Token } from "../../dtos/token-dto"
 import { CLIENT_FILES_GLOB_PATTERN } from "../../shared/glob-patterns"
 
@@ -22,18 +20,4 @@ export async function parseAllUsages(): Promise<Token[]> {
 async function findClientFiles(): Promise<string[]> {
   const files = await vscode.workspace.findFiles(CLIENT_FILES_GLOB_PATTERN, "**/node_modules/**")
   return files.map((uri) => uri.fsPath)
-}
-
-const parsers: Record<string, ClientFileParser> = {
-  jsx: new JsxParser(),
-  tsx: new JsxParser(),
-  html: new HtmlParser(),
-}
-
-function selectParser(extension: string): ClientFileParser {
-  const parser = parsers[extension]
-  if (!parser) {
-    throw new Error(`No parser found for extension ${extension}`)
-  }
-  return parser
 }
