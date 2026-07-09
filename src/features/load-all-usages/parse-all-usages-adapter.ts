@@ -6,15 +6,7 @@ import { CLIENT_FILES_GLOB_PATTERN } from "../../shared/glob-patterns"
 
 export async function parseAllUsages(): Promise<Token[]> {
   const files = await findClientFiles()
-
-  return files.flatMap((uri) => {
-    const extension = uri.split(".").pop()
-    if (!extension) {
-      throw new Error(`File ${uri} has no extension`)
-    }
-
-    return selectParser(extension).parseUsagesFrom(uri)
-  })
+  return files.flatMap((uri) => selectParser(uri).parseUsagesFrom(uri))
 }
 
 async function findClientFiles(): Promise<string[]> {

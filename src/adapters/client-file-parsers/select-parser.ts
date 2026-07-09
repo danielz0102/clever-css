@@ -8,7 +8,12 @@ const parsers: Record<string, ClientFileParser> = {
   html: new HtmlParser(),
 }
 
-export function selectParser(extension: string): ClientFileParser {
+export function selectParser(uri: string): ClientFileParser {
+  const extension = uri.split(".").pop()
+  if (!extension) {
+    throw new Error(`File ${uri} has no extension`)
+  }
+
   const parser = parsers[extension]
   if (!parser) {
     throw new Error(`No parser found for extension ${extension}`)

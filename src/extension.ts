@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { JsxParser } from "./adapters/client-file-parsers/jsx-parser-adapter"
+import { selectParser } from "./adapters/client-file-parsers/select-parser"
 import { CssClassRepository } from "./adapters/css-class-repository"
 import { parseCssClassTokens } from "./adapters/css-parser"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
@@ -46,7 +46,9 @@ export async function activate(context: vscode.ExtensionContext) {
   })
 
   const clientFilesWatcher = watchClientFiles({
-    updateUsages: new UpdateUsages(repo, new JsxParser()),
+    updateUsages: new UpdateUsages(repo, {
+      parseUsagesFrom: (uri) => selectParser(uri).parseUsagesFrom(uri),
+    }),
     deleteUsages: new DeleteUsages(repo),
   })
 
