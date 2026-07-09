@@ -5,7 +5,7 @@ import type { DeleteDefinitions } from "../../features/delete-definitions/delete
 import type { GetAllClasses } from "../../features/get-all-classes/get-all-classes-query-handler"
 import type { UpdateDefinitions } from "../../features/update-definitions/update-definitions-command-handler"
 import type { ClassTreeDataProvider } from "../providers/class-tree/class-tree-data-provider"
-import { mapCssFiles } from "../providers/class-tree/css-file-data"
+import { mapCssFiles } from "../providers/class-tree/css-file-mapper"
 
 type CssFileWatcherDeps = {
   updateDefinitions: UpdateDefinitions

@@ -17,7 +17,7 @@ import { UpdateUsages } from "./features/update-usages/update-usages-command-han
 import { index } from "./persistence/css-class-index"
 import { openLocation } from "./ui/commands/open-location"
 import { ClassTreeDataProvider } from "./ui/providers/class-tree/class-tree-data-provider"
-import { mapCssFiles } from "./ui/providers/class-tree/css-file-data"
+import { mapCssFiles } from "./ui/providers/class-tree/css-file-mapper"
 import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
