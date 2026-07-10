@@ -23,19 +23,26 @@ import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
+  const disposables = await init().catch((err) => {
+    console.error("Error during extension activation:", err)
+    vscode.window.showErrorMessage("[Clever CSS]: Error during extension activation")
+  })
+
+  if (disposables) {
+    context.subscriptions.push(...disposables)
+  }
+}
+
+export function deactivate() {}
+
+async function init(): Promise<vscode.Disposable[]> {
   const repo = new CssClassRepository(index)
 
   const loadDefinitions = new LoadDefinitions(repo, parseAllCssClassSymbols)
-  await loadDefinitions.execute().catch((err) => {
-    console.error("Error loading definitions:", err)
-    vscode.window.showErrorMessage("[Clever CSS]: Error loading CSS definitions")
-  })
+  await loadDefinitions.execute()
 
   const loadUsages = new LoadAllUsages(repo, parseAllUsages)
-  await loadUsages.execute().catch((err) => {
-    console.error("Error loading usages:", err)
-    vscode.window.showErrorMessage("[Clever CSS]: Error loading CSS usages")
-  })
+  await loadUsages.execute()
 
   const getAll = new GetAllClasses(index)
   const tree = new ClassTreeDataProvider(mapCssFiles(await getAll.execute()))
@@ -53,16 +60,16 @@ export async function activate(context: vscode.ExtensionContext) {
     deleteUsages: new DeleteUsages(repo),
   })
 
-  const getAllReferences = new GetAllReferences(index)
-  const referenceProvider = createFindReferencesProvider(getAllReferences)
-  const renameProvider = createRenameProvider(getAllReferences)
+  const getReferences = new GetAllReferences(index)
+  const referenceProvider = createFindReferencesProvider(getReferences)
+  const renameProvider = createRenameProvider(getReferences)
 
-  context.subscriptions.push(vscode.commands.registerCommand("cleverCss.openClass", openLocation))
-  context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", tree))
-  context.subscriptions.push(cssFilesWatcher)
-  context.subscriptions.push(clientFilesWatcher)
-  context.subscriptions.push(referenceProvider)
-  context.subscriptions.push(renameProvider)
+  return [
+    vscode.commands.registerCommand("cleverCss.openClass", openLocation),
+    vscode.window.registerTreeDataProvider("classes", tree),
+    cssFilesWatcher,
+    clientFilesWatcher,
+    referenceProvider,
+    renameProvider,
+  ]
 }
-
-export function deactivate() {}
