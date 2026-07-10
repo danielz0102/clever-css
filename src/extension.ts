@@ -31,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
   })
 
   const loadUsages = new LoadAllUsages(repo, parseAllUsages)
-  void loadUsages.execute().catch((err) => {
+  await loadUsages.execute().catch((err) => {
     console.error("Error loading usages:", err)
     vscode.window.showErrorMessage("[Clever CSS]: Error loading CSS usages")
   })
