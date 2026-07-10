@@ -7,6 +7,7 @@ import { DeleteDefinitions } from "./features/delete-definitions/delete-definiti
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
 import { GetAllClasses } from "./features/get-all-classes/get-all-classes-query-handler"
 import { GetAllReferences } from "./features/get-all-references/get-all-references-query-handler"
+import { createRenameProvider } from "./features/get-all-references/rename-provider"
 import { createFindReferencesProvider } from "./features/get-all-references/vscode-references-provider-controller"
 import { LoadAllUsages } from "./features/load-all-usages/load-all-usages-command-handler"
 import { parseAllUsages } from "./features/load-all-usages/parse-all-usages-adapter"
@@ -52,13 +53,16 @@ export async function activate(context: vscode.ExtensionContext) {
     deleteUsages: new DeleteUsages(repo),
   })
 
-  const referenceProvider = createFindReferencesProvider(new GetAllReferences(index))
+  const getAllReferences = new GetAllReferences(index)
+  const referenceProvider = createFindReferencesProvider(getAllReferences)
+  const renameProvider = createRenameProvider(getAllReferences)
 
   context.subscriptions.push(vscode.commands.registerCommand("cleverCss.openClass", openLocation))
   context.subscriptions.push(vscode.window.registerTreeDataProvider("classes", tree))
   context.subscriptions.push(cssFilesWatcher)
   context.subscriptions.push(clientFilesWatcher)
   context.subscriptions.push(referenceProvider)
+  context.subscriptions.push(renameProvider)
 }
 
 export function deactivate() {}
