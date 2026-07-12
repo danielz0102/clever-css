@@ -23,8 +23,7 @@
     "format": "oxfmt"
   },
   "dependencies": {
-    "@ast-grep/napi": "^0.44.1",
-    "css-tree": "^3.2.1"
+    "@ast-grep/napi": "^0.44.1"
   },
   "devDependencies": {
     "@types/css-tree": "^2.3.11",
