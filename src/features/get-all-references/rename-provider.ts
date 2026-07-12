@@ -8,9 +8,7 @@ export function createRenameProvider(getAllReferences: GetAllReferences) {
     {
       async provideRenameEdits(document, position, newName) {
         const wordRange = document.getWordRangeAtPosition(position)
-        if (!wordRange) {
-          throw new Error("No range found at the given position")
-        }
+        if (!wordRange) return
 
         const oldName = document.getText(wordRange).substring(1)
         const edits = new vscode.WorkspaceEdit()
