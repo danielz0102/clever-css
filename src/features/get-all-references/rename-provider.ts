@@ -11,6 +11,8 @@ export function createRenameProvider(getAllReferences: GetAllReferences) {
         if (!wordRange) return
 
         const oldName = document.getText(wordRange).substring(1)
+        if (!oldName.startsWith(".")) return
+
         const edits = new vscode.WorkspaceEdit()
         const references = await getAllReferences.execute(oldName)
 
