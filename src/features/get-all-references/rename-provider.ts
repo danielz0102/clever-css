@@ -17,7 +17,6 @@ export function createRenameProvider(getAllReferences: GetAllReferences) {
         const references = await getAllReferences.execute(oldName)
 
         references.forEach((ref) => {
-          const isCssFile = ref.uri.endsWith(".css")
           const uri = vscode.Uri.file(ref.uri)
           const range = new vscode.Range(
             ref.start.line,
@@ -25,11 +24,18 @@ export function createRenameProvider(getAllReferences: GetAllReferences) {
             ref.end.line,
             ref.end.column
           )
-          edits.replace(uri, range, isCssFile ? newName : newName.substring(1))
+          edits.replace(uri, range, normalizeClassName(newName))
         })
 
         return edits
       },
     }
   )
+}
+
+function normalizeClassName(className: string) {
+  if (className.startsWith(".")) {
+    return className.substring(1)
+  }
+  return className
 }
