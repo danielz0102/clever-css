@@ -1,93 +1,53 @@
-import {
-  Project,
-  SyntaxKind,
-  type JsxAttribute,
-  type SourceFile,
-  type TemplateExpression,
-} from "ts-morph"
+import { readFileSync } from "node:fs"
 
-import type { Position } from "../../domain/location"
+import { Lang, parse } from "@ast-grep/napi"
+
 import type { Token } from "../../dtos/token-dto"
 import type { ClientFileParser } from "./client-file-parser-port"
 
 export class JsxParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
-    const sourceFile = new Project().addSourceFileAtPath(uri)
-    return new JsxAst(sourceFile).getClasses()
-  }
-}
-
-class JsxAst {
-  constructor(private readonly sourceFile: SourceFile) {}
-
-  getClasses(): Token[] {
-    return this.sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute).flatMap((attr) => {
-      if (attr.getNameNode().getText() !== "className") return []
-
-      const initializer = attr.getInitializer()
-      if (!initializer) return []
-
-      return this.parseInitializer(initializer)
-    })
-  }
-
-  private parseInitializer(
-    initializer: Exclude<ReturnType<JsxAttribute["getInitializer"]>, undefined>
-  ): Token[] {
-    if (initializer.isKind(SyntaxKind.StringLiteral)) {
-      return this.parseText(initializer.getLiteralValue(), initializer.getStart())
-    }
-
-    if (!initializer.isKind(SyntaxKind.JsxExpression)) return []
-
-    const expression = initializer.getExpression()
-    if (!expression) return []
-
-    if (expression.isKind(SyntaxKind.NoSubstitutionTemplateLiteral)) {
-      return this.parseText(expression.getLiteralValue(), expression.getStart())
-    }
-
-    if (expression.isKind(SyntaxKind.TemplateExpression)) {
-      return this.parseTemplateExpression(expression)
-    }
-
-    return []
-  }
-
-  private parseText(text: string, startOffset: number): Token[] {
-    const usages: Token[] = []
-
-    for (const match of text.matchAll(/\S+/g)) {
-      const name = match[0]
-      const start = startOffset + match.index + 1
-
-      usages.push({
-        name: name,
-        location: {
-          uri: this.sourceFile.getFilePath(),
-          start: this.posAt(start),
-          end: this.posAt(start + name.length),
+    const content = readFileSync(uri, "utf-8")
+    const ast = parse(Lang.Tsx, content)
+    const nodes = ast.root().findAll({
+      rule: {
+        kind: "string_fragment",
+        pattern: "$CLASSES",
+        inside: {
+          kind: "jsx_attribute",
+          has: {
+            kind: "property_identifier",
+            regex: "^className$",
+          },
+          stopBy: "end",
         },
-      })
-    }
-
-    return usages
-  }
-
-  private parseTemplateExpression(expression: TemplateExpression): Token[] {
-    const head = expression.getHead()
-    const usages = this.parseText(head.getLiteralText(), head.getStart())
-
-    expression.getTemplateSpans().forEach((span) => {
-      const literal = span.getLiteral()
-      usages.push(...this.parseText(literal.getLiteralText(), literal.getStart()))
+      },
     })
 
-    return usages
-  }
+    return nodes.flatMap((node) => {
+      const classes = node.getMatch("CLASSES")
+      if (!classes) return []
 
-  private posAt(offset: number): Position {
-    const { line, column } = this.sourceFile.getLineAndColumnAtPos(offset)
-    return { line: line - 1, column: column - 1 }
+      const range = classes.range()
+      return Array.from(classes.text().matchAll(/\S+/g)).map((match) => {
+        const name = match[0]
+        const startCol = range.start.column + match.index
+
+        return {
+          name,
+          location: {
+            uri,
+            start: {
+              line: range.start.line,
+              column: startCol,
+            },
+            end: {
+              line: range.end.line,
+              column: startCol + name.length,
+            },
+          },
+        }
+      })
+    })
   }
 }

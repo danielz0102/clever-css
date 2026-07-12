@@ -11,7 +11,16 @@ export function createFindReferencesProvider(getReferences: GetAllReferences) {
 
         if (!wordRange) return
 
-        const references = await getReferences.execute(document.getText(wordRange).substring(1))
+        let references = await getReferences.execute(document.getText(wordRange).substring(1))
+
+        for (const ref of references) {
+          const isSeletedClass = ref.uri === document.uri.fsPath && ref.start.line === position.line
+          if (isSeletedClass) {
+            references = references.filter((r) => r !== ref)
+            break
+          }
+        }
+
         return references.map(
           (l) =>
             new vscode.Location(
