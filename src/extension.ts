@@ -16,9 +16,9 @@ import { parseAllCssClassSymbols } from "./features/load-definitions/parse-all-s
 import { UpdateDefinitions } from "./features/update-definitions/update-definitions-command-handler"
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
 import { index } from "./persistence/css-class-index"
+import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
+import { mapCssFiles } from "./ui/class-tree/css-file-mapper"
 import { openLocation } from "./ui/commands/open-location"
-import { ClassTreeDataProvider } from "./ui/providers/class-tree/class-tree-data-provider"
-import { mapCssFiles } from "./ui/providers/class-tree/css-file-mapper"
 import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
