@@ -17,7 +17,7 @@ import { UpdateDefinitions } from "./features/update-definitions/update-definiti
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
 import { index } from "./persistence/css-class-index"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
-import { mapCssFiles } from "./ui/class-tree/css-file-mapper"
+import { modelsToIndex } from "./ui/class-tree/files-index"
 import { openLocation } from "./ui/commands/open-location"
 import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
@@ -45,7 +45,7 @@ async function init(): Promise<vscode.Disposable[]> {
   await loadUsages.execute()
 
   const getAll = new GetAllClasses(index)
-  const tree = new ClassTreeDataProvider(mapCssFiles(await getAll.execute()))
+  const tree = new ClassTreeDataProvider(modelsToIndex(await getAll.execute()))
   const cssFilesWatcher = watchCSSFiles({
     updateDefinitions: new UpdateDefinitions(repo, parseCssClassTokens),
     deleteDefinitions: new DeleteDefinitions(repo),

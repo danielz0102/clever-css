@@ -3,7 +3,7 @@ import assert from "node:assert"
 import * as vscode from "vscode"
 
 import { ClassTreeDataProvider } from "../../../ui/class-tree/class-tree-data-provider"
-import type { FilesIndex } from "../../../ui/class-tree/css-file-mapper"
+import type { FilesIndex } from "../../../ui/class-tree/files-index"
 
 suite("ClassDataProvider", () => {
   test("loads all CSS files and their classes", async () => {

@@ -5,7 +5,7 @@ import type { DeleteDefinitions } from "../../features/delete-definitions/delete
 import type { GetAllClasses } from "../../features/get-all-classes/get-all-classes-query-handler"
 import type { UpdateDefinitions } from "../../features/update-definitions/update-definitions-command-handler"
 import type { ClassTreeDataProvider } from "../class-tree/class-tree-data-provider"
-import { mapCssFiles } from "../class-tree/css-file-mapper"
+import { modelsToIndex } from "../class-tree/files-index"
 
 type CssFileWatcherDeps = {
   updateDefinitions: UpdateDefinitions
@@ -23,7 +23,7 @@ export function watchCSSFiles({
   const watcher = vscode.workspace.createFileSystemWatcher("**/*.css")
 
   const refreshTree = async () => {
-    tree.refresh(mapCssFiles(await getAll.execute()))
+    tree.refresh(modelsToIndex(await getAll.execute()))
   }
 
   watcher.onDidChange(async (uri) => {

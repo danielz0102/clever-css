@@ -1,8 +1,8 @@
 import * as vscode from "vscode"
 
 import { ClassItem } from "./class-tree-item"
-import type { FilesIndex } from "./css-file-mapper"
 import { FileItem } from "./file-tree-item"
+import type { FilesIndex } from "./files-index"
 
 export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
   private onDidChangeTreeDataEmitter = new vscode.EventEmitter<
