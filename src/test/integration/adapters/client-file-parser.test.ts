@@ -1,12 +1,12 @@
 import assert from "node:assert"
 
-import { HtmlParserTextContext, JsxParserTextContext } from "../../fixtures/parser-context"
+import { htmlParserContext, jsxParserContext } from "../../fixtures/parser-context"
 import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
 suite("Client File Parsers", () => {
   const workspace = new TemporalWorkspaceFixture()
-  const jsContexts = [new JsxParserTextContext()]
-  const allContexts = [new JsxParserTextContext(), new HtmlParserTextContext()]
+  const jsContexts = [jsxParserContext]
+  const allContexts = [jsxParserContext, htmlParserContext]
 
   teardown(async () => {
     await workspace.teardown()
