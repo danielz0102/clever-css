@@ -1,20 +1,31 @@
 import * as vscode from "vscode"
 
+import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
 import type { GetAllReferences } from "./get-all-references-query-handler"
 
 export function createRenameProvider(getAllReferences: GetAllReferences) {
+  const filesThatCanRename = [...CLIENT_FILE_EXTENSIONS, "css"]
+
   return vscode.languages.registerRenameProvider(
-    { pattern: "**/*.css", scheme: "file" },
+    { pattern: toGlobPattern(filesThatCanRename), scheme: "file" },
     {
       async provideRenameEdits(document, position, newName) {
-        const wordRange = document.getWordRangeAtPosition(position)
-        if (!wordRange) return
+        const wordRange = getWordRange(document, position)
+        if (!wordRange) {
+          return
+        }
 
-        const oldName = document.getText(wordRange).substring(1)
-        if (!oldName.startsWith(".")) return
+        const oldName = document.getText(wordRange)
+        const uri = document.uri.fsPath
+        const isDefinition = uri.endsWith(".css") && oldName.startsWith(".")
+        const isUsage = !uri.endsWith(".css") && !oldName.startsWith(".")
+
+        if (!isDefinition && !isUsage) {
+          return
+        }
 
         const edits = new vscode.WorkspaceEdit()
-        const references = await getAllReferences.execute(oldName)
+        const references = await getAllReferences.execute(normalizeClassName(oldName))
 
         references.forEach((ref) => {
           const uri = vscode.Uri.file(ref.uri)
@@ -38,4 +49,17 @@ function normalizeClassName(className: string) {
     return className.substring(1)
   }
   return className
+}
+
+function getWordRange(
+  document: vscode.TextDocument,
+  position: vscode.Position
+): vscode.Range | undefined {
+  const uri = document.uri.fsPath
+
+  if (uri.endsWith(".css")) {
+    return document.getWordRangeAtPosition(position)
+  }
+
+  return document.getWordRangeAtPosition(position, /[\w-]+/)
 }
