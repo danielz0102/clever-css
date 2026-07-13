@@ -9,7 +9,20 @@ export class HtmlParser implements ClientFileParser {
   parseUsagesFrom(uri: string): Token[] {
     const content = readFileSync(uri, "utf-8")
     const ast = parse(Lang.Html, content)
-    const nodes = ast.root().findAll('<$TAG class="$CLASSES">$$$</$TAG>')
+    const nodes = ast.root().findAll({
+      rule: {
+        kind: "attribute_value",
+        pattern: "$CLASSES",
+        inside: {
+          kind: "attribute",
+          has: {
+            kind: "attribute_name",
+            regex: "^class$",
+          },
+          stopBy: "end",
+        },
+      },
+    })
 
     return nodes.flatMap((node) => {
       const classes = node.getMatch("CLASSES")

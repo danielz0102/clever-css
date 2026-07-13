@@ -132,6 +132,18 @@ suite("Client File Parsers", () => {
         const usages = parser.parseUsagesFrom(file.fsPath)
         assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
       })
+
+      test("works with self-closing tags", async () => {
+        const file = await workspace.writeFile(
+          `self-closing.${ctx.extension}`,
+          `<img ${ctx.classNameAttribute}="self-closing-class" />`
+        )
+
+        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+
+        const classUsages = usages.filter((u) => u.name === "self-closing-class")
+        assert.equal(classUsages.length, 1, `Expected 1 usage, found ${classUsages.length}`)
+      })
     })
   })
 
