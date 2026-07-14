@@ -9,6 +9,8 @@ import { GetAllClasses } from "./features/get-all-classes/get-all-classes-query-
 import { GetAllReferences } from "./features/get-all-references/get-all-references-query-handler"
 import { createFindReferencesProvider } from "./features/get-all-references/vscode-references-provider-controller"
 import { createRenameProvider } from "./features/get-all-references/vscode-rename-provider"
+import { GetDefinition } from "./features/get-definition/get-definition-query-handler"
+import { createHoverProvider } from "./features/get-definition/vscode-hover-provider"
 import { LoadAllUsages } from "./features/load-all-usages/load-all-usages-command-handler"
 import { parseAllUsages } from "./features/load-all-usages/parse-all-usages-adapter"
 import { LoadDefinitions } from "./features/load-definitions/load-definitions-command-handler"
@@ -71,5 +73,6 @@ async function init(): Promise<vscode.Disposable[]> {
     clientFilesWatcher,
     referenceProvider,
     renameProvider,
+    createHoverProvider(new GetDefinition(index)),
   ]
 }
