@@ -10,6 +10,7 @@ import { GetAllReferences } from "./features/get-all-references/get-all-referenc
 import { createFindReferencesProvider } from "./features/get-all-references/vscode-references-provider-controller"
 import { createRenameProvider } from "./features/get-all-references/vscode-rename-provider"
 import { GetDefinition } from "./features/get-definition/get-definition-query-handler"
+import { createDefinitionProvider } from "./features/get-definition/vscode-definition-provider"
 import { createHoverProvider } from "./features/get-definition/vscode-hover-provider"
 import { LoadAllUsages } from "./features/load-all-usages/load-all-usages-command-handler"
 import { parseAllUsages } from "./features/load-all-usages/parse-all-usages-adapter"
@@ -66,6 +67,10 @@ async function init(): Promise<vscode.Disposable[]> {
   const referenceProvider = createFindReferencesProvider(getReferences)
   const renameProvider = createRenameProvider(getReferences)
 
+  const getDefinition = new GetDefinition(index)
+  const hoverProvider = createHoverProvider(getDefinition)
+  const definitionProvider = createDefinitionProvider(getDefinition)
+
   return [
     vscode.commands.registerCommand("cleverCss.openClass", openLocation),
     vscode.window.registerTreeDataProvider("classes", tree),
@@ -73,6 +78,7 @@ async function init(): Promise<vscode.Disposable[]> {
     clientFilesWatcher,
     referenceProvider,
     renameProvider,
-    createHoverProvider(new GetDefinition(index)),
+    hoverProvider,
+    definitionProvider,
   ]
 }
