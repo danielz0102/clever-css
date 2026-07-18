@@ -71,8 +71,15 @@ async function init(): Promise<vscode.Disposable[]> {
   const hoverProvider = createHoverProvider(getDefinition)
   const definitionProvider = createDefinitionProvider(getDefinition)
 
+  const rescan = async () => {
+    await loadDefinitions.execute()
+    await loadUsages.execute()
+    tree.refresh(modelsToIndex(await getAll.execute()))
+  }
+
   return [
     vscode.commands.registerCommand("cleverCss.openClass", openLocation),
+    vscode.commands.registerCommand("cleverCss.rescan", rescan),
     vscode.window.registerTreeDataProvider("classes", tree),
     cssFilesWatcher,
     clientFilesWatcher,

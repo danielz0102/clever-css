@@ -45,8 +45,22 @@
       {
         "command": "cleverCss.openClass",
         "title": "Open CSS Class"
+      },
+      {
+        "command": "cleverCss.rescan",
+        "title": "Rescan Workspace",
+        "icon": "$(refresh)"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "cleverCss.rescan",
+          "when": "view == classes",
+          "group": "navigation"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
