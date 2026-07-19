@@ -20,10 +20,10 @@ import { parseAllCssClassSymbols } from "./features/load-definitions/parse-all-s
 import { UpdateDefinitions } from "./features/update-definitions/update-definitions-command-handler"
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
 import { index } from "./persistence/css-class-index"
+import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "./shared/client-file-extensions"
 import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
 import { modelsToIndex } from "./ui/class-tree/files-index"
 import { openLocation } from "./ui/commands/open-location"
-import { watchClientFiles } from "./ui/watchers/client-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
   const disposables = await init().catch((err) => {
@@ -62,12 +62,15 @@ async function init(): Promise<vscode.Disposable[]> {
     await tree.refresh()
   })
 
-  const clientFilesWatcher = watchClientFiles({
-    updateUsages: new UpdateUsages(repo, {
-      parseUsagesFrom: (uri) => selectParser(uri).parseUsagesFrom(uri),
-    }),
-    deleteUsages: new DeleteUsages(repo),
+  const updateUsages = new UpdateUsages(repo, {
+    parseUsagesFrom: (uri) => selectParser(uri).parseUsagesFrom(uri),
   })
+  const deleteUsages = new DeleteUsages(repo)
+  const clientFilesWatcher = vscode.workspace.createFileSystemWatcher(
+    toGlobPattern(CLIENT_FILE_EXTENSIONS)
+  )
+  clientFilesWatcher.onDidChange((uri) => updateUsages.from(uri.fsPath))
+  clientFilesWatcher.onDidDelete((uri) => deleteUsages.from(uri.fsPath))
 
   const getReferences = new GetAllReferences(index)
   const referenceProvider = createFindReferencesProvider(getReferences)
