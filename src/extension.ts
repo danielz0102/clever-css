@@ -3,6 +3,7 @@ import * as vscode from "vscode"
 import { selectParser } from "./adapters/client-file-parsers/select-parser"
 import { CssClassRepository } from "./adapters/css-class-repository"
 import { parseCssClassTokens } from "./adapters/css-parser"
+import { uriToCssFileDto } from "./dtos/css-file-dto"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
 import { GetAllClasses } from "./features/get-all-classes/get-all-classes-query-handler"
@@ -23,7 +24,6 @@ import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
 import { modelsToIndex } from "./ui/class-tree/files-index"
 import { openLocation } from "./ui/commands/open-location"
 import { watchClientFiles } from "./ui/watchers/client-files-watcher"
-import { watchCSSFiles } from "./ui/watchers/css-files-watcher"
 
 export async function activate(context: vscode.ExtensionContext) {
   const disposables = await init().catch((err) => {
@@ -49,11 +49,23 @@ async function init(): Promise<vscode.Disposable[]> {
 
   const getAll = new GetAllClasses(index)
   const tree = new ClassTreeDataProvider(modelsToIndex(await getAll.execute()))
-  const cssFilesWatcher = watchCSSFiles({
-    updateDefinitions: new UpdateDefinitions(repo, parseCssClassTokens),
-    deleteDefinitions: new DeleteDefinitions(repo),
-    getAll,
-    tree,
+
+  const refreshTree = async () => {
+    tree.refresh(modelsToIndex(await getAll.execute()))
+  }
+
+  const updateDefinitions = new UpdateDefinitions(repo, parseCssClassTokens)
+  const deleteDefinitions = new DeleteDefinitions(repo)
+
+  const cssFilesWatcher = vscode.workspace.createFileSystemWatcher("**/*.css")
+  cssFilesWatcher.onDidChange(async (uri) => {
+    const file = await uriToCssFileDto(uri)
+    await updateDefinitions.from(file)
+    await refreshTree()
+  })
+  cssFilesWatcher.onDidDelete(async (uri) => {
+    await deleteDefinitions.from(uri.fsPath)
+    await refreshTree()
   })
 
   const clientFilesWatcher = watchClientFiles({
@@ -74,7 +86,7 @@ async function init(): Promise<vscode.Disposable[]> {
   const rescan = async () => {
     await loadDefinitions.execute()
     await loadUsages.execute()
-    tree.refresh(modelsToIndex(await getAll.execute()))
+    await refreshTree()
   }
 
   return [
