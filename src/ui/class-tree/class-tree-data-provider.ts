@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 
 import { ClassItem } from "./class-tree-item"
 import { FileItem } from "./file-tree-item"
-import type { FilesIndex } from "./files-index"
+import { type FilesIndex } from "./files-index"
 
 export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem | FileItem> {
   private onDidChangeTreeDataEmitter = new vscode.EventEmitter<
@@ -10,10 +10,17 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
   >()
   readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event
 
-  constructor(private files: FilesIndex) {}
+  private constructor(
+    private files: FilesIndex,
+    private readonly getFiles: () => Promise<FilesIndex>
+  ) {}
 
-  refresh(newData: FilesIndex): void {
-    this.files = newData
+  static async create(getFiles: () => Promise<FilesIndex>): Promise<ClassTreeDataProvider> {
+    return new ClassTreeDataProvider(await getFiles(), getFiles)
+  }
+
+  async refresh(): Promise<void> {
+    this.files = await this.getFiles()
     this.onDidChangeTreeDataEmitter.fire()
   }
 
