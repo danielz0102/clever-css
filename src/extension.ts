@@ -6,6 +6,8 @@ import { parseCssClassTokens } from "./adapters/css-parser"
 import { uriToCssFileDto } from "./dtos/css-file-dto"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
+import { Diagnostics } from "./features/diagnostics/diagnostics-service"
+import { GetUnusedClasses } from "./features/diagnostics/get-unused-classes-query-handler"
 import { GetAllClasses } from "./features/get-all-classes/get-all-classes-query-handler"
 import { GetAllReferences } from "./features/get-all-references/get-all-references-query-handler"
 import { createFindReferencesProvider } from "./features/get-all-references/vscode-references-provider-controller"
@@ -47,6 +49,9 @@ async function init(): Promise<vscode.Disposable[]> {
   const loadUsages = new LoadAllUsages(repo, parseAllUsages)
   await loadUsages.execute()
 
+  const diagnostics = new Diagnostics(new GetUnusedClasses(index))
+  await diagnostics.refresh()
+
   const getAll = new GetAllClasses(index)
   const tree = await ClassTreeDataProvider.create(async () => modelsToIndex(await getAll.execute()))
   const updateDefinitions = new UpdateDefinitions(repo, parseCssClassTokens)
@@ -56,10 +61,12 @@ async function init(): Promise<vscode.Disposable[]> {
     const file = await uriToCssFileDto(uri)
     await updateDefinitions.from(file)
     await tree.refresh()
+    await diagnostics.refresh()
   })
   cssFilesWatcher.onDidDelete(async (uri) => {
     await deleteDefinitions.from(uri.fsPath)
     await tree.refresh()
+    await diagnostics.refresh()
   })
 
   const updateUsages = new UpdateUsages(repo, {
@@ -69,8 +76,14 @@ async function init(): Promise<vscode.Disposable[]> {
   const clientFilesWatcher = vscode.workspace.createFileSystemWatcher(
     toGlobPattern(CLIENT_FILE_EXTENSIONS)
   )
-  clientFilesWatcher.onDidChange((uri) => updateUsages.from(uri.fsPath))
-  clientFilesWatcher.onDidDelete((uri) => deleteUsages.from(uri.fsPath))
+  clientFilesWatcher.onDidChange(async (uri) => {
+    await updateUsages.from(uri.fsPath)
+    await diagnostics.refresh()
+  })
+  clientFilesWatcher.onDidDelete(async (uri) => {
+    await deleteUsages.from(uri.fsPath)
+    await diagnostics.refresh()
+  })
 
   const getReferences = new GetAllReferences(index)
   const referenceProvider = createFindReferencesProvider(getReferences)
@@ -84,6 +97,7 @@ async function init(): Promise<vscode.Disposable[]> {
     await loadDefinitions.execute()
     await loadUsages.execute()
     await tree.refresh()
+    await diagnostics.refresh()
   }
 
   return [
@@ -96,5 +110,6 @@ async function init(): Promise<vscode.Disposable[]> {
     renameProvider,
     hoverProvider,
     definitionProvider,
+    diagnostics,
   ]
 }

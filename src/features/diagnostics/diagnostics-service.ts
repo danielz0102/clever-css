@@ -1,0 +1,42 @@
+import * as vscode from "vscode"
+
+import { GetUnusedClasses } from "./get-unused-classes-query-handler"
+
+export class Diagnostics implements vscode.Disposable {
+  private collection = vscode.languages.createDiagnosticCollection("clever-css")
+
+  constructor(private getUnusedClasses: GetUnusedClasses) {}
+
+  async refresh(): Promise<void> {
+    const unusedClasses = await this.getUnusedClasses.execute()
+    const diagnosticsByFile = new Map<string, vscode.Diagnostic[]>()
+
+    console.log(`Found ${unusedClasses.length} unused classes`)
+
+    for (const cls of unusedClasses) {
+      for (const definition of cls.definitions) {
+        const diagnostic = new vscode.Diagnostic(
+          new vscode.Range(
+            new vscode.Position(definition.start.line, definition.start.column),
+            new vscode.Position(definition.end.line, definition.end.column)
+          ),
+          "This class is not being used anywhere in the workspace",
+          vscode.DiagnosticSeverity.Warning
+        )
+        const existing = diagnosticsByFile.get(definition.uri) ?? []
+        existing.push(diagnostic)
+        diagnosticsByFile.set(definition.uri, existing)
+      }
+    }
+
+    this.collection.clear()
+
+    for (const [uri, diagnostics] of diagnosticsByFile) {
+      this.collection.set(vscode.Uri.parse(uri), diagnostics)
+    }
+  }
+
+  dispose(): void {
+    this.collection.dispose()
+  }
+}

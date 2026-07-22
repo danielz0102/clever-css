@@ -79,4 +79,28 @@ suite("UpdateDefinitions", () => {
     const myClass = await repo.findOne("my-class")
     assert(myClass === undefined, "Expected 'my-class' to be removed from the index")
   })
+
+  test("does not not modify unmodifed classes", async () => {
+    const repo = new CssClassRepository(new Map())
+    await repo.save(
+      CssClassMother({
+        className: "my-class",
+        definitions: [{ uri: "file:///test.css" }],
+        usages: [{ uri: "file:///test.html" }],
+      })
+    )
+    const command = new UpdateDefinitions(repo, async () => [
+      makeToken({ className: "my-class", uri: "file:///test.css" }),
+    ])
+
+    await command.from({ uri: "file:///test.css", content: "" })
+
+    const myClass = await repo.findOne("my-class")
+    assert(myClass !== undefined, "Expected 'my-class' to remain in the index")
+    assert(
+      myClass.definitions.length === 1,
+      `Expected 1 definition, got ${myClass.definitions.length}`
+    )
+    assert(myClass.usages.length === 1, `Expected 1 usage, got ${myClass.usages.length}`)
+  })
 })
