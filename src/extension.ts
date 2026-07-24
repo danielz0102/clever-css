@@ -57,12 +57,12 @@ async function init(): Promise<vscode.Disposable[]> {
   cssFilesWatcher.onDidChange(async (uri) => {
     const file = await uriToCssFileDto(uri)
     await updateDefinitions.from(file)
-    await trees.refreshIndex()
+    await trees.refresh()
     await diagnostics.refresh()
   })
   cssFilesWatcher.onDidDelete(async (uri) => {
     await deleteDefinitions.from(uri.fsPath)
-    await trees.refreshIndex()
+    await trees.refresh()
     await diagnostics.refresh()
   })
 
@@ -93,7 +93,7 @@ async function init(): Promise<vscode.Disposable[]> {
   const rescan = async () => {
     await loadDefinitions.execute()
     await loadUsages.execute()
-    await trees.refreshIndex()
+    await trees.refresh()
     await diagnostics.refresh()
   }
 

@@ -24,7 +24,7 @@ export class ClassTreeViewContainer {
     return new ClassTreeViewContainer(allClassesTree, unusedClassesTree)
   }
 
-  async refreshIndex(): Promise<void> {
+  async refresh(): Promise<void> {
     await Promise.all([this.allClassesTree.refresh(), this.unusedClassesTree.refresh()])
   }
 }

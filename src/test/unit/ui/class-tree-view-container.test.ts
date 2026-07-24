@@ -91,10 +91,14 @@ suite("ClassTreeViewContainer", () => {
       usages: [],
     })
 
-    await container.refreshIndex()
+    await container.refresh()
 
     const updatedFileItems = container.allClassesTree.getChildren()
-    assert.strictEqual(updatedFileItems.length, 2, "allClassesTree should show 2 files after refresh")
+    assert.strictEqual(
+      updatedFileItems.length,
+      2,
+      "allClassesTree should show 2 files after refresh"
+    )
 
     const updatedUnusedItems = container.unusedClassesTree.getChildren()
     assert.strictEqual(
@@ -117,13 +121,19 @@ suite("ClassTreeViewContainer", () => {
     const container = await ClassTreeViewContainer.create(index)
 
     const initialUnusedItems = container.unusedClassesTree.getChildren()
-    assert.strictEqual(initialUnusedItems.length, 1, "unusedClassesTree should show 1 file initially")
+    assert.strictEqual(
+      initialUnusedItems.length,
+      1,
+      "unusedClassesTree should show 1 file initially"
+    )
 
     const cls = index.get("my-class")
     assert(cls !== undefined)
-    cls.usages = [{ uri: "file:///app.ts", start: { line: 1, column: 0 }, end: { line: 1, column: 8 } }]
+    cls.usages = [
+      { uri: "file:///app.ts", start: { line: 1, column: 0 }, end: { line: 1, column: 8 } },
+    ]
 
-    await container.refreshIndex()
+    await container.refresh()
 
     const updatedUnusedItems = container.unusedClassesTree.getChildren()
     assert.strictEqual(
