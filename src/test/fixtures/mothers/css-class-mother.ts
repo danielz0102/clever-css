@@ -12,14 +12,14 @@ type LocationOptions = {
   uri: string
 }
 
-export function CssClassMother(options: CssClassOptions): CssClass {
-  const cssClass = new CssClass(options.className)
-  if (options.definitions) {
-    cssClass.definitions.add(...options.definitions.map(({ uri }) => makeLocationFrom(uri)))
-  }
-  if (options.usages) {
-    cssClass.usages.add(...options.usages.map(({ uri }) => makeLocationFrom(uri)))
-  }
+export function CssClassMother({
+  className,
+  definitions = [],
+  usages = [],
+}: CssClassOptions): CssClass {
+  const cssClass = new CssClass(className)
+  cssClass.definitions.add(...definitions.map(({ uri }) => makeLocationFrom(uri)))
+  cssClass.usages.add(...usages.map(({ uri }) => makeLocationFrom(uri)))
   return cssClass
 }
 
