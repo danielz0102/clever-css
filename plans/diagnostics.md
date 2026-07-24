@@ -1,3 +1,8 @@
+---
+type: feature
+date: 7/21/2026
+---
+
 # Diagnostics Feature
 
 The goal of this feature is to provide diagnostics about unused CSS classes. CSS classes are those who doesn't have any usage in client files.

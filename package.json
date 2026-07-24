@@ -74,7 +74,12 @@
       "cleverCss": [
         {
           "id": "classes",
-          "name": "Classes",
+          "name": "All Classes",
+          "icon": ""
+        },
+        {
+          "id": "unusedClasses",
+          "name": "Unused Classes",
           "icon": ""
         }
       ]

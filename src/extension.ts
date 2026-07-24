@@ -8,7 +8,6 @@ import { DeleteDefinitions } from "./features/delete-definitions/delete-definiti
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
 import { Diagnostics } from "./features/diagnostics/diagnostics-service"
 import { GetUnusedClasses } from "./features/diagnostics/get-unused-classes-query-handler"
-import { GetAllClasses } from "./features/get-all-classes/get-all-classes-query-handler"
 import { GetAllReferences } from "./features/get-all-references/get-all-references-query-handler"
 import { createFindReferencesProvider } from "./features/get-all-references/vscode-references-provider-controller"
 import { createRenameProvider } from "./features/get-all-references/vscode-rename-provider"
@@ -23,8 +22,7 @@ import { UpdateDefinitions } from "./features/update-definitions/update-definiti
 import { UpdateUsages } from "./features/update-usages/update-usages-command-handler"
 import { index } from "./persistence/css-class-index"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "./shared/client-file-extensions"
-import { ClassTreeDataProvider } from "./ui/class-tree/class-tree-data-provider"
-import { modelsToIndex } from "./ui/class-tree/files-index"
+import { ClassTreeViewContainer } from "./ui/class-tree/class-tree-view-container"
 import { openLocation } from "./ui/commands/open-location"
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -52,20 +50,19 @@ async function init(): Promise<vscode.Disposable[]> {
   const diagnostics = new Diagnostics(new GetUnusedClasses(index))
   await diagnostics.refresh()
 
-  const getAll = new GetAllClasses(index)
-  const tree = await ClassTreeDataProvider.create(async () => modelsToIndex(await getAll.execute()))
+  const trees = await ClassTreeViewContainer.create(index)
   const updateDefinitions = new UpdateDefinitions(repo, parseCssClassTokens)
   const deleteDefinitions = new DeleteDefinitions(repo)
   const cssFilesWatcher = vscode.workspace.createFileSystemWatcher("**/*.css")
   cssFilesWatcher.onDidChange(async (uri) => {
     const file = await uriToCssFileDto(uri)
     await updateDefinitions.from(file)
-    await tree.refresh()
+    await trees.refreshIndex()
     await diagnostics.refresh()
   })
   cssFilesWatcher.onDidDelete(async (uri) => {
     await deleteDefinitions.from(uri.fsPath)
-    await tree.refresh()
+    await trees.refreshIndex()
     await diagnostics.refresh()
   })
 
@@ -96,14 +93,15 @@ async function init(): Promise<vscode.Disposable[]> {
   const rescan = async () => {
     await loadDefinitions.execute()
     await loadUsages.execute()
-    await tree.refresh()
+    await trees.refreshIndex()
     await diagnostics.refresh()
   }
 
   return [
     vscode.commands.registerCommand("cleverCss.openClass", openLocation),
     vscode.commands.registerCommand("cleverCss.rescan", rescan),
-    vscode.window.registerTreeDataProvider("classes", tree),
+    vscode.window.registerTreeDataProvider("classes", trees.allClassesTree),
+    vscode.window.registerTreeDataProvider("unusedClasses", trees.unusedClassesTree),
     cssFilesWatcher,
     clientFilesWatcher,
     referenceProvider,

@@ -11,8 +11,6 @@ export class Diagnostics implements vscode.Disposable {
     const unusedClasses = await this.getUnusedClasses.execute()
     const diagnosticsByFile = new Map<string, vscode.Diagnostic[]>()
 
-    console.log(`Found ${unusedClasses.length} unused classes`)
-
     for (const cls of unusedClasses) {
       for (const definition of cls.definitions) {
         const diagnostic = new vscode.Diagnostic(
