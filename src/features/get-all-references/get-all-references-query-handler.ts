@@ -4,7 +4,7 @@ import type { CssClassIndex } from "../../persistence/css-class-index"
 export class GetAllReferences {
   constructor(private index: CssClassIndex) {}
 
-  async execute(className: string): Promise<Location[]> {
+  execute(className: string): Location[] {
     const cssClass = this.index.get(className)
     if (!cssClass) {
       return []

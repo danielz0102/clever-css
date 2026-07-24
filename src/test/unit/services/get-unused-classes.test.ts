@@ -18,7 +18,7 @@ suite("GetUnusedClasses", () => {
     )
     const handler = new GetUnusedClasses(index)
 
-    const result = await handler.execute()
+    const result = handler.execute()
 
     assert.strictEqual(result.length, 2)
     const names = result.map((r) => r.className).sort()
@@ -33,7 +33,7 @@ suite("GetUnusedClasses", () => {
     )
     const handler = new GetUnusedClasses(index)
 
-    const result = await handler.execute()
+    const result = handler.execute()
 
     assert.strictEqual(result.length, 1)
     assert.strictEqual(result[0]?.className, "foo")
@@ -51,7 +51,7 @@ suite("GetUnusedClasses", () => {
     )
     const handler = new GetUnusedClasses(index)
 
-    const result = await handler.execute()
+    const result = handler.execute()
 
     assert.strictEqual(result.length, 0)
   })
@@ -61,7 +61,7 @@ suite("GetUnusedClasses", () => {
     index.set("noDef", CssClassMother({ className: "noDef" }))
     const handler = new GetUnusedClasses(index)
 
-    const result = await handler.execute()
+    const result = handler.execute()
 
     assert.strictEqual(result.length, 0)
   })
@@ -86,7 +86,7 @@ suite("GetUnusedClasses", () => {
     )
     const handler = new GetUnusedClasses(index)
 
-    const result = await handler.execute()
+    const result = handler.execute()
 
     assert.strictEqual(result.length, 0)
   })

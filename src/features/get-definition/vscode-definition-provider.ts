@@ -17,7 +17,7 @@ export function createDefinitionProvider(getSelector: GetDefinition) {
         }
 
         const className = document.getText(range)
-        const definition = await getSelector.execute(className)
+        const definition = getSelector.execute(className)
         if (!definition) {
           return
         }

@@ -8,14 +8,14 @@ import { makeToken } from "../../fixtures/mothers/make-token"
 suite("UpdateUsages", () => {
   test("loads all usages found", async () => {
     const repo = new CssClassRepository(new Map())
-    await repo.save(
+    repo.save(
       CssClassMother({
         className: "my-class",
         definitions: [{ uri: "file:///styles.css" }],
         usages: [{ uri: "file:///component.tsx" }],
       })
     )
-    await repo.save(
+    repo.save(
       CssClassMother({
         className: "other-class",
         definitions: [{ uri: "file:///styles.css" }],
@@ -29,13 +29,13 @@ suite("UpdateUsages", () => {
       ],
     })
 
-    await update.from("/component.tsx")
+    update.from("/component.tsx")
 
-    const classesFound = await repo.getFromUsageUri("file:///component.tsx")
+    const classesFound = repo.getFromUsageUri("file:///component.tsx")
     assert(classesFound.length === 2, `Expected 2 classes, found ${classesFound.length}`)
 
-    const myClass = await repo.findOne("my-class")
-    const otherClass = await repo.findOne("other-class")
+    const myClass = repo.findOne("my-class")
+    const otherClass = repo.findOne("other-class")
     assert(myClass !== undefined, "Expected 'my-class' to remain in the index")
     assert(otherClass !== undefined, "Expected 'other-class' to remain in the index")
     assert(
@@ -57,9 +57,9 @@ suite("UpdateUsages", () => {
       ],
     })
 
-    await update.from("file:///component.tsx")
+    update.from("file:///component.tsx")
 
-    const classesFound = await repo.getFromUsageUri("file:///component.tsx")
+    const classesFound = repo.getFromUsageUri("file:///component.tsx")
     assert(classesFound.length === 0, `Expected 0 classes, found ${classesFound.length}`)
   })
 })

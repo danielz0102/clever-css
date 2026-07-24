@@ -8,7 +8,7 @@ import { makeToken } from "../../fixtures/mothers/make-token"
 suite("LoadUsages", () => {
   test("loads usages for all classes in the repository", async () => {
     const repo = new CssClassRepository(new Map())
-    await repo.save(
+    repo.save(
       CssClassMother({ className: "my-class", definitions: [{ uri: "file:///styles.css" }] })
     )
     const command = new LoadAllUsages(repo, async () => [
@@ -18,14 +18,14 @@ suite("LoadUsages", () => {
 
     await command.execute()
 
-    const myClass = await repo.findOne("my-class")
+    const myClass = repo.findOne("my-class")
     assert(myClass !== undefined)
     assert(myClass.usages.length === 2, `Expected 2 usages, found ${myClass.usages.length}`)
   })
 
   test("does not load usages for classes that are not used", async () => {
     const repo = new CssClassRepository(new Map())
-    await repo.save(
+    repo.save(
       CssClassMother({ className: "unused-class", definitions: [{ uri: "file:///styles.css" }] })
     )
     const command = new LoadAllUsages(repo, async () => [
@@ -34,14 +34,14 @@ suite("LoadUsages", () => {
 
     await command.execute()
 
-    const unusedClass = await repo.findOne("unused-class")
+    const unusedClass = repo.findOne("unused-class")
     assert(unusedClass !== undefined)
     assert(unusedClass.usages.length === 0, `Expected 0 usages, found ${unusedClass.usages.length}`)
   })
 
   test("set usages to 0 if there are no usages", async () => {
     const repo = new CssClassRepository(new Map())
-    await repo.save(
+    repo.save(
       CssClassMother({
         className: "my-class",
         definitions: [{ uri: "file:///styles.css" }],
@@ -52,7 +52,7 @@ suite("LoadUsages", () => {
 
     await command.execute()
 
-    const record = await repo.findOne("my-class")
+    const record = repo.findOne("my-class")
     assert(record !== undefined)
     assert(record.usages.length === 0, `Expected 0 usages, found ${record.usages.length}`)
   })
@@ -65,7 +65,7 @@ suite("LoadUsages", () => {
 
     await command.execute()
 
-    const cssClass = await repo.findOne("new-class")
+    const cssClass = repo.findOne("new-class")
     assert(cssClass === undefined, `Expected no record, found ${cssClass?.className}`)
   })
 })

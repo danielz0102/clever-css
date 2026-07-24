@@ -8,17 +8,17 @@ export class LoadAllUsages {
   ) {}
 
   async execute(): Promise<void> {
-    await this.classes.resetAllUsages()
-    await this.saveUsages(await this.getAllUsages())
+    this.classes.resetAllUsages()
+    this.saveUsages(await this.getAllUsages())
   }
 
-  private async saveUsages(usages: Token[]): Promise<void> {
+  private saveUsages(usages: Token[]): void {
     for (const { name, location } of usages) {
-      const cssClass = await this.classes.findOne(name)
+      const cssClass = this.classes.findOne(name)
       if (!cssClass) continue
 
       cssClass.usages.add(location)
-      await this.classes.save(cssClass)
+      this.classes.save(cssClass)
     }
   }
 }

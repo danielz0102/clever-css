@@ -48,7 +48,7 @@ async function init(): Promise<vscode.Disposable[]> {
   await loadUsages.execute()
 
   const diagnostics = new Diagnostics(new GetUnusedClasses(index))
-  await diagnostics.refresh()
+  diagnostics.refresh()
 
   const trees = await ClassTreeViewContainer.create(index)
   const updateDefinitions = new UpdateDefinitions(repo, parseCssClassTokens)
@@ -57,13 +57,13 @@ async function init(): Promise<vscode.Disposable[]> {
   cssFilesWatcher.onDidChange(async (uri) => {
     const file = await uriToCssFileDto(uri)
     await updateDefinitions.from(file)
-    await trees.refresh()
-    await diagnostics.refresh()
+    trees.refresh()
+    diagnostics.refresh()
   })
   cssFilesWatcher.onDidDelete(async (uri) => {
-    await deleteDefinitions.from(uri.fsPath)
-    await trees.refresh()
-    await diagnostics.refresh()
+    deleteDefinitions.from(uri.fsPath)
+    trees.refresh()
+    diagnostics.refresh()
   })
 
   const updateUsages = new UpdateUsages(repo, {
@@ -74,12 +74,12 @@ async function init(): Promise<vscode.Disposable[]> {
     toGlobPattern(CLIENT_FILE_EXTENSIONS)
   )
   clientFilesWatcher.onDidChange(async (uri) => {
-    await updateUsages.from(uri.fsPath)
-    await diagnostics.refresh()
+    updateUsages.from(uri.fsPath)
+    diagnostics.refresh()
   })
   clientFilesWatcher.onDidDelete(async (uri) => {
-    await deleteUsages.from(uri.fsPath)
-    await diagnostics.refresh()
+    deleteUsages.from(uri.fsPath)
+    diagnostics.refresh()
   })
 
   const getReferences = new GetAllReferences(index)
@@ -93,8 +93,8 @@ async function init(): Promise<vscode.Disposable[]> {
   const rescan = async () => {
     await loadDefinitions.execute()
     await loadUsages.execute()
-    await trees.refresh()
-    await diagnostics.refresh()
+    trees.refresh()
+    diagnostics.refresh()
   }
 
   return [

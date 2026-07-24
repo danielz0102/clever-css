@@ -60,7 +60,7 @@ suite("ClassTreeViewContainer", () => {
       })
     )
 
-    await container.refresh()
+    container.refresh()
 
     const updatedFileItems = container.allClassesTree.getChildren()
     assert.strictEqual(

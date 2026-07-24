@@ -11,7 +11,7 @@ export function createFindReferencesProvider(getReferences: GetAllReferences) {
 
         if (!wordRange) return
 
-        let references = await getReferences.execute(document.getText(wordRange).substring(1))
+        let references = getReferences.execute(document.getText(wordRange).substring(1))
 
         for (const ref of references) {
           const isSeletedClass = ref.uri === document.uri.fsPath && ref.start.line === position.line

@@ -8,27 +8,27 @@ export class UpdateUsages {
     private parser: ClientFileParser
   ) {}
 
-  async from(uri: string): Promise<void> {
-    await this.resetUsages(uri)
-    await this.saveUsages(this.parser.parseUsagesFrom(uri))
+  from(uri: string): void {
+    this.resetUsages(uri)
+    this.saveUsages(this.parser.parseUsagesFrom(uri))
   }
 
-  private async resetUsages(uri: string): Promise<void> {
-    const classes = await this.classes.getFromUsageUri(uri)
+  private resetUsages(uri: string): void {
+    const classes = this.classes.getFromUsageUri(uri)
 
     for (const cssClass of classes) {
       cssClass.usages.removeFromUri(uri)
-      await this.classes.save(cssClass)
+      this.classes.save(cssClass)
     }
   }
 
-  private async saveUsages(usages: Token[]): Promise<void> {
+  private saveUsages(usages: Token[]): void {
     for (const { name, location } of usages) {
-      const cssClass = await this.classes.findOne(name)
+      const cssClass = this.classes.findOne(name)
       if (!cssClass) continue
 
       cssClass.usages.add(location)
-      await this.classes.save(cssClass)
+      this.classes.save(cssClass)
     }
   }
 }

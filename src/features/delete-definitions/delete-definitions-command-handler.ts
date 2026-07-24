@@ -3,16 +3,16 @@ import type { CssClassRepository } from "../../adapters/css-class-repository"
 export class DeleteDefinitions {
   constructor(private classes: CssClassRepository) {}
 
-  async from(uri: string): Promise<void> {
-    const classes = await this.classes.getFromDefinitionUri(uri)
+  from(uri: string): void {
+    const classes = this.classes.getFromDefinitionUri(uri)
 
     for (const cssClass of classes) {
       cssClass.definitions.removeFromUri(uri)
 
       if (!cssClass.exists) {
-        await this.classes.delete(cssClass)
+        this.classes.delete(cssClass)
       } else {
-        await this.classes.save(cssClass)
+        this.classes.save(cssClass)
       }
     }
   }

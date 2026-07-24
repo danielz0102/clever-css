@@ -25,7 +25,7 @@ export function createRenameProvider(getAllReferences: GetAllReferences) {
         }
 
         const edits = new vscode.WorkspaceEdit()
-        const references = await getAllReferences.execute(normalizeClassName(oldName))
+        const references = getAllReferences.execute(normalizeClassName(oldName))
 
         references.forEach((ref) => {
           const uri = vscode.Uri.file(ref.uri)

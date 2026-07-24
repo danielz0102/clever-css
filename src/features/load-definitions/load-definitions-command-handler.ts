@@ -9,14 +9,14 @@ export class LoadDefinitions {
   ) {}
 
   async execute(): Promise<void> {
-    await this.classes.destroy()
+    this.classes.destroy()
 
     const symbols = await this.parseAllSymbols()
 
     for (const { name: className, location } of symbols) {
-      const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
+      const cssClass = this.classes.findOne(className) ?? new CssClass(className)
       cssClass.definitions.add(location)
-      await this.classes.save(cssClass)
+      this.classes.save(cssClass)
     }
   }
 }

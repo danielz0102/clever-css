@@ -3,7 +3,7 @@ import type { CssClassModel, CssClassIndex } from "../../persistence/css-class-i
 export class GetAllClasses {
   constructor(private index: CssClassIndex) {}
 
-  async execute(): Promise<CssClassModel[]> {
+  execute(): CssClassModel[] {
     return Array.from(this.index.values())
   }
 }

@@ -7,8 +7,8 @@ export class Diagnostics implements vscode.Disposable {
 
   constructor(private getUnusedClasses: GetUnusedClasses) {}
 
-  async refresh(): Promise<void> {
-    const unusedClasses = await this.getUnusedClasses.execute()
+  refresh(): void {
+    const unusedClasses = this.getUnusedClasses.execute()
     const diagnosticsByFile = new Map<string, vscode.Diagnostic[]>()
 
     for (const cls of unusedClasses) {

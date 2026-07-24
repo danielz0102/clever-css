@@ -15,14 +15,14 @@ suite("LoadDefinitions", () => {
 
     await command.execute()
 
-    const foo = await repo.findOne("foo")
+    const foo = repo.findOne("foo")
     assert(foo !== undefined, "Expected 'foo' to be in the index")
     assert(
       foo.definitions.length === 1,
       `Expected 'foo' to have 1 definition, got ${foo.definitions.length}`
     )
 
-    const bar = await repo.findOne("bar")
+    const bar = repo.findOne("bar")
     assert(bar !== undefined, "Expected 'bar' to be in the index")
     assert(
       bar.definitions.length === 1,
@@ -32,16 +32,16 @@ suite("LoadDefinitions", () => {
 
   test("removes classes if they're not definitions", async () => {
     const repo = new CssClassRepository(new Map())
-    await repo.save(CssClassMother({ className: "foo", definitions: [{ uri: "file:///foo.css" }] }))
-    await repo.save(CssClassMother({ className: "bar", definitions: [{ uri: "file:///bar.css" }] }))
+    repo.save(CssClassMother({ className: "foo", definitions: [{ uri: "file:///foo.css" }] }))
+    repo.save(CssClassMother({ className: "bar", definitions: [{ uri: "file:///bar.css" }] }))
     const command = new LoadDefinitions(repo, async () => [])
 
     await command.execute()
 
-    const foo = await repo.findOne("foo")
+    const foo = repo.findOne("foo")
     assert(foo === undefined, "Expected 'foo' to be removed from the index")
 
-    const bar = await repo.findOne("bar")
+    const bar = repo.findOne("bar")
     assert(bar === undefined, "Expected 'bar' to be removed from the index")
   })
 
@@ -54,7 +54,7 @@ suite("LoadDefinitions", () => {
 
     await command.execute()
 
-    const foo = await repo.findOne("foo")
+    const foo = repo.findOne("foo")
     assert(foo !== undefined)
     assert(foo.usages.length === 0, "Expected usages to be empty")
   })

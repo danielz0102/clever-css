@@ -10,34 +10,34 @@ export class UpdateDefinitions {
   ) {}
 
   async from(file: CssFileDto): Promise<void> {
-    const { removeNonExistent } = await this.resetDefinitions(file)
+    const { removeNonExistent } = this.resetDefinitions(file)
     const symbols = await this.parseSymbols(file)
 
     for (const { name: className, location } of symbols) {
-      const cssClass = (await this.classes.findOne(className)) ?? new CssClass(className)
+      const cssClass = this.classes.findOne(className) ?? new CssClass(className)
       cssClass.definitions.add(location)
-      await this.classes.save(cssClass)
+      this.classes.save(cssClass)
     }
 
-    await removeNonExistent()
+    removeNonExistent()
   }
 
-  private async resetDefinitions(
+  private resetDefinitions(
     file: CssFileDto
-  ): Promise<{ removeNonExistent: () => Promise<void> }> {
-    const classes = await this.classes.getFromDefinitionUri(file.uri)
+  ): { removeNonExistent: () => void } {
+    const classes = this.classes.getFromDefinitionUri(file.uri)
 
     for (const cssClass of classes) {
       cssClass.definitions.removeFromUri(file.uri)
-      await this.classes.save(cssClass)
+      this.classes.save(cssClass)
     }
 
-    const removeNonExistent = async () => {
+    const removeNonExistent = () => {
       for (const cssClass of classes) {
-        const classFound = await this.classes.findOne(cssClass.className)
+        const classFound = this.classes.findOne(cssClass.className)
 
         if (classFound && !classFound.exists) {
-          await this.classes.delete(cssClass)
+          this.classes.delete(cssClass)
         }
       }
     }

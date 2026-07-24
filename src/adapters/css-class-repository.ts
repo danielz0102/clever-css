@@ -4,43 +4,39 @@ import type { CssClassModel, CssClassIndex } from "../persistence/css-class-inde
 export class CssClassRepository {
   constructor(private index: CssClassIndex) {}
 
-  async findOne(className: string): Promise<CssClass | undefined> {
+  findOne(className: string): CssClass | undefined {
     const model = this.index.get(className)
     return model ? this.toDomain(model) : undefined
   }
 
-  async getFromDefinitionUri(uri: string): Promise<CssClass[]> {
-    const classes = Array.from(this.index.values())
+  getFromDefinitionUri(uri: string): CssClass[] {
+    return Array.from(this.index.values())
       .filter((c) => c.definitions.some((d) => d.uri === uri))
       .map((c) => this.toDomain(c))
-
-    return classes
   }
 
-  async getFromUsageUri(uri: string): Promise<CssClass[]> {
-    const classes = Array.from(this.index.values())
+  getFromUsageUri(uri: string): CssClass[] {
+    return Array.from(this.index.values())
       .filter((c) => c.usages.some((u) => u.uri === uri))
       .map((c) => this.toDomain(c))
-
-    return classes
   }
 
-  async save(cssClass: CssClass): Promise<void> {
+  save(cssClass: CssClass): void {
     const model = this.toPersistence(cssClass)
     this.index.set(model.className, model)
   }
 
-  async delete(cssClass: CssClass): Promise<void> {
+  delete(cssClass: CssClass): void {
     this.index.delete(cssClass.className)
   }
 
-  async resetAllUsages(): Promise<void> {
+  resetAllUsages(): void {
     for (const model of this.index.values()) {
       model.usages = []
     }
   }
 
-  async destroy(): Promise<void> {
+  destroy(): void {
     this.index.clear()
   }
 
