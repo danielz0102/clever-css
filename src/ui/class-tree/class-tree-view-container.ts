@@ -13,17 +13,18 @@ export class ClassTreeViewContainer {
 
   static async create(index: CssClassIndex): Promise<ClassTreeViewContainer> {
     const getAll = new GetAllClasses(index)
-    const getUnusedClasses = new GetUnusedClasses(index)
 
-    const allClassesTree = new ClassTreeDataProvider(modelsToIndex(await getAll.execute()))
-    const unusedClassesTree = new ClassTreeDataProvider(
-      modelsToIndex(await getUnusedClasses.execute())
-    )
-
-    return new ClassTreeViewContainer(allClassesTree, unusedClassesTree, async () => {
-      const [all, unused] = await Promise.all([getAll.execute(), getUnusedClasses.execute()])
+    const refreshData = async () => {
+      const all = await getAll.execute()
+      const unused = all.filter(GetUnusedClasses.filter)
       return { all, unused }
-    })
+    }
+
+    const { all, unused } = await refreshData()
+    const allClassesTree = new ClassTreeDataProvider(modelsToIndex(all))
+    const unusedClassesTree = new ClassTreeDataProvider(modelsToIndex(unused))
+
+    return new ClassTreeViewContainer(allClassesTree, unusedClassesTree, refreshData)
   }
 
   async refresh(): Promise<void> {
