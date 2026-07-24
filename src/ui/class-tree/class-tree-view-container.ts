@@ -1,26 +1,14 @@
-import type { CssClassIndex } from "../../persistence/css-class-index"
-import { GetAllClasses } from "../../features/get-all-classes/get-all-classes-query-handler"
 import { GetUnusedClasses } from "../../features/diagnostics/get-unused-classes-query-handler"
+import { GetAllClasses } from "../../features/get-all-classes/get-all-classes-query-handler"
+import type { CssClassIndex } from "../../persistence/css-class-index"
 import { ClassTreeDataProvider } from "./class-tree-data-provider"
 import { modelsToIndex } from "./files-index"
 
 export class ClassTreeViewContainer {
-  readonly allClassesTree: ClassTreeDataProvider
-  readonly unusedClassesTree: ClassTreeDataProvider
-  private getAll: GetAllClasses
-  private getUnusedClasses: GetUnusedClasses
-
   private constructor(
-    allClassesTree: ClassTreeDataProvider,
-    unusedClassesTree: ClassTreeDataProvider,
-    getAll: GetAllClasses,
-    getUnusedClasses: GetUnusedClasses
-  ) {
-    this.allClassesTree = allClassesTree
-    this.unusedClassesTree = unusedClassesTree
-    this.getAll = getAll
-    this.getUnusedClasses = getUnusedClasses
-  }
+    readonly allClassesTree: ClassTreeDataProvider,
+    readonly unusedClassesTree: ClassTreeDataProvider
+  ) {}
 
   static async create(index: CssClassIndex): Promise<ClassTreeViewContainer> {
     const getAll = new GetAllClasses(index)
@@ -33,7 +21,7 @@ export class ClassTreeViewContainer {
       modelsToIndex(await getUnusedClasses.execute())
     )
 
-    return new ClassTreeViewContainer(allClassesTree, unusedClassesTree, getAll, getUnusedClasses)
+    return new ClassTreeViewContainer(allClassesTree, unusedClassesTree)
   }
 
   async refreshIndex(): Promise<void> {
