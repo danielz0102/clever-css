@@ -10,17 +10,10 @@ export class ClassTreeDataProvider implements vscode.TreeDataProvider<ClassItem 
   >()
   readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event
 
-  private constructor(
-    private files: FilesIndex,
-    private readonly getFiles: () => Promise<FilesIndex>
-  ) {}
+  constructor(private files: FilesIndex) {}
 
-  static async create(getFiles: () => Promise<FilesIndex>): Promise<ClassTreeDataProvider> {
-    return new ClassTreeDataProvider(await getFiles(), getFiles)
-  }
-
-  async refresh(): Promise<void> {
-    this.files = await this.getFiles()
+  refresh(files: FilesIndex): void {
+    this.files = files
     this.onDidChangeTreeDataEmitter.fire()
   }
 
