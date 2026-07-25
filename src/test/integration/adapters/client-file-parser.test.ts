@@ -8,7 +8,7 @@ suite("parseUsagesFrom", () => {
   const allContexts = [jsxParserContext, htmlParserContext]
 
   allContexts.forEach((ctx) => {
-    suite(ctx.parserName, () => {
+    suite(ctx.suiteName, () => {
       test("detects multiple classes in a single attribute", () => {
         const usages = parseUsagesFrom({
           uri: `multiple-classes.${ctx.extension}`,
@@ -115,7 +115,7 @@ suite("parseUsagesFrom", () => {
   })
 
   jsContexts.forEach((ctx) => {
-    suite(ctx.parserName, () => {
+    suite(ctx.suiteName, () => {
       test("supports classes inside template strings", () => {
         const usages = parseUsagesFrom({
           uri: `with-template-strings.${ctx.extension}`,
