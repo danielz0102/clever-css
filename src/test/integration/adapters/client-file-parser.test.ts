@@ -1,26 +1,19 @@
 import assert from "node:assert"
 
+import { parseUsagesFrom } from "../../../adapters/client-file-parsers/client-file-parser"
 import { htmlParserContext, jsxParserContext } from "../../fixtures/parser-context"
-import { TemporalWorkspaceFixture } from "../../fixtures/temporal-workspace"
 
-suite("Client File Parsers", () => {
-  const workspace = new TemporalWorkspaceFixture()
+suite("parseUsagesFrom", () => {
   const jsContexts = [jsxParserContext]
   const allContexts = [jsxParserContext, htmlParserContext]
 
-  teardown(async () => {
-    await workspace.teardown()
-  })
-
   allContexts.forEach((ctx) => {
     suite(ctx.parserName, () => {
-      test("detects multiple classes in a single attribute", async () => {
-        const file = await workspace.writeFile(
-          `multiple-classes.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}="class-one class-two"></div>`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("detects multiple classes in a single attribute", () => {
+        const usages = parseUsagesFrom({
+          uri: `multiple-classes.${ctx.extension}`,
+          content: `<div ${ctx.classNameAttribute}="class-one class-two"></div>`,
+        })
 
         const classOneUsages = usages.filter((u) => u.name === "class-one")
         assert(
@@ -35,13 +28,11 @@ suite("Client File Parsers", () => {
         )
       })
 
-      test("detects the same class used multiple times in a single attribute", async () => {
-        const file = await workspace.writeFile(
-          `duplicate-classes.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}="duplicate-class duplicate-class"></div>`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("detects the same class used multiple times in a single attribute", () => {
+        const usages = parseUsagesFrom({
+          uri: `duplicate-classes.${ctx.extension}`,
+          content: `<div ${ctx.classNameAttribute}="duplicate-class duplicate-class"></div>`,
+        })
 
         const classUsages = usages.filter((u) => u.name === "duplicate-class")
         assert(
@@ -50,24 +41,22 @@ suite("Client File Parsers", () => {
         )
       })
 
-      test("detects nested elements with classes", async () => {
-        const file = await workspace.writeFile(
-          `nested-elements.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}="outer-class"><span ${ctx.classNameAttribute}="inner-class"></span></div>`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("detects nested elements with classes", () => {
+        const usages = parseUsagesFrom({
+          uri: `nested-elements.${ctx.extension}`,
+          content: `<div ${ctx.classNameAttribute}="outer-class">
+            <span ${ctx.classNameAttribute}="inner-class"></span>
+          </div>`,
+        })
 
         assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
       })
 
-      test("returns correct positions", async () => {
-        const file = await workspace.writeFile(
-          `positions.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}="positioned-class"></div>`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("returns correct positions", () => {
+        const usages = parseUsagesFrom({
+          uri: `positions.${ctx.extension}`,
+          content: `<div ${ctx.classNameAttribute}="positioned-class"></div>`,
+        })
 
         const positionedClass = usages.find((u) => u.name === "positioned-class")
         assert(positionedClass)
@@ -94,52 +83,30 @@ suite("Client File Parsers", () => {
         )
       })
 
-      test("returns an empty array when there are no classes", async () => {
-        const file = await workspace.writeFile(
-          `no-classes.${ctx.extension}`,
-          `<div><span></span></div>`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("returns an empty array when there are no classes", () => {
+        const usages = parseUsagesFrom({
+          uri: `no-classes.${ctx.extension}`,
+          content: `<div><span></span></div>`,
+        })
 
         assert(usages.length === 0, `Expected 0 usages, found ${usages.length}.`)
       })
 
-      test("does not match class name in casual text", async () => {
-        const file = await workspace.writeFile(
-          `index.${ctx.extension}`,
-          "<p>A paragraph that has the text button which is casually the same name of a class</p>"
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("does not match class name in casual text", () => {
+        const usages = parseUsagesFrom({
+          uri: `index.${ctx.extension}`,
+          content:
+            "<p>A paragraph that has the text button which is casually the same name of a class</p>",
+        })
 
         assert(usages.length === 0, `Expected 0 usages, found ${usages.length}`)
       })
 
-      test("does not cache the result of parsing a file", async () => {
-        const file = await workspace.writeFile(
-          `caching.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}="cached-class"></div>`
-        )
-        const parser = ctx.createParser()
-
-        parser.parseUsagesFrom(file.fsPath)
-        await workspace.writeFile(
-          `caching.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}="cached-class modified-class"></div>`
-        )
-
-        const usages = parser.parseUsagesFrom(file.fsPath)
-        assert(usages.length === 2, `Expected 2 usages, found ${usages.length}.`)
-      })
-
-      test("works with self-closing tags", async () => {
-        const file = await workspace.writeFile(
-          `self-closing.${ctx.extension}`,
-          `<img ${ctx.classNameAttribute}="self-closing-class" />`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("works with self-closing tags", () => {
+        const usages = parseUsagesFrom({
+          uri: `self-closing.${ctx.extension}`,
+          content: `<img ${ctx.classNameAttribute}="self-closing-class" />`,
+        })
 
         const classUsages = usages.filter((u) => u.name === "self-closing-class")
         assert.equal(classUsages.length, 1, `Expected 1 usage, found ${classUsages.length}`)
@@ -149,25 +116,20 @@ suite("Client File Parsers", () => {
 
   jsContexts.forEach((ctx) => {
     suite(ctx.parserName, () => {
-      test("supports classes inside template strings", async () => {
-        const file = await workspace.writeFile(
-          `with-template-strings.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}={\`my-class\`} />`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
-
+      test("supports classes inside template strings", () => {
+        const usages = parseUsagesFrom({
+          uri: `with-template-strings.${ctx.extension}`,
+          content: `<div ${ctx.classNameAttribute}={\`my-class\`} />`,
+        })
         const classUsages = usages.filter((u) => u.name === "my-class")
         assert(classUsages.length === 1, `Expected 1 usage, found ${classUsages.length}`)
       })
 
-      test("supports classes inside template strings with expressions", async () => {
-        const file = await workspace.writeFile(
-          `with-template-expressions.${ctx.extension}`,
-          `<div ${ctx.classNameAttribute}={\`my-class \${variable} another-class \`} />`
-        )
-
-        const usages = ctx.createParser().parseUsagesFrom(file.fsPath)
+      test("supports classes inside template strings with expressions", () => {
+        const usages = parseUsagesFrom({
+          uri: `with-template-expressions.${ctx.extension}`,
+          content: `<div ${ctx.classNameAttribute}={\`my-class \${variable} another-class \`} />`,
+        })
 
         const myClassUsages = usages.filter((u) => u.name === "my-class")
         assert(myClassUsages.length === 1, `Expected 1 usage, found ${myClassUsages.length}`)
