@@ -1,16 +1,16 @@
-import type { ClientFileParser } from "../../adapters/client-file-parsers/client-file-parser-port"
 import type { CssClassRepository } from "../../adapters/css-class-repository"
+import type { CssFileDto } from "../../dtos/css-file-dto"
 import type { Token } from "../../dtos/token-dto"
 
 export class UpdateUsages {
   constructor(
     private classes: CssClassRepository,
-    private parser: ClientFileParser
+    private parseUsagesFrom: (file: CssFileDto) => Token[]
   ) {}
 
-  from(uri: string): void {
-    this.resetUsages(uri)
-    this.saveUsages(this.parser.parseUsagesFrom(uri))
+  from(file: CssFileDto): void {
+    this.resetUsages(file.uri)
+    this.saveUsages(this.parseUsagesFrom(file))
   }
 
   private resetUsages(uri: string): void {

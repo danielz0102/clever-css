@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { selectParser } from "./adapters/client-file-parsers/select-parser"
+import { parseUsagesFrom } from "./adapters/client-file-parsers/client-file-parser"
 import { CssClassRepository } from "./adapters/css-class-repository"
 import { parseCssClassTokens } from "./adapters/css-parser"
 import { uriToCssFileDto } from "./dtos/css-file-dto"
@@ -66,15 +66,14 @@ async function init(): Promise<vscode.Disposable[]> {
     diagnostics.refresh()
   })
 
-  const updateUsages = new UpdateUsages(repo, {
-    parseUsagesFrom: (uri) => selectParser(uri).parseUsagesFrom(uri),
-  })
+  const updateUsages = new UpdateUsages(repo, parseUsagesFrom)
   const deleteUsages = new DeleteUsages(repo)
   const clientFilesWatcher = vscode.workspace.createFileSystemWatcher(
     toGlobPattern(CLIENT_FILE_EXTENSIONS)
   )
   clientFilesWatcher.onDidChange(async (uri) => {
-    updateUsages.from(uri.fsPath)
+    const file = await uriToCssFileDto(uri)
+    updateUsages.from(file)
     diagnostics.refresh()
   })
   clientFilesWatcher.onDidDelete(async (uri) => {

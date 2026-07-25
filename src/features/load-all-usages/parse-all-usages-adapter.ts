@@ -1,18 +1,19 @@
 import * as vscode from "vscode"
 
-import { selectParser } from "../../adapters/client-file-parsers/select-parser"
+import { parseUsagesFrom } from "../../adapters/client-file-parsers/client-file-parser"
+import { uriToCssFileDto, type CssFileDto } from "../../dtos/css-file-dto"
 import type { Token } from "../../dtos/token-dto"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
 
 export async function parseAllUsages(): Promise<Token[]> {
   const files = await findClientFiles()
-  return files.flatMap((uri) => selectParser(uri).parseUsagesFrom(uri))
+  return files.flatMap(parseUsagesFrom)
 }
 
-async function findClientFiles(): Promise<string[]> {
-  const files = await vscode.workspace.findFiles(
+async function findClientFiles(): Promise<CssFileDto[]> {
+  const uris = await vscode.workspace.findFiles(
     toGlobPattern(CLIENT_FILE_EXTENSIONS),
     "**/node_modules/**"
   )
-  return files.map((uri) => uri.fsPath)
+  return await Promise.all(uris.map(uriToCssFileDto))
 }

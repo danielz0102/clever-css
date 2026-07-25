@@ -22,14 +22,12 @@ suite("UpdateUsages", () => {
         usages: [{ uri: "file:///component.tsx" }],
       })
     )
-    const update = new UpdateUsages(repo, {
-      parseUsagesFrom: () => [
-        makeToken({ className: "my-class", uri: "file:///component.tsx" }),
-        makeToken({ className: "other-class", uri: "file:///component.tsx" }),
-      ],
-    })
+    const update = new UpdateUsages(repo, () => [
+      makeToken({ className: "my-class", uri: "file:///component.tsx" }),
+      makeToken({ className: "other-class", uri: "file:///component.tsx" }),
+    ])
 
-    update.from("/component.tsx")
+    update.from({ uri: "component.tsx", content: "" })
 
     const classesFound = repo.getFromUsageUri("file:///component.tsx")
     assert(classesFound.length === 2, `Expected 2 classes, found ${classesFound.length}`)
@@ -50,14 +48,12 @@ suite("UpdateUsages", () => {
 
   test("doesn't add classes that don't exist in the index", async () => {
     const repo = new CssClassRepository(new Map())
-    const update = new UpdateUsages(repo, {
-      parseUsagesFrom: () => [
-        makeToken({ className: "my-class", uri: "file:///component.tsx" }),
-        makeToken({ className: "other-class", uri: "file:///component.tsx" }),
-      ],
-    })
+    const update = new UpdateUsages(repo, () => [
+      makeToken({ className: "my-class", uri: "file:///component.tsx" }),
+      makeToken({ className: "other-class", uri: "file:///component.tsx" }),
+    ])
 
-    update.from("file:///component.tsx")
+    update.from({ uri: "component.tsx", content: "" })
 
     const classesFound = repo.getFromUsageUri("file:///component.tsx")
     assert(classesFound.length === 0, `Expected 0 classes, found ${classesFound.length}`)
