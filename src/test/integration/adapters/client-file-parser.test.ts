@@ -1,7 +1,24 @@
 import assert from "node:assert"
 
 import { parseUsagesFrom } from "../../../adapters/client-file-parsers/client-file-parser"
-import { htmlParserContext, jsxParserContext } from "../../fixtures/parser-context"
+
+type ParserTestContext = {
+  suiteName: string
+  extension: string
+  classNameAttribute: "class" | "className"
+}
+
+const jsxParserContext: ParserTestContext = {
+  suiteName: "JsxParser",
+  extension: "tsx",
+  classNameAttribute: "className",
+}
+
+const htmlParserContext: ParserTestContext = {
+  suiteName: "HtmlParser",
+  extension: "html",
+  classNameAttribute: "class",
+}
 
 suite("parseUsagesFrom", () => {
   const jsContexts = [jsxParserContext]
