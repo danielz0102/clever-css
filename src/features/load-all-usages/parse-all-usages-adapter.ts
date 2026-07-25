@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { parseUsagesFrom } from "../../adapters/client-file-parsers/client-file-parser"
+import { parseUsagesFrom } from "../../adapters/client-file-parser"
 import { uriToCssFileDto, type CssFileDto } from "../../dtos/css-file-dto"
 import type { Token } from "../../dtos/token-dto"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"

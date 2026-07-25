@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import { parseUsagesFrom } from "./adapters/client-file-parsers/client-file-parser"
+import { parseUsagesFrom } from "./adapters/client-file-parser"
 import { CssClassRepository } from "./adapters/css-class-repository"
 import { parseCssClassTokens } from "./adapters/css-parser"
 import { uriToCssFileDto } from "./dtos/css-file-dto"

@@ -1,8 +1,8 @@
 import { Lang, parse, type NapiConfig } from "@ast-grep/napi"
 import type { TypesMap } from "@ast-grep/napi/types/staticTypes"
 
-import type { CssFileDto } from "../../dtos/css-file-dto"
-import type { Token } from "../../dtos/token-dto"
+import type { CssFileDto } from "../dtos/css-file-dto"
+import type { Token } from "../dtos/token-dto"
 
 type ParserStrategy = {
   lang: Lang
