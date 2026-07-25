@@ -36,9 +36,7 @@ suite("DeleteDefinitions", () => {
 
   test("removes classes from the index if they have no definitions left", async () => {
     const repo = new CssClassRepository(new Map())
-    repo.save(
-      CssClassMother({ className: "my-class", definitions: [{ uri: "file:///test.css" }] })
-    )
+    repo.save(CssClassMother({ className: "my-class", definitions: [{ uri: "file:///test.css" }] }))
 
     const command = new DeleteDefinitions(repo)
     command.from("file:///test.css")

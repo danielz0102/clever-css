@@ -22,9 +22,7 @@ export class UpdateDefinitions {
     removeNonExistent()
   }
 
-  private resetDefinitions(
-    file: CssFileDto
-  ): { removeNonExistent: () => void } {
+  private resetDefinitions(file: CssFileDto): { removeNonExistent: () => void } {
     const classes = this.classes.getFromDefinitionUri(file.uri)
 
     for (const cssClass of classes) {

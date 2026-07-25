@@ -24,9 +24,7 @@ suite("UpdateDefinitions", () => {
 
   test("adds new definitions of an existing class", async () => {
     const repo = new CssClassRepository(new Map())
-    repo.save(
-      CssClassMother({ className: "my-class", definitions: [{ uri: "file:///test.css" }] })
-    )
+    repo.save(CssClassMother({ className: "my-class", definitions: [{ uri: "file:///test.css" }] }))
     const command = new UpdateDefinitions(repo, async (file) => [
       makeToken({ className: "my-class", uri: file.uri }),
     ])
