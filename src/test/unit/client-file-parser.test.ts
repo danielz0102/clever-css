@@ -1,6 +1,6 @@
 import assert from "node:assert"
 
-import { parseUsagesFrom } from "../../../adapters/client-file-parser"
+import { parseUsagesFrom } from "../../adapters/client-file-parser"
 
 type FileTestContext = {
   extension: string
