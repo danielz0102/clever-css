@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import type { ClassAnalyzer } from "./get-unused-classes-query-handler"
+import type { ClassAnalyzer } from "./class-analyzer"
 
 export class Diagnostics implements vscode.Disposable {
   private collection = vscode.languages.createDiagnosticCollection("clever-css")

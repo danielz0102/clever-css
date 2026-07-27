@@ -1,5 +1,5 @@
 import { CssClassRepository } from "../../adapters/css-class-repository"
-import { ClassAnalyzer } from "../../features/diagnostics/get-unused-classes-query-handler"
+import { ClassAnalyzer } from "../../features/diagnostics/class-analyzer"
 import { GetAllClasses } from "../../features/get-all-classes/get-all-classes-query-handler"
 import type { CssClassIndex, CssClassModel } from "../../persistence/css-class-index"
 import { ClassTreeDataProvider } from "./class-tree-data-provider"
