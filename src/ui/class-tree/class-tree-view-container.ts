@@ -1,4 +1,5 @@
-import { GetUnusedClasses } from "../../features/diagnostics/get-unused-classes-query-handler"
+import { CssClassRepository } from "../../adapters/css-class-repository"
+import { ClassAnalyzer } from "../../features/diagnostics/get-unused-classes-query-handler"
 import { GetAllClasses } from "../../features/get-all-classes/get-all-classes-query-handler"
 import type { CssClassIndex, CssClassModel } from "../../persistence/css-class-index"
 import { ClassTreeDataProvider } from "./class-tree-data-provider"
@@ -11,13 +12,12 @@ export class ClassTreeViewContainer {
     private readonly refreshData: () => { all: CssClassModel[]; unused: CssClassModel[] }
   ) {}
 
-  static async create(index: CssClassIndex): Promise<ClassTreeViewContainer> {
+  static create(index: CssClassIndex): ClassTreeViewContainer {
     const getAll = new GetAllClasses(index)
+    const analyzer = new ClassAnalyzer(new CssClassRepository(index))
 
     const refreshData = () => {
-      const all = getAll.execute()
-      const unused = all.filter(GetUnusedClasses.filter)
-      return { all, unused }
+      return { all: getAll.execute(), unused: analyzer.getUnused() }
     }
 
     const { all, unused } = refreshData()

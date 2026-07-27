@@ -7,7 +7,7 @@ import { uriToCssFileDto } from "./dtos/css-file-dto"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
 import { Diagnostics } from "./features/diagnostics/diagnostics-service"
-import { GetUnusedClasses } from "./features/diagnostics/get-unused-classes-query-handler"
+import { ClassAnalyzer } from "./features/diagnostics/get-unused-classes-query-handler"
 import { GetAllReferences } from "./features/get-all-references/get-all-references-query-handler"
 import { createFindReferencesProvider } from "./features/get-all-references/vscode-references-provider-controller"
 import { createRenameProvider } from "./features/get-all-references/vscode-rename-provider"
@@ -47,10 +47,11 @@ async function init(): Promise<vscode.Disposable[]> {
   const loadUsages = new LoadAllUsages(repo, parseAllUsages)
   await loadUsages.execute()
 
-  const diagnostics = new Diagnostics(new GetUnusedClasses(index))
+  const analyzer = new ClassAnalyzer(repo)
+  const diagnostics = new Diagnostics(analyzer)
   diagnostics.refresh()
 
-  const trees = await ClassTreeViewContainer.create(index)
+  const trees = ClassTreeViewContainer.create(index)
   const updateDefinitions = new UpdateDefinitions(repo, parseCssClassTokens)
   const deleteDefinitions = new DeleteDefinitions(repo)
   const cssFilesWatcher = vscode.workspace.createFileSystemWatcher("**/*.css")

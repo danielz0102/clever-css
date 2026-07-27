@@ -1,14 +1,14 @@
 import * as vscode from "vscode"
 
-import { GetUnusedClasses } from "./get-unused-classes-query-handler"
+import type { ClassAnalyzer } from "./get-unused-classes-query-handler"
 
 export class Diagnostics implements vscode.Disposable {
   private collection = vscode.languages.createDiagnosticCollection("clever-css")
 
-  constructor(private getUnusedClasses: GetUnusedClasses) {}
+  constructor(private readonly analyzer: ClassAnalyzer) {}
 
   refresh(): void {
-    const unusedClasses = this.getUnusedClasses.execute()
+    const unusedClasses = this.analyzer.getUnused()
     const diagnosticsByFile = new Map<string, vscode.Diagnostic[]>()
 
     for (const cls of unusedClasses) {

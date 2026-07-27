@@ -14,4 +14,12 @@ export class CssClass {
   get exists(): boolean {
     return this.definitions.length > 0
   }
+
+  get isUnused(): boolean {
+    return this.definitions.length > 0 && this.usages.length === 0
+  }
+
+  get isDuplicated(): boolean {
+    return this.definitions.length > 1
+  }
 }

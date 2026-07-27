@@ -9,16 +9,20 @@ export class CssClassRepository {
     return model ? this.toDomain(model) : undefined
   }
 
+  getAll(): CssClass[] {
+    return Array.from(this.index.values()).map(this.toDomain)
+  }
+
   getFromDefinitionUri(uri: string): CssClass[] {
     return Array.from(this.index.values())
       .filter((c) => c.definitions.some((d) => d.uri === uri))
-      .map((c) => this.toDomain(c))
+      .map(this.toDomain)
   }
 
   getFromUsageUri(uri: string): CssClass[] {
     return Array.from(this.index.values())
       .filter((c) => c.usages.some((u) => u.uri === uri))
-      .map((c) => this.toDomain(c))
+      .map(this.toDomain)
   }
 
   save(cssClass: CssClass): void {
@@ -40,7 +44,7 @@ export class CssClassRepository {
     this.index.clear()
   }
 
-  private toDomain(model: CssClassModel): CssClass {
+  private toDomain = (model: CssClassModel): CssClass => {
     const entity = new CssClass(model.className, ...model.definitions)
     entity.usages.add(...model.usages)
     return entity
