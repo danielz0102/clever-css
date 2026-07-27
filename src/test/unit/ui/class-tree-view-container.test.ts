@@ -5,7 +5,7 @@ import { ClassTreeViewContainer } from "../../../ui/class-tree/class-tree-view-c
 import { CssClassModelMother } from "../../fixtures/mothers/css-class-mother"
 
 suite("ClassTreeViewContainer", () => {
-  test("unusedClassesTree excludes classes with usages", async () => {
+  test("unusedClassesTree excludes classes with usages", () => {
     const index: CssClassIndex = new Map([
       [
         "unused",
@@ -24,7 +24,7 @@ suite("ClassTreeViewContainer", () => {
       ],
     ])
 
-    const container = await ClassTreeViewContainer.create(index)
+    const container = ClassTreeViewContainer.create(index)
     const allFileItems = container.allClassesTree.getChildren()
 
     assert.strictEqual(allFileItems.length, 2, "allClassesTree should show both files")
@@ -36,7 +36,7 @@ suite("ClassTreeViewContainer", () => {
     assert.strictEqual(unusedClasses.length, 1, "unusedClassesTree should show 1 class")
   })
 
-  test("refresh propagates index changes", async () => {
+  test("refresh propagates index changes", () => {
     const index: CssClassIndex = new Map([
       [
         "class-a",
@@ -47,7 +47,7 @@ suite("ClassTreeViewContainer", () => {
       ],
     ])
 
-    const container = await ClassTreeViewContainer.create(index)
+    const container = ClassTreeViewContainer.create(index)
 
     const initialFileItems = container.allClassesTree.getChildren()
     assert.strictEqual(initialFileItems.length, 1, "Should start with 1 file item")
