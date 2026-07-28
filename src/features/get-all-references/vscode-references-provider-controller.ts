@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 
+import type { Location } from "../../domain/location"
 import type { GetAllReferences } from "./get-all-references-query-handler"
 
 export function createFindReferencesProvider(getReferences: GetAllReferences) {
@@ -8,18 +9,14 @@ export function createFindReferencesProvider(getReferences: GetAllReferences) {
     {
       async provideReferences(document, position) {
         const wordRange = document.getWordRangeAtPosition(position)
-
         if (!wordRange) return
 
-        let references = getReferences.execute(document.getText(wordRange).substring(1))
+        const isSelected = (ref: Location) =>
+          ref.uri === document.uri.fsPath && ref.start.line === position.line
 
-        for (const ref of references) {
-          const isSeletedClass = ref.uri === document.uri.fsPath && ref.start.line === position.line
-          if (isSeletedClass) {
-            references = references.filter((r) => r !== ref)
-            break
-          }
-        }
+        const references = getReferences
+          .execute(document.getText(wordRange).substring(1))
+          .filter((r) => !isSelected(r))
 
         return references.map(
           (l) =>
