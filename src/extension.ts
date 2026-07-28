@@ -57,7 +57,7 @@ async function init(): Promise<vscode.Disposable[]> {
   const cssFilesWatcher = vscode.workspace.createFileSystemWatcher("**/*.css")
   cssFilesWatcher.onDidChange(async (uri) => {
     const file = await uriToCssFileDto(uri)
-    await updateDefinitions.from(file)
+    updateDefinitions.from(file)
     trees.refresh()
     diagnostics.refresh()
   })
@@ -77,7 +77,7 @@ async function init(): Promise<vscode.Disposable[]> {
     updateUsages.from(file)
     diagnostics.refresh()
   })
-  clientFilesWatcher.onDidDelete(async (uri) => {
+  clientFilesWatcher.onDidDelete((uri) => {
     deleteUsages.from(uri.fsPath)
     diagnostics.refresh()
   })

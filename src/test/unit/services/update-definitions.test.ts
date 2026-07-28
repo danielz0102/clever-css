@@ -6,13 +6,13 @@ import { CssClassMother } from "../../fixtures/mothers/css-class-mother"
 import { makeToken } from "../../fixtures/mothers/make-token"
 
 suite("UpdateDefinitions", () => {
-  test("adds new classes found in the file", async () => {
+  test("adds new classes found in the file", () => {
     const repo = new CssClassRepository(new Map())
-    const command = new UpdateDefinitions(repo, async (file) => [
+    const command = new UpdateDefinitions(repo, (file) => [
       makeToken({ className: "my-class", uri: file.uri }),
     ])
 
-    await command.from({ uri: "file:///test.css", content: ".my-class { color: red; }" })
+    command.from({ uri: "file:///test.css", content: ".my-class { color: red; }" })
 
     const myClass = repo.findOne("my-class")
     assert(myClass !== undefined, "Expected 'my-class' to be added to the index")
@@ -22,14 +22,14 @@ suite("UpdateDefinitions", () => {
     )
   })
 
-  test("adds new definitions of an existing class", async () => {
+  test("adds new definitions of an existing class", () => {
     const repo = new CssClassRepository(new Map())
     repo.save(CssClassMother({ className: "my-class", definitions: [{ uri: "file:///test.css" }] }))
-    const command = new UpdateDefinitions(repo, async (file) => [
+    const command = new UpdateDefinitions(repo, (file) => [
       makeToken({ className: "my-class", uri: file.uri }),
     ])
 
-    await command.from({ uri: "file:///other.css", content: ".my-class { color: blue; }" })
+    command.from({ uri: "file:///other.css", content: ".my-class { color: blue; }" })
 
     const myClass = repo.findOne("my-class")
     assert(myClass !== undefined, "Expected 'my-class' to remain in the index")
@@ -42,7 +42,7 @@ suite("UpdateDefinitions", () => {
     assert(def !== undefined, "Expected definition in 'file:///other.css' to remain")
   })
 
-  test("removes definitions deleted from the file", async () => {
+  test("removes definitions deleted from the file", () => {
     const repo = new CssClassRepository(new Map())
     repo.save(
       CssClassMother({
@@ -50,9 +50,9 @@ suite("UpdateDefinitions", () => {
         definitions: [{ uri: "file:///test.css" }, { uri: "file:///other.css" }],
       })
     )
-    const command = new UpdateDefinitions(repo, async () => [])
+    const command = new UpdateDefinitions(repo, () => [])
 
-    await command.from({ uri: "file:///test.css", content: "" })
+    command.from({ uri: "file:///test.css", content: "" })
 
     const record = repo.findOne("my-class")
     assert(record !== undefined, "Expected 'my-class' to remain in the index")
@@ -62,7 +62,7 @@ suite("UpdateDefinitions", () => {
     )
   })
 
-  test("removes classes with no definitions left", async () => {
+  test("removes classes with no definitions left", () => {
     const repo = new CssClassRepository(new Map())
     repo.save(
       CssClassMother({
@@ -70,15 +70,15 @@ suite("UpdateDefinitions", () => {
         definitions: [{ uri: "file:///test.css" }],
       })
     )
-    const command = new UpdateDefinitions(repo, async () => [])
+    const command = new UpdateDefinitions(repo, () => [])
 
-    await command.from({ uri: "file:///test.css", content: "" })
+    command.from({ uri: "file:///test.css", content: "" })
 
     const myClass = repo.findOne("my-class")
     assert(myClass === undefined, "Expected 'my-class' to be removed from the index")
   })
 
-  test("does not not modify unmodifed classes", async () => {
+  test("does not not modify unmodifed classes", () => {
     const repo = new CssClassRepository(new Map())
     repo.save(
       CssClassMother({
@@ -87,11 +87,11 @@ suite("UpdateDefinitions", () => {
         usages: [{ uri: "file:///test.html" }],
       })
     )
-    const command = new UpdateDefinitions(repo, async () => [
+    const command = new UpdateDefinitions(repo, () => [
       makeToken({ className: "my-class", uri: "file:///test.css" }),
     ])
 
-    await command.from({ uri: "file:///test.css", content: "" })
+    command.from({ uri: "file:///test.css", content: "" })
 
     const myClass = repo.findOne("my-class")
     assert(myClass !== undefined, "Expected 'my-class' to remain in the index")

@@ -9,9 +9,9 @@ export class UpdateDefinitions {
     private parseSymbols: CssClassParser
   ) {}
 
-  async from(file: CssFileDto): Promise<void> {
+  from(file: CssFileDto): void {
     const { removeNonExistent } = this.resetDefinitions(file)
-    const symbols = await this.parseSymbols(file)
+    const symbols = this.parseSymbols(file)
 
     for (const { name: className, location } of symbols) {
       const cssClass = this.classes.findOne(className) ?? new CssClass(className)
