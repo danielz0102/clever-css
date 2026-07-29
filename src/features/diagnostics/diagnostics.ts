@@ -9,6 +9,7 @@ export class Diagnostics implements vscode.Disposable {
 
   refresh(): void {
     const unusedClasses = this.analyzer.getUnused()
+    const duplicatedClasses = this.analyzer.getDuplicated()
     const diagnosticsByFile = new Map<string, vscode.Diagnostic[]>()
 
     for (const cls of unusedClasses) {
@@ -19,6 +20,22 @@ export class Diagnostics implements vscode.Disposable {
             new vscode.Position(definition.end.line, definition.end.column)
           ),
           "This class is not being used anywhere in the workspace",
+          vscode.DiagnosticSeverity.Warning
+        )
+        const existing = diagnosticsByFile.get(definition.uri) ?? []
+        existing.push(diagnostic)
+        diagnosticsByFile.set(definition.uri, existing)
+      }
+    }
+
+    for (const cls of duplicatedClasses) {
+      for (const definition of cls.definitions) {
+        const diagnostic = new vscode.Diagnostic(
+          new vscode.Range(
+            new vscode.Position(definition.start.line, definition.start.column),
+            new vscode.Position(definition.end.line, definition.end.column)
+          ),
+          `Duplicate class: defined in ${cls.definitions.length} locations`,
           vscode.DiagnosticSeverity.Warning
         )
         const existing = diagnosticsByFile.get(definition.uri) ?? []
