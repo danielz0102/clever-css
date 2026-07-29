@@ -102,6 +102,7 @@ async function init(): Promise<vscode.Disposable[]> {
     vscode.commands.registerCommand("cleverCss.rescan", rescan),
     vscode.window.registerTreeDataProvider("classes", trees.allClassesTree),
     vscode.window.registerTreeDataProvider("unusedClasses", trees.unusedClassesTree),
+    vscode.window.registerTreeDataProvider("duplicatedClasses", trees.duplicatedClassesTree),
     cssFilesWatcher,
     clientFilesWatcher,
     referenceProvider,

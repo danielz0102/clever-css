@@ -36,6 +36,33 @@ suite("ClassTreeViewContainer", () => {
     assert.strictEqual(unusedClasses.length, 1, "unusedClassesTree should show 1 class")
   })
 
+  test("duplicatedClassesTree shows classes with multiple definitions", () => {
+    const index: CssClassIndex = new Map([
+      [
+        "single",
+        CssClassModelMother({
+          className: "single",
+          definitions: [{ uri: "file:///single.css" }],
+        }),
+      ],
+      [
+        "duplicated",
+        CssClassModelMother({
+          className: "duplicated",
+          definitions: [{ uri: "file:///a.css" }, { uri: "file:///b.css" }],
+        }),
+      ],
+    ])
+
+    const container = ClassTreeViewContainer.create(index)
+    const fileItems = container.duplicatedClassesTree.getChildren()
+
+    assert.strictEqual(fileItems.length, 2, "duplicatedClassesTree should show all definitions")
+
+    const classes = container.duplicatedClassesTree.getChildren(fileItems[0])
+    assert.ok(classes[0], "should have a class item")
+  })
+
   test("refresh propagates index changes", () => {
     const index: CssClassIndex = new Map([
       [

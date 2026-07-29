@@ -81,6 +81,11 @@
           "id": "unusedClasses",
           "name": "Unused Classes",
           "icon": ""
+        },
+        {
+          "id": "duplicatedClasses",
+          "name": "Duplicated Classes",
+          "icon": ""
         }
       ]
     }
