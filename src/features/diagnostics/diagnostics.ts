@@ -4,10 +4,26 @@ import type { ClassAnalyzer } from "./class-analyzer"
 
 export class Diagnostics implements vscode.Disposable {
   private collection = vscode.languages.createDiagnosticCollection("clever-css")
+  private enabled = true
 
   constructor(private readonly analyzer: ClassAnalyzer) {}
 
+  enable(): void {
+    this.enabled = true
+    this.refresh()
+  }
+
+  disable(): void {
+    this.enabled = false
+    this.collection.clear()
+  }
+
   refresh(): void {
+    if (!this.enabled) {
+      this.collection.clear()
+      return
+    }
+
     const unusedClasses = this.analyzer.getUnused()
     const duplicatedClasses = this.analyzer.getDuplicated()
     const diagnosticsByFile = new Map<string, vscode.Diagnostic[]>()

@@ -41,6 +41,16 @@
     "typescript": "^6.0.3"
   },
   "contributes": {
+    "configuration": {
+      "title": "Clever CSS",
+      "properties": {
+        "clever-css.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable CSS class diagnostics (unused and duplicated classes)"
+        }
+      }
+    },
     "commands": [
       {
         "command": "cleverCss.rescan",

@@ -49,7 +49,26 @@ async function init(): Promise<vscode.Disposable[]> {
 
   const analyzer = new ClassAnalyzer(repo)
   const diagnostics = new Diagnostics(analyzer)
-  diagnostics.refresh()
+
+  const enabled = vscode.workspace
+    .getConfiguration("clever-css")
+    .get<boolean>("diagnostics.enabled", true)
+  if (!enabled) {
+    diagnostics.disable()
+  }
+
+  const configChangeListener = vscode.workspace.onDidChangeConfiguration((e) => {
+    if (e.affectsConfiguration("clever-css.diagnostics.enabled")) {
+      const enabled = vscode.workspace
+        .getConfiguration("clever-css")
+        .get<boolean>("diagnostics.enabled", true)
+      if (enabled) {
+        diagnostics.enable()
+      } else {
+        diagnostics.disable()
+      }
+    }
+  })
 
   const trees = ClassTreeViewContainer.create(index)
   const updateDefinitions = new UpdateDefinitions(repo, parseCssClassTokens)
@@ -110,5 +129,6 @@ async function init(): Promise<vscode.Disposable[]> {
     hoverProvider,
     definitionProvider,
     diagnostics,
+    configChangeListener,
   ]
 }
