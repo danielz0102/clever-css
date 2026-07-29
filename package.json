@@ -84,7 +84,21 @@
           "icon": ""
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "classes",
+        "contents": "No CSS classes found in the workspace."
+      },
+      {
+        "view": "unusedClasses",
+        "contents": "No unused CSS classes found."
+      },
+      {
+        "view": "duplicatedClasses",
+        "contents": "No duplicated CSS classes found."
+      }
+    ]
   },
   "activationEvents": [
     "onStartupFinished"
