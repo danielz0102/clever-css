@@ -43,10 +43,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "cleverCss.openClass",
-        "title": "Open CSS Class"
-      },
-      {
         "command": "cleverCss.rescan",
         "title": "Rescan Workspace",
         "icon": "$(refresh)"
