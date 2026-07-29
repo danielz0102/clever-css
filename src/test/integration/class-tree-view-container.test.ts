@@ -1,8 +1,8 @@
 import assert from "node:assert"
 
-import type { CssClassIndex } from "../../../persistence/css-class-index"
-import { ClassTreeViewContainer } from "../../../ui/class-tree/class-tree-view-container"
-import { CssClassModelMother } from "../../fixtures/mothers/css-class-mother"
+import type { CssClassIndex } from "../../persistence/css-class-index"
+import { ClassTreeViewContainer } from "../../ui/class-tree/class-tree-view-container"
+import { CssClassModelMother } from "../fixtures/mothers/css-class-mother"
 
 suite("ClassTreeViewContainer", () => {
   test("unusedClassesTree excludes classes with usages", () => {
