@@ -1,6 +1,5 @@
 import * as vscode from "vscode"
 
-import type { Location } from "../../domain/location"
 import type { GetAllReferences } from "./get-all-references-query-handler"
 
 export function createFindReferencesProvider(getReferences: GetAllReferences) {
@@ -11,12 +10,11 @@ export function createFindReferencesProvider(getReferences: GetAllReferences) {
         const wordRange = document.getWordRangeAtPosition(position)
         if (!wordRange) return
 
-        const isSelected = (ref: Location) =>
-          ref.uri === document.uri.fsPath && ref.start.line === position.line
-
         const references = getReferences
           .execute(document.getText(wordRange).substring(1))
-          .filter((r) => !isSelected(r))
+          //* Built-in reference provider already includes references from the current file,
+          //* so we filter them out to avoid duplicates
+          .filter((r) => r.uri !== document.uri.fsPath)
 
         return references.map(
           (l) =>
