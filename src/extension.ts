@@ -4,6 +4,7 @@ import { parseUsagesFrom } from "./adapters/client-file-parser"
 import { CssClassRepository } from "./adapters/css-class-repository"
 import { parseCssClassTokens } from "./adapters/css-parser"
 import { uriToCssFileDto } from "./dtos/css-file-dto"
+import { createCompletionProvider } from "./features/autocomplete/vscode-completion-provider"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
 import { ClassAnalyzer } from "./features/diagnostics/class-analyzer"
@@ -116,6 +117,8 @@ async function init(): Promise<vscode.Disposable[]> {
     diagnostics.refresh()
   }
 
+  const completionProvider = createCompletionProvider(index)
+
   return [
     vscode.commands.registerCommand("cleverCss.openClass", openLocation),
     vscode.commands.registerCommand("cleverCss.rescan", rescan),
@@ -128,6 +131,7 @@ async function init(): Promise<vscode.Disposable[]> {
     renameProvider,
     hoverProvider,
     definitionProvider,
+    completionProvider,
     diagnostics,
     configChangeListener,
   ]
