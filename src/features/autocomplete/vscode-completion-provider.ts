@@ -38,6 +38,22 @@ export function createCompletionProvider(classes: CssClassIndex) {
           return item
         })
       },
+      async resolveCompletionItem(item) {
+        const label = typeof item.label === "string" ? item.label : item.label.label
+        const definition = classes.get(label)?.definitions[0]
+        if (!definition) {
+          return item
+        }
+
+        const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(definition.uri))
+        const rule = parseCssClassRule(doc.getText(), label)
+        if (!rule) {
+          return item
+        }
+
+        item.documentation = new vscode.MarkdownString(`\`\`\`css\n${rule}\n\`\`\``)
+        return item
+      },
     },
     "-",
     " "
@@ -111,4 +127,15 @@ const HtmlStrategy: ParserStrategy = {
       },
     },
   },
+}
+
+function parseCssClassRule(text: string, className: string): string | undefined {
+  const ast = parse(Lang.Css, text)
+  const rule = ast.root().find(`.${className} {$$$}`)
+
+  if (!rule) {
+    return
+  }
+
+  return rule.text()
 }
