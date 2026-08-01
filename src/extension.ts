@@ -25,6 +25,7 @@ import { index } from "./persistence/css-class-index"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "./shared/client-file-extensions"
 import { ClassTreeViewContainer } from "./ui/class-tree/class-tree-view-container"
 import { openLocation } from "./ui/commands/open-location"
+import { Configuration } from "./ui/configuration"
 import { GitIgnoreFilter } from "./ui/gitignore"
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -53,23 +54,16 @@ async function init(): Promise<vscode.Disposable[]> {
   const analyzer = new ClassAnalyzer(repo)
   const diagnostics = new Diagnostics(analyzer)
 
-  const enabled = vscode.workspace
-    .getConfiguration("clever-css")
-    .get<boolean>("diagnostics.enabled", true)
-  if (!enabled) {
+  const config = new Configuration()
+  if (!config.diagnosticsEnabled) {
     diagnostics.disable()
   }
 
-  const configChangeListener = vscode.workspace.onDidChangeConfiguration((e) => {
-    if (e.affectsConfiguration("clever-css.diagnostics.enabled")) {
-      const enabled = vscode.workspace
-        .getConfiguration("clever-css")
-        .get<boolean>("diagnostics.enabled", true)
-      if (enabled) {
-        diagnostics.enable()
-      } else {
-        diagnostics.disable()
-      }
+  const configListener = config.onChange(({ diagnositcsEnabled }) => {
+    if (diagnositcsEnabled) {
+      diagnostics.enable()
+    } else {
+      diagnostics.disable()
     }
   })
 
@@ -143,6 +137,6 @@ async function init(): Promise<vscode.Disposable[]> {
     definitionProvider,
     completionProvider,
     diagnostics,
-    configChangeListener,
+    configListener,
   ]
 }
