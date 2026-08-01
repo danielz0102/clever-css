@@ -25,6 +25,7 @@ import { index } from "./persistence/css-class-index"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "./shared/client-file-extensions"
 import { ClassTreeViewContainer } from "./ui/class-tree/class-tree-view-container"
 import { openLocation } from "./ui/commands/open-location"
+import { GitIgnoreFilter } from "./ui/gitignore"
 
 export async function activate(context: vscode.ExtensionContext) {
   const disposables = await init().catch((err) => {
@@ -41,11 +42,12 @@ export function deactivate() {}
 
 async function init(): Promise<vscode.Disposable[]> {
   const repo = new CssClassRepository(index)
+  const gitIgnore = await GitIgnoreFilter.create()
 
-  const loadDefinitions = new LoadDefinitions(repo, parseAllCssClassSymbols)
+  const loadDefinitions = new LoadDefinitions(repo, () => parseAllCssClassSymbols(gitIgnore))
   await loadDefinitions.execute()
 
-  const loadUsages = new LoadAllUsages(repo, parseAllUsages)
+  const loadUsages = new LoadAllUsages(repo, () => parseAllUsages(gitIgnore))
   await loadUsages.execute()
 
   const analyzer = new ClassAnalyzer(repo)
@@ -76,12 +78,20 @@ async function init(): Promise<vscode.Disposable[]> {
   const deleteDefinitions = new DeleteDefinitions(repo)
   const cssFilesWatcher = vscode.workspace.createFileSystemWatcher("**/*.css")
   cssFilesWatcher.onDidChange(async (uri) => {
+    if (gitIgnore.ignores(uri.fsPath)) {
+      return
+    }
+
     const file = await uriToCssFileDto(uri)
     updateDefinitions.from(file)
     trees.refresh()
     diagnostics.refresh()
   })
   cssFilesWatcher.onDidDelete(async (uri) => {
+    if (gitIgnore.ignores(uri.fsPath)) {
+      return
+    }
+
     deleteDefinitions.from(uri.fsPath)
     trees.refresh()
     diagnostics.refresh()
