@@ -60,7 +60,8 @@ export function createCompletionProvider(classes: CssClassIndex) {
   )
 }
 
-function isClassNameValue(file: CssFileDto, range: vscode.Range): boolean {
+//TODO: Move this function to a shared folder
+export function isClassNameValue(file: CssFileDto, range: vscode.Range): boolean {
   const extension = file.uri.split(".").pop()
   if (!extension) {
     throw new Error(`File ${file.uri} has no extension`)

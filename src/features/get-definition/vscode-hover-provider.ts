@@ -1,7 +1,9 @@
 import { parseAsync, Lang } from "@ast-grep/napi"
 import * as vscode from "vscode"
 
+import type { CssFileDto } from "../../dtos/css-file-dto"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
+import { isClassNameValue } from "../autocomplete/vscode-completion-provider"
 import type { GetDefinition } from "./get-definition-query-handler"
 
 export function createHoverProvider(getSelector: GetDefinition) {
@@ -14,6 +16,15 @@ export function createHoverProvider(getSelector: GetDefinition) {
       async provideHover(document, position) {
         const range = document.getWordRangeAtPosition(position, /[\w-]+/)
         if (!range) {
+          return
+        }
+
+        const file: CssFileDto = {
+          uri: document.uri.fsPath,
+          content: document.getText(),
+        }
+
+        if (!isClassNameValue(file, range)) {
           return
         }
 
