@@ -10,11 +10,19 @@ CSS class completion as you type.
 
 ![Class Autocompletion](images/autocomplete.gif)
 
-### Linting and Diagnostics
+### Diagnostics
 
-Warnings for unused and duplicated CSS classes.
+Warnings for unused and duplicated CSS classes (configurable).
 
 ![Diagnostics](images/diagnostics.gif)
+
+### Tree View
+
+A tree view of all CSS classes in your workspace.
+
+<img src="images/tree-view.png" alt="Tree View" width="300"/>
+
+###
 
 ## Requirements
 
