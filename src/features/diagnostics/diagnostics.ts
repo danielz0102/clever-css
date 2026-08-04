@@ -35,7 +35,7 @@ export class Diagnostics implements vscode.Disposable {
             new vscode.Position(definition.start.line, definition.start.column),
             new vscode.Position(definition.end.line, definition.end.column)
           ),
-          "This class is not being used anywhere in the workspace",
+          `Class ".${cls.className}" is defined but never used`,
           vscode.DiagnosticSeverity.Warning
         )
         const existing = diagnosticsByFile.get(definition.uri) ?? []
@@ -51,7 +51,7 @@ export class Diagnostics implements vscode.Disposable {
             new vscode.Position(definition.start.line, definition.start.column),
             new vscode.Position(definition.end.line, definition.end.column)
           ),
-          `Duplicate class: defined in ${cls.definitions.length} locations`,
+          `Class ".${cls.className}" is duplicated in ${cls.definitions.length} locations`,
           vscode.DiagnosticSeverity.Warning
         )
         const existing = diagnosticsByFile.get(definition.uri) ?? []
