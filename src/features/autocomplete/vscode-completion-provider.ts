@@ -3,10 +3,14 @@ import * as vscode from "vscode"
 import { isClassNameValue } from "../../adapters/client-file-parser"
 import { parseCssClassRule } from "../../adapters/css-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
-import type { CssClassIndex } from "../../persistence/css-class-index"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
+import { GetDefinition } from "../get-definition/get-definition-query-handler"
+import { SearchClasses } from "./search-classes-query-handler"
 
-export function createCompletionProvider(classes: CssClassIndex) {
+export function createCompletionProvider(
+  searchClasses: SearchClasses,
+  getDefinition: GetDefinition
+) {
   return vscode.languages.registerCompletionItemProvider(
     {
       pattern: toGlobPattern(CLIENT_FILE_EXTENSIONS),
@@ -28,11 +32,8 @@ export function createCompletionProvider(classes: CssClassIndex) {
           return
         }
 
-        const completions = Array.from(classes.entries()).filter(([className, model]) => {
-          return className.includes(document.getText(range)) && model.definitions.length > 0
-        })
-
-        return completions.map(([className]) => {
+        const classesFound = searchClasses.execute(document.getText(range))
+        return classesFound.map(({ className }) => {
           const item = new vscode.CompletionItem(className, vscode.CompletionItemKind.Text)
           item.range = range
           return item
@@ -40,7 +41,7 @@ export function createCompletionProvider(classes: CssClassIndex) {
       },
       async resolveCompletionItem(item) {
         const label = typeof item.label === "string" ? item.label : item.label.label
-        const definition = classes.get(label)?.definitions[0]
+        const definition = getDefinition.execute(label)
         if (!definition) {
           return item
         }
