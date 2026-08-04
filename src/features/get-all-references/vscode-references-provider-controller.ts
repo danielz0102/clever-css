@@ -2,6 +2,11 @@ import * as vscode from "vscode"
 
 import type { GetAllReferences } from "./get-all-references-query-handler"
 
+/**
+ * Built-in reference provider only includes definitions from the active file.
+ * This function augments the built-in reference provider to include definitions
+ * from other CSS files, as well as class usages in client files (HTML, JSX, etc.).
+ */
 export function createFindReferencesProvider(getReferences: GetAllReferences) {
   return vscode.languages.registerReferenceProvider(
     { pattern: "**/*.css", scheme: "file" },
@@ -10,15 +15,11 @@ export function createFindReferencesProvider(getReferences: GetAllReferences) {
         const wordRange = document.getWordRangeAtPosition(position)
         if (!wordRange) return
 
-        const word = (() => {
-          const w = document.getText(wordRange)
-          return w.startsWith(".") ? w.substring(1) : w
-        })()
-
+        const word = document.getText(wordRange)
         const references = getReferences
-          .execute(word)
-          //* Built-in reference provider already includes references from the current file,
-          //* so we filter them out to avoid duplicates
+          .execute(word.startsWith(".") ? word.substring(1) : word)
+          //* Workaround: Filtering out references from the current document
+          //* Built-in refernce provider should include them
           .filter((r) => r.uri !== document.uri.fsPath)
 
         return references.map(
