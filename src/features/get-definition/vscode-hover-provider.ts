@@ -1,7 +1,7 @@
-import { parseAsync, Lang } from "@ast-grep/napi"
 import * as vscode from "vscode"
 
 import { isClassNameValue } from "../../adapters/client-file-parser"
+import { parseCssClassRule } from "../../adapters/css-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
 import type { GetDefinition } from "./get-definition-query-handler"
@@ -35,20 +35,9 @@ export function createHoverProvider(getSelector: GetDefinition) {
         }
 
         const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(definition.uri))
-        const rule = await parseCssClassRule(doc.getText(), className)
+        const rule = parseCssClassRule(doc.getText(), className)
         return new vscode.Hover(`\`\`\`css\n${rule}\n\`\`\``, range)
       },
     }
   )
-}
-
-async function parseCssClassRule(text: string, className: string): Promise<string> {
-  const ast = await parseAsync(Lang.Css, text)
-  const rule = ast.root().find(`.${className} {$$$}`)
-
-  if (!rule) {
-    throw new Error(`${className} class rule not found in file ${text}`)
-  }
-
-  return rule.text()
 }

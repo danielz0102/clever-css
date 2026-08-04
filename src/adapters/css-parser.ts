@@ -20,3 +20,14 @@ export const parseCssClassTokens: CssClassParser = (file) => {
     }
   })
 }
+
+export function parseCssClassRule(text: string, className: string): string | undefined {
+  const ast = parse(Lang.Css, text)
+  const rule = ast.root().find(`.${className} {$$$}`)
+
+  if (!rule) {
+    return
+  }
+
+  return rule.text()
+}

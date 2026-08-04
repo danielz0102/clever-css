@@ -1,7 +1,7 @@
-import { Lang, parse } from "@ast-grep/napi"
 import * as vscode from "vscode"
 
 import { isClassNameValue } from "../../adapters/client-file-parser"
+import { parseCssClassRule } from "../../adapters/css-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 import type { CssClassIndex } from "../../persistence/css-class-index"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
@@ -58,15 +58,4 @@ export function createCompletionProvider(classes: CssClassIndex) {
     "-",
     " "
   )
-}
-
-function parseCssClassRule(text: string, className: string): string | undefined {
-  const ast = parse(Lang.Css, text)
-  const rule = ast.root().find(`.${className} {$$$}`)
-
-  if (!rule) {
-    return
-  }
-
-  return rule.text()
 }
