@@ -1,6 +1,6 @@
 # Clever CSS
 
-Clever CSS is an extension for CSS files. Detects all CSS classes used in the workspace and provides features like class autocompletion, detection of unused and duplicated classes, and more.
+Augmented Intellisense for CSS files.
 
 ## Features
 
@@ -9,6 +9,12 @@ Clever CSS is an extension for CSS files. Detects all CSS classes used in the wo
 CSS class completion as you type.
 
 ![Class Autocompletion](images/autocomplete.gif)
+
+### Linting and Diagnostics
+
+Warnings for unused and duplicated CSS classes.
+
+![Diagnostics](images/diagnostics.gif)
 
 ## Requirements
 
