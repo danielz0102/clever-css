@@ -10,8 +10,13 @@ export function createFindReferencesProvider(getReferences: GetAllReferences) {
         const wordRange = document.getWordRangeAtPosition(position)
         if (!wordRange) return
 
+        const word = (() => {
+          const w = document.getText(wordRange)
+          return w.startsWith(".") ? w.substring(1) : w
+        })()
+
         const references = getReferences
-          .execute(document.getText(wordRange).substring(1))
+          .execute(word)
           //* Built-in reference provider already includes references from the current file,
           //* so we filter them out to avoid duplicates
           .filter((r) => r.uri !== document.uri.fsPath)
