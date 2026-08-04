@@ -8,7 +8,6 @@ import { SearchClasses } from "./features/autocomplete/search-classes-query-hand
 import { createCompletionProvider } from "./features/autocomplete/vscode-completion-provider"
 import { DeleteDefinitions } from "./features/delete-definitions/delete-definitions-command-handler"
 import { DeleteUsages } from "./features/delete-usages/delete-usages-command-handler"
-import { ClassAnalyzer } from "./features/diagnostics/class-analyzer"
 import { Diagnostics } from "./features/diagnostics/diagnostics"
 import { GetAllReferences } from "./features/get-all-references/get-all-references-query-handler"
 import { createFindReferencesProvider } from "./features/get-all-references/vscode-references-provider-controller"
@@ -52,21 +51,9 @@ async function init(): Promise<vscode.Disposable[]> {
   const loadUsages = new LoadAllUsages(repo, () => parseAllUsages(gitIgnore))
   await loadUsages.execute()
 
-  const analyzer = new ClassAnalyzer(repo)
-  const diagnostics = new Diagnostics(analyzer)
-
   const config = new Configuration()
-  if (!config.diagnosticsEnabled) {
-    diagnostics.disable()
-  }
-
-  const configListener = config.onChange(({ diagnositcsEnabled }) => {
-    if (diagnositcsEnabled) {
-      diagnostics.enable()
-    } else {
-      diagnostics.disable()
-    }
-  })
+  const diagnostics = Diagnostics.create(repo, config.diagnostics)
+  const configListener = config.onChange(({ diagnostics: c }) => diagnostics.updateConfig(c))
 
   const trees = ClassTreeViewContainer.create(index)
   const updateDefinitions = new UpdateDefinitions(repo, parseCssClassTokens)

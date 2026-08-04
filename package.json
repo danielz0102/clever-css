@@ -49,10 +49,27 @@
     "configuration": {
       "title": "Clever CSS",
       "properties": {
-        "clever-css.diagnostics.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable or disable CSS class diagnostics (unused and duplicated classes)"
+        "clever-css.diagnostics": {
+          "title": "Diagnostics",
+          "description": "Enable or disable specific warnings",
+          "type": "object",
+          "default": {
+            "unusedClasses": true,
+            "duplicatedClasses": true
+          },
+          "additionalProperties": false,
+          "properties": {
+            "unusedClasses": {
+              "title": "Unused Classes",
+              "type": "boolean",
+              "description": "Warnings for unused CSS classes"
+            },
+            "duplicatedClasses": {
+              "title": "Duplicated Classes",
+              "type": "boolean",
+              "description": "Warnings for duplicated CSS classes"
+            }
+          }
         }
       }
     },

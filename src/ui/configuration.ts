@@ -1,14 +1,24 @@
 import * as vscode from "vscode"
 
+export type DiagnosticsConfig = {
+  unusedClasses: boolean
+  duplicatedClasses: boolean
+}
+
 export class Configuration {
-  get diagnosticsEnabled(): boolean {
-    return vscode.workspace.getConfiguration("clever-css").get<boolean>("diagnostics.enabled", true)
+  get diagnostics(): DiagnosticsConfig {
+    const config = vscode.workspace.getConfiguration("clever-css")
+
+    return config.get<DiagnosticsConfig>("diagnostics", {
+      duplicatedClasses: true,
+      unusedClasses: true,
+    })
   }
 
-  onChange(cb: (config: { diagnositcsEnabled: boolean }) => void): vscode.Disposable {
+  onChange(cb: (config: { diagnostics: DiagnosticsConfig }) => void): vscode.Disposable {
     return vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("clever-css.diagnostics.enabled")) {
-        cb({ diagnositcsEnabled: this.diagnosticsEnabled })
+      if (e.affectsConfiguration("clever-css.diagnostics")) {
+        cb({ diagnostics: this.diagnostics })
       }
     })
   }
