@@ -7,7 +7,9 @@ export type CssClassParser = (file: CssFileDto) => Token[]
 
 export const parseCssClassTokens: CssClassParser = (file) => {
   const ast = parse(Lang.Css, file.content)
-  const nodes = ast.root().findAll({ rule: { kind: "class_name" } })
+  const nodes = ast
+    .root()
+    .findAll({ rule: { kind: "class_name", inside: { kind: "class_selector", stopBy: "end" } } })
   return nodes.flatMap((node) => {
     const range = node.range()
     return {
