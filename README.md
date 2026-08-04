@@ -1,16 +1,14 @@
-# css-viewer README
+# Clever CSS
 
-This is the README for your extension "css-viewer". After writing up a brief description, we recommend including the following sections.
+Clever CSS is an extension for CSS files. Detects all CSS classes used in the workspace and provides features like class autocompletion, detection of unused and duplicated classes, and more.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Class Autocompletion
 
-For example if there is an image subfolder under your extension project workspace:
+CSS class completion as you type.
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+![Class Autocompletion](images/autocomplete.gif)
 
 ## Requirements
 

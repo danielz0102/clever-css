@@ -6,6 +6,10 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielz0102/clever-css"
+  },
   "main": "./dist/extension.mjs",
   "scripts": {
     "vscode:prepublish": "pnpm run package",
