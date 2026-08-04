@@ -1,7 +1,7 @@
 import { Lang, parse } from "@ast-grep/napi"
 import * as vscode from "vscode"
 
-import { parseUsagesFrom } from "../../adapters/client-file-parser"
+import { isClassNameValue } from "../../adapters/client-file-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 import type { CssClassIndex } from "../../persistence/css-class-index"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
@@ -58,19 +58,6 @@ export function createCompletionProvider(classes: CssClassIndex) {
     "-",
     " "
   )
-}
-
-//TODO: Move this function to a shared folder
-export function isClassNameValue(file: CssFileDto, range: vscode.Range): boolean {
-  const tokens = parseUsagesFrom(file)
-  return tokens.some(({ location }) => {
-    return new vscode.Range(
-      location.start.line,
-      location.start.column,
-      location.end.line,
-      location.end.column
-    ).contains(range)
-  })
 }
 
 function parseCssClassRule(text: string, className: string): string | undefined {

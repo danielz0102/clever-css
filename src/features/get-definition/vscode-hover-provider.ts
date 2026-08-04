@@ -1,9 +1,9 @@
 import { parseAsync, Lang } from "@ast-grep/napi"
 import * as vscode from "vscode"
 
+import { isClassNameValue } from "../../adapters/client-file-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
-import { isClassNameValue } from "../autocomplete/vscode-completion-provider"
 import type { GetDefinition } from "./get-definition-query-handler"
 
 export function createHoverProvider(getSelector: GetDefinition) {

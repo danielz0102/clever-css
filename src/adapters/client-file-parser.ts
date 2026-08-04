@@ -1,5 +1,6 @@
 import { Lang, parse, type NapiConfig } from "@ast-grep/napi"
 import type { TypesMap } from "@ast-grep/napi/types/staticTypes"
+import * as vscode from "vscode"
 
 import type { CssFileDto } from "../dtos/css-file-dto"
 import type { Token } from "../dtos/token-dto"
@@ -38,6 +39,18 @@ export function parseUsagesFrom(file: CssFileDto): Token[] {
         },
       }
     })
+  })
+}
+
+export function isClassNameValue(file: CssFileDto, range: vscode.Range): boolean {
+  const tokens = parseUsagesFrom(file)
+  return tokens.some(({ location }) => {
+    return new vscode.Range(
+      location.start.line,
+      location.start.column,
+      location.end.line,
+      location.end.column
+    ).contains(range)
   })
 }
 
