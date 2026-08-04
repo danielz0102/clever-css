@@ -1,7 +1,7 @@
-import { Lang, parse, type NapiConfig } from "@ast-grep/napi"
-import type { TypesMap } from "@ast-grep/napi/types/staticTypes"
+import { Lang, parse } from "@ast-grep/napi"
 import * as vscode from "vscode"
 
+import { parseUsagesFrom } from "../../adapters/client-file-parser"
 import type { CssFileDto } from "../../dtos/css-file-dto"
 import type { CssClassIndex } from "../../persistence/css-class-index"
 import { CLIENT_FILE_EXTENSIONS, toGlobPattern } from "../../shared/client-file-extensions"
@@ -62,72 +62,15 @@ export function createCompletionProvider(classes: CssClassIndex) {
 
 //TODO: Move this function to a shared folder
 export function isClassNameValue(file: CssFileDto, range: vscode.Range): boolean {
-  const extension = file.uri.split(".").pop()
-  if (!extension) {
-    throw new Error(`File ${file.uri} has no extension`)
-  }
-
-  const strategy = selectStrategy(extension)
-  const ast = parse(strategy.lang, file.content)
-  const nodes = ast.root().findAll(strategy.matcher)
-
-  return nodes.some((n) => {
+  const tokens = parseUsagesFrom(file)
+  return tokens.some(({ location }) => {
     return new vscode.Range(
-      new vscode.Position(n.range().start.line, n.range().start.column),
-      new vscode.Position(n.range().end.line, n.range().end.column)
+      location.start.line,
+      location.start.column,
+      location.end.line,
+      location.end.column
     ).contains(range)
   })
-}
-
-function selectStrategy(extension: string): ParserStrategy {
-  switch (extension) {
-    case "jsx":
-    case "tsx":
-      return JsxStrategy
-    case "html":
-      return HtmlStrategy
-    default:
-      throw new Error(`No parser strategy found for extension ${extension}`)
-  }
-}
-
-type ParserStrategy = {
-  lang: Lang
-  matcher: NapiConfig<TypesMap>
-}
-
-const JsxStrategy: ParserStrategy = {
-  lang: Lang.Tsx,
-  matcher: {
-    rule: {
-      kind: "string_fragment",
-      inside: {
-        kind: "jsx_attribute",
-        has: {
-          kind: "property_identifier",
-          regex: "^className$",
-        },
-        stopBy: "end",
-      },
-    },
-  },
-}
-
-const HtmlStrategy: ParserStrategy = {
-  lang: Lang.Html,
-  matcher: {
-    rule: {
-      kind: "attribute_value",
-      inside: {
-        kind: "attribute",
-        has: {
-          kind: "attribute_name",
-          regex: "^class$",
-        },
-        stopBy: "end",
-      },
-    },
-  },
 }
 
 function parseCssClassRule(text: string, className: string): string | undefined {
