@@ -18,11 +18,19 @@ Warnings for unused and duplicated CSS classes (configurable).
 
 ### Tree View
 
-A tree view of all CSS classes in your workspace.
+A tree view of all CSS classes in your workspace. Clicking on a class will navigate to its definition.
 
-<img src="images/tree-view.png" alt="Tree View" width="300"/>
+<img src="images/tree-view.png" alt="Tree View" width="300" />
 
-###
+### Definition Provider
+
+Navigate to the definition of a CSS class with Ctrl/Cmd + Click. Also see the definition on hover.
+
+![Definition Provider](images/definitions.gif)
+
+### Other Features
+
+- Include all definitions and usages of a class in the Find All References command.
 
 ## Requirements
 
