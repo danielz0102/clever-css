@@ -30,22 +30,24 @@ Navigate to the definition of a CSS class with Ctrl/Cmd + Click. Also see the de
 
 ### Other Features
 
-- Include all definitions and usages of a class in the Find All References command.
+- Reference provider for all definitions and usages of a CSS class.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- VS Code 1.120.0 or higher
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+You can disable diagnostics in your `settings.json`:
 
-For example:
-
-This extension contributes the following settings:
-
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
+```json
+{
+  "clever-css.diagnostics": {
+    "unusedClasses": false, // Disable unused class warnings
+    "duplicatedClasses": false // Disable duplicated class warnings
+  }
+}
+```
 
 ## Known Issues
 
