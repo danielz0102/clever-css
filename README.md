@@ -51,6 +51,10 @@ You can disable diagnostics in your `settings.json`:
 }
 ```
 
+## Support
+
+Currently, the extension detects classes only for HTML and JSX/TSX files.
+
 ## Known Issues
 
 ### The tree view, definitions, or references have become out of sync
@@ -59,7 +63,7 @@ If the extension ever becomes out of sync, you can click the refresh button in t
 
 <img src="images/reset.png" alt="Tree View" width="300" />
 
-If you can reproduce the problem, I'd appreciate it if you could open an issue!
+If you can reproduce the problem, I'd appreciate it if you could [open an issue!](https://github.com/danielz0102/clever-css/issues/new).
 
 ### I don't see some definitions in references when I execute the Find All References command
 
