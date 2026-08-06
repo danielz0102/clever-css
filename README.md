@@ -51,7 +51,25 @@ You can disable diagnostics in your `settings.json`:
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### The tree view, definitions, or references have become out of sync
+
+If the extension ever becomes out of sync, you can click the refresh button in the "All Classes" tree view to force a rescan of your workspace.
+
+<img src="images/reset.png" alt="Tree View" width="300" />
+
+If you can reproduce the problem, I'd appreciate it if you could open an issue!
+
+### I don't see some definitions in references when I execute the Find All References command
+
+Built-in VS Code reference provider should provide references for definitions found in the same file. If you don't see them, probably VS Code is not recognizing your file as a CSS file, maybe because you have an extension like [PostCSS Language Support](https://marketplace.visualstudio.com/items?itemName=csstools.postcss) installed. The solution is to configure file associations of CSS files in your `settings.json`:
+
+```json
+{
+  "files.associations": {
+    "*.css": "css"
+  }
+}
+```
 
 ## Release Notes
 
