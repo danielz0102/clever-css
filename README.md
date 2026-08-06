@@ -67,7 +67,7 @@ If you can reproduce the problem, I'd appreciate it if you could [open an issue!
 
 ### I don't see some definitions in references when I execute the Find All References command
 
-Built-in VS Code reference provider should provide references for definitions found in the same file. If you don't see them, VS Code may be not recognizing your file as a CSS file, probably because you have an extension like [PostCSS Language Support](https://marketplace.visualstudio.com/items?itemName=csstools.postcss) installed. The solution is to configure file associations of CSS files in your `settings.json`:
+Built-in VS Code reference provider should provide references for definitions found in the same file. If you don't see them, VS Code may not be recognizing your file as a CSS file, probably because you have an extension like [PostCSS Language Support](https://marketplace.visualstudio.com/items?itemName=csstools.postcss) installed. The solution is to configure file associations of CSS files in your `settings.json`:
 
 ```json
 {
