@@ -28,9 +28,11 @@ Navigate to the definition of a CSS class with Ctrl/Cmd + Click. Also see the de
 
 ![Definition Provider](images/definitions.gif)
 
-### Other Features
+### Reference Provider
 
-- Reference provider for all definitions and usages of a CSS class.
+Find all definitions and usages of a CSS class when you execute the Find All References command.
+
+![Reference Provider](images/references.gif)
 
 ## Requirements
 
