@@ -51,7 +51,7 @@ You can disable diagnostics in your `settings.json`:
 }
 ```
 
-## Support
+## File Support
 
 Currently, the extension detects classes only for HTML and JSX/TSX files.
 
