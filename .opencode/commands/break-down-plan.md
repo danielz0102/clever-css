@@ -13,9 +13,9 @@ Take a plan and break it down into multiple tasks. Each task should have:
 Also include a Acceptance Criteria section that has a checklist with:
 
 - All tasks completed
-- All tests passing (`pnpm run test`)
-- Linter passing (`pnpm run lint`)
-- Type checks passing (`pnpm run check-types`)
+- All tests passing (`npm run test`)
+- Linter passing (`npm run lint`)
+- Type checks passing (`npm run check-types`)
 
 Check existing examples in @plans
 
