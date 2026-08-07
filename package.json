@@ -11,6 +11,12 @@
     "url": "https://github.com/danielz0102/clever-css"
   },
   "publisher": "daniel-zambrano",
+  "files": [
+    "dist/**",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "main": "./dist/extension.mjs",
   "scripts": {
     "vscode:prepublish": "npm run package",
