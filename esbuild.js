@@ -33,7 +33,7 @@ async function main() {
     sourcesContent: false,
     platform: "node",
     outfile: "dist/extension.mjs",
-    external: ["vscode", "@ast-grep/napi"],
+    external: ["vscode", "@ast-grep/napi", "ignore"],
     logLevel: "silent",
     plugins: [
       /* add to the end of plugins array */
