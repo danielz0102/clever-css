@@ -2,8 +2,9 @@
   "name": "clever-css",
   "displayName": "Clever CSS",
   "version": "0.0.1",
-  "description": "",
+  "description": "Augmented Intellisense for CSS files",
   "categories": [
+    "Linters",
     "Other"
   ],
   "repository": {
