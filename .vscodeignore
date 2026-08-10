@@ -1,0 +1,13 @@
+.*
+.*/
+node_modules
+!node_modules/@ast-grep
+
+plans
+images
+out
+
+skills-lock.json
+tsconfig.json
+esbuild.js
+vsc-extension-quickstart.md
