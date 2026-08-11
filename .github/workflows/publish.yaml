@@ -1,0 +1,59 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    # ast-grep detects the OS and architecture to download the proper binary
+    # This is necessary to support multiple platforms
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: "linux-x64"
+          - os: ubuntu-24.04-arm
+            target: "linux-arm64"
+          - os: windows-2025
+            target: "win32-x64"
+          - os: windows-11-arm
+            target: "win32-arm64"
+          - os: macos-15-intel
+            target: "darwin-x64"
+          - os: macos-15
+            target: "darwin-arm64"
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies and vsce
+        run: |
+          npm ci
+          npm install -g @vscode/vsce
+
+      - name: Lint and type check
+        run: |
+          npm run lint
+          npm run check-types
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Publish to VS Code Marketplace
+        run: vsce publish --azure-credential --target ${{ matrix.target }}
