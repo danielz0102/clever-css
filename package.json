@@ -1,7 +1,7 @@
 {
   "name": "clever-css",
   "displayName": "Clever CSS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Augmented Intellisense for CSS files",
   "categories": [
     "Linters",
