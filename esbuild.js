@@ -33,6 +33,7 @@ async function main() {
     sourcesContent: false,
     platform: "node",
     outfile: "dist/extension.mjs",
+    /* @ast-grep/napi is a native module. It cannot be resolved by esbuild. */
     external: ["vscode", "@ast-grep/napi"],
     logLevel: "silent",
     plugins: [
