@@ -1,0 +1,9 @@
+steps:
+- task: AzureCLI@2
+  displayName: 'Get identity details'
+  inputs:
+    azureSubscription: f84e0cc7-2f72-468d-9e1b-2b8074175235
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
+      az rest -u https://app.vssps.visualstudio.com/_apis/profile/profiles/me --resource 499b84ac-1321-427f-aa17-267ca6975798
