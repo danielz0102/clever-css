@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   publish:
+    environment: release
     # ast-grep detects the OS and architecture to download the proper binary
     # This is necessary to support multiple platforms
     strategy:
