@@ -5,7 +5,8 @@
   "description": "Augmented Intellisense for CSS files",
   "categories": [
     "Linters",
-    "Other"
+    "Programming Languages",
+    "Visualization"
   ],
   "repository": {
     "type": "git",
