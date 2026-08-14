@@ -11,3 +11,5 @@ skills-lock.json
 tsconfig.json
 esbuild.js
 vsc-extension-quickstart.md
+
+!images/logo.png
