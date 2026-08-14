@@ -138,6 +138,7 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.120.0"
   }

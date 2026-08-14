@@ -1,6 +1,9 @@
 # Clever CSS
 
-Augmented Intellisense for CSS files.
+<div style="text-align: center;">
+  <img src="images/logo.png" alt="Logo" width="300" />
+  <p>Augmented Intellisense for CSS files</p>
+</div>
 
 ## Features
 
