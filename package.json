@@ -8,6 +8,14 @@
     "Programming Languages",
     "Visualization"
   ],
+  "keywords": [
+    "completion",
+    "css",
+    "html",
+    "intellisense",
+    "linter",
+    "react"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/danielz0102/clever-css"
